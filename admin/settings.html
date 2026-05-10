@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integrasi WA Lite - Sky Circle</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
+            <span>SKY CIRCLE</span>
+        </div>
+        <div class="nav-label">Main Menu</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Rekap Data</span></a></li>
+            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Database Siswa</span></a></li>
+            <li class="nav-item"><a href="mentors.html" class="nav-link"><i class="fas fa-user-tie"></i><span>Database Mentor</span></a></li>
+            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Laporan Sekolah</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link active"><i class="fas fa-plug"></i><span>WA Lite Settings</span></a></li>
+        </ul>
+        <div class="nav-label">Integrasi WA Lite</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-plug"></i><span>API & Webhook</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-clock"></i><span>Reminder Schedule</span></a></li>
+            <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-reply-all"></i><span>Autoreply Rules</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button class="btn" onclick="toggleSidebar()" style="background: transparent; font-size: 20px; padding: 0;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Pengaturan Integrasi WA (Lite Plan)</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <div class="badge badge-success" style="padding: 8px 16px;">
+                    <i class="fas fa-check-circle"></i> Kuota: 124 / 1.000 Pesan
+                </div>
+            </div>
+        </header>
+
+        <div class="grid-2-1">
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <!-- API Configuration -->
+                <div class="card">
+                    <div class="section-title">
+                        <span>Konfigurasi API Gateway</span>
+                    </div>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">API Token / Key</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="password" value="************************" class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;">
+                                <button class="btn btn-primary" style="padding: 10px;"><i class="fas fa-eye"></i></button>
+                            </div>
+                        </div>
+                        <div>
+                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">Webhook URL (Untuk Menerima Presensi)</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" value="https://api.skycircle.com/v1/webhook" class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;" readonly>
+                                <button class="btn" style="background: #eee;"><i class="fas fa-copy"></i></button>
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Salin URL ini ke dashboard Ruang WA / Fonnte Anda.</p>
+                        </div>
+                        <button class="btn btn-primary" style="width: fit-content; margin-top: 10px;">Simpan Perubahan</button>
+                    </div>
+                </div>
+
+                <!-- Reminder Logic -->
+                <div class="card">
+                    <div class="section-title">
+                        <span>Jadwal Reminder Mentor (Schedule)</span>
+                        <button class="btn" style="background: var(--primary-light); color: var(--primary); font-size: 12px;"><i class="fas fa-plus"></i> Tambah Jadwal</button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Nama Reminder</th>
+                                <th>Waktu</th>
+                                <th>Target</th>
+                                <th>Status</th>
+                                <th>Aksi</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 500;">Reminder Sore</td>
+                                <td>Setiap Hari, 17:00</td>
+                                <td>Semua Mentor</td>
+                                <td><span class="status-pill status-done">Aktif</span></td>
+                                <td><i class="fas fa-ellipsis-v"></i></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 500;">Follow-up Minggu</td>
+                                <td>Minggu, 10:00</td>
+                                <td>Mentor Terlambat</td>
+                                <td><span class="status-pill status-new">Pending</span></td>
+                                <td><i class="fas fa-ellipsis-v"></i></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- Side Info -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                <div class="card" style="background: #075e54; color: white;">
+                    <h3 style="margin-bottom: 12px;">WA Lite Status</h3>
+                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
+                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #25d366;"></div>
+                        <span>Device Connected</span>
+                    </div>
+                    <div style="font-size: 14px; opacity: 0.9;">
+                        Nomor: 0812-xxxx-xxxx<br>
+                        Server: Ruang WA API
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="section-title"><span>Template Pesan</span></div>
+                    <div style="background: #f1f2f6; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;">
+                        "Halo {{nama}}, jangan lupa isi presensi mentoring hari ini di {{sekolah}} ya!"
+                    </div>
+                    <button class="btn" style="width: 100%; border: 1px dashed #ddd; justify-content: center;">Edit Template</button>
+                </div>
+            </div>
+        </div>
+    </main>
+    <script src="../js/app.js"></script>
+</body>
+</html>

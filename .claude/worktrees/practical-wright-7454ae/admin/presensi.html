@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Input Presensi - Sky Circle</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        .form-group {
+            margin-bottom: 20px;
+        }
+        .form-label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            color: var(--text-main);
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            border-color: var(--primary);
+            background: var(--bg-card);
+            box-shadow: 0 0 0 3px rgba(0,123,255,0.1);
+        }
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 20px;
+        }
+        .student-checklist {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+        .student-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border-color);
+            background: var(--bg-body);
+            cursor: pointer;
+            transition: var(--transition);
+            user-select: none;
+        }
+        .student-item:hover {
+            border-color: var(--primary);
+            background: var(--primary-light);
+        }
+        .student-item.checked {
+            border-color: var(--success);
+            background: #ecfdf5;
+        }
+        .student-item.izin {
+            border-color: var(--warning);
+            background: #fffbeb;
+        }
+        .student-item.alpha {
+            border-color: var(--danger);
+            background: #fef2f2;
+        }
+        .student-checkbox {
+            width: 20px;
+            height: 20px;
+            border-radius: 6px;
+            border: 2px solid #d1d5db;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: var(--transition);
+        }
+        .student-item.checked .student-checkbox {
+            background: var(--success);
+            border-color: var(--success);
+            color: white;
+        }
+        .student-item.izin .student-checkbox {
+            background: var(--warning);
+            border-color: var(--warning);
+            color: white;
+        }
+        .student-item.alpha .student-checkbox {
+            background: var(--danger);
+            border-color: var(--danger);
+            color: white;
+        }
+        .student-name {
+            font-size: 14px;
+            font-weight: 500;
+            flex-grow: 1;
+        }
+        .student-status-btn {
+            font-size: 11px;
+            padding: 3px 8px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: var(--transition);
+        }
+        .attendance-legend {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+        .legend-dot {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+        }
+        .attendance-summary {
+            display: flex;
+            gap: 20px;
+            padding: 16px 20px;
+            background: var(--bg-body);
+            border-radius: var(--radius);
+            margin-bottom: 20px;
+            font-size: 14px;
+        }
+        .summary-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 600;
+        }
+        .btn-group {
+            display: flex;
+            gap: 12px;
+            justify-content: flex-end;
+            margin-top: 24px;
+        }
+        .btn-outline {
+            background: transparent;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+        }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: #218838;
+        }
+        .select-all-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+        }
+        .btn-sm {
+            padding: 6px 14px;
+            font-size: 13px;
+            border-radius: 8px;
+        }
+        .history-table td, .history-table th {
+            padding: 12px 16px;
+        }
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(80px);
+            background: #1a1a1a;
+            color: white;
+            padding: 14px 28px;
+            border-radius: 30px;
+            font-size: 14px;
+            font-weight: 500;
+            z-index: 9999;
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .toast.show {
+            opacity: 1;
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
+            <span>SKY CIRCLE</span>
+        </div>
+        <div class="nav-label">Main Menu</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Rekap Data</span></a></li>
+            <li class="nav-item"><a href="presensi.html" class="nav-link active"><i class="fas fa-clipboard-check"></i><span>Input Presensi</span></a></li>
+            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Database Siswa</span></a></li>
+            <li class="nav-item"><a href="mentors.html" class="nav-link"><i class="fas fa-user-tie"></i><span>Database Mentor</span></a></li>
+            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Laporan Sekolah</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-plug"></i><span>WA Lite Settings</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button class="btn" onclick="toggleSidebar()" style="background: transparent; font-size: 20px; padding: 0;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Input Presensi</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <div class="user-profile">
+                    <span style="font-weight: 600;">Admin Sky Circle</span>
+                </div>
+            </div>
+        </header>
+
+        <!-- Form Input Presensi -->
+        <div class="card" style="margin-bottom: 24px;">
+            <div class="section-title"><span>Form Presensi Sesi Mentoring</span></div>
+
+            <div class="form-grid" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Tanggal Sesi</label>
+                    <input type="date" class="form-control" id="input-tanggal">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Materi / Tema</label>
+                    <input type="text" class="form-control" id="input-materi" placeholder="Contoh: Adab Bergaul, Manajemen Waktu...">
+                </div>
+            </div>
+
+            <div class="form-grid-3" style="margin-bottom: 20px;">
+                <div class="form-group">
+                    <label class="form-label">Mentor</label>
+                    <select class="form-control" id="input-mentor" onchange="loadStudents()">
+                        <option value="">-- Pilih Mentor --</option>
+                        <option value="M-01">Kak Ahmad</option>
+                        <option value="M-02">Kak Siti</option>
+                        <option value="M-03">Kak Budi</option>
+                        <option value="M-04">Kak Rini</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Sekolah</label>
+                    <select class="form-control" id="input-sekolah" onchange="loadStudents()">
+                        <option value="">-- Pilih Sekolah --</option>
+                        <option value="SMAN2">SMA N 2 Cibinong</option>
+                        <option value="SMK1">SMK Bina Karya</option>
+                        <option value="SMAN3">SMA N 3 Bogor</option>
+                        <option value="MAN1">MAN 1 Bogor</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Kelas / Kelompok</label>
+                    <select class="form-control" id="input-kelas" onchange="loadStudents()">
+                        <option value="">-- Pilih Kelas --</option>
+                        <option value="XI MIPA 1">XI MIPA 1</option>
+                        <option value="XI MIPA 2">XI MIPA 2</option>
+                        <option value="XI MIPA 3">XI MIPA 3</option>
+                        <option value="XI IPS 1">XI IPS 1</option>
+                        <option value="XI IPS 2">XI IPS 2</option>
+                        <option value="X MIPA 1">X MIPA 1</option>
+                        <option value="X IPS 1">X IPS 1</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Daftar Siswa -->
+            <div id="student-section" style="display: none;">
+                <div style="border-top: 1px solid var(--border-color); padding-top: 20px; margin-top: 4px;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                        <span style="font-size: 15px; font-weight: 600;">Daftar Siswa</span>
+                        <div class="attendance-summary">
+                            <div class="summary-item" style="color: var(--success);">
+                                <i class="fas fa-check-circle"></i>
+                                <span>Hadir: <span id="count-hadir">0</span></span>
+                            </div>
+                            <div class="summary-item" style="color: var(--warning);">
+                                <i class="fas fa-clock"></i>
+                                <span>Izin/Sakit: <span id="count-izin">0</span></span>
+                            </div>
+                            <div class="summary-item" style="color: var(--danger);">
+                                <i class="fas fa-times-circle"></i>
+                                <span>Alpha: <span id="count-alpha">0</span></span>
+                            </div>
+                            <div class="summary-item" style="color: var(--text-muted);">
+                                <i class="fas fa-users"></i>
+                                <span>Total: <span id="count-total">0</span></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="attendance-legend">
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--success);"></div> Hadir</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--warning);"></div> Izin / Sakit</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: var(--danger);"></div> Alpha</div>
+                        <div class="legend-item"><div class="legend-dot" style="background: #d1d5db;"></div> Belum ditandai</div>
+                    </div>
+
+                    <div class="select-all-bar">
+                        <button class="btn btn-sm" onclick="markAll('checked')" style="background: #ecfdf5; color: var(--success); border: 1px solid var(--success);">
+                            <i class="fas fa-check-double"></i> Semua Hadir
+                        </button>
+                        <button class="btn btn-sm" onclick="markAll('izin')" style="background: #fffbeb; color: #b45309; border: 1px solid var(--warning);">
+                            <i class="fas fa-clock"></i> Semua Izin
+                        </button>
+                        <button class="btn btn-sm" onclick="markAll('alpha')" style="background: #fef2f2; color: var(--danger); border: 1px solid var(--danger);">
+                            <i class="fas fa-times"></i> Semua Alpha
+                        </button>
+                        <button class="btn btn-sm btn-outline" onclick="markAll('')">
+                            <i class="fas fa-redo"></i> Reset
+                        </button>
+                    </div>
+
+                    <div class="student-checklist" id="student-list"></div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label class="form-label">Catatan Tambahan (Opsional)</label>
+                    <textarea class="form-control" id="input-catatan" rows="3" placeholder="Contoh: Sesi berlangsung online, ada gangguan jaringan, dll."></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button class="btn btn-outline" onclick="resetForm()">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                    <button class="btn btn-success" onclick="submitPresensi()">
+                        <i class="fas fa-save"></i> Simpan Presensi
+                    </button>
+                </div>
+            </div>
+
+            <div id="student-placeholder" style="text-align: center; padding: 40px; color: var(--text-muted);">
+                <i class="fas fa-clipboard-list" style="font-size: 40px; margin-bottom: 12px; display: block; opacity: 0.3;"></i>
+                <p style="font-size: 14px;">Pilih mentor, sekolah, dan kelas terlebih dahulu untuk menampilkan daftar siswa.</p>
+            </div>
+        </div>
+
+        <!-- Riwayat Presensi -->
+        <div class="card">
+            <div class="section-title">
+                <span>Riwayat Input Presensi</span>
+                <span style="font-size: 13px; color: var(--text-muted); font-weight: 400;">Session ini</span>
+            </div>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Tanggal</th>
+                        <th>Mentor</th>
+                        <th>Sekolah</th>
+                        <th>Kelas</th>
+                        <th>Materi</th>
+                        <th>Hadir</th>
+                        <th>Izin</th>
+                        <th>Alpha</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody id="history-tbody">
+                    <tr>
+                        <td colspan="9" style="text-align: center; color: var(--text-muted); padding: 32px;">
+                            Belum ada data presensi yang diinput.
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-check-circle" style="color: #4ade80;"></i>
+        <span id="toast-msg">Presensi berhasil disimpan!</span>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        // Set default date to today
+        document.getElementById('input-tanggal').valueAsDate = new Date();
+
+        // Sample student data per class
+        const studentData = {
+            'XI MIPA 1': ['Ahmad Fauzi', 'Siti Rahma', 'Budi Santoso', 'Dewi Lestari', 'Eko Prasetyo', 'Farah Nadia', 'Gilang Ramadhan', 'Hana Pertiwi', 'Ivan Kurniawan', 'Jihan Aulia', 'Kevin Setiawan', 'Laras Ayu'],
+            'XI MIPA 2': ['Maya Sari', 'Nabil Pratama', 'Olivia Putri', 'Putra Wijaya', 'Qiana Zahra', 'Rizky Maulana', 'Sandra Dwi', 'Taufik Hidayat', 'Ulfa Amelia', 'Vino Gustave'],
+            'XI MIPA 3': ['Wulan Dari', 'Xander Basuki', 'Yuni Astuti', 'Zaki Rahman', 'Andi Saputra', 'Bella Mutiara', 'Cahyo Nugroho', 'Dinda Putri'],
+            'XI IPS 1': ['Erna Safitri', 'Faisal Amir', 'Gita Larasati', 'Hendra Gunawan', 'Intan Permata', 'Joko Susilo'],
+            'XI IPS 2': ['Kartika Sari', 'Lutfi Hakim', 'Mega Wati', 'Nando Prasetya', 'Okta Rina', 'Pandu Aji', 'Qori Indah'],
+            'X MIPA 1': ['Rafi Abdullah', 'Sarah Amalia', 'Teguh Santoso', 'Ulfah Nurhayati', 'Veri Wicaksono'],
+            'X IPS 1': ['Wawan Setiadi', 'Xiomara Putri', 'Yogi Pratama', 'Zara Anggraini'],
+        };
+
+        let studentStatus = {};
+
+        function loadStudents() {
+            const mentor = document.getElementById('input-mentor').value;
+            const sekolah = document.getElementById('input-sekolah').value;
+            const kelas = document.getElementById('input-kelas').value;
+
+            if (!mentor || !sekolah || !kelas) return;
+
+            const students = studentData[kelas] || [];
+            const list = document.getElementById('student-list');
+            list.innerHTML = '';
+            studentStatus = {};
+
+            students.forEach((name, idx) => {
+                studentStatus[idx] = '';
+                const item = document.createElement('div');
+                item.className = 'student-item';
+                item.id = `student-${idx}`;
+                item.innerHTML = `
+                    <div class="student-checkbox" id="chk-${idx}"><i class="fas fa-check" style="font-size: 11px; display:none;"></i></div>
+                    <span class="student-name">${name}</span>
+                    <div style="display: flex; gap: 4px;">
+                        <button class="student-status-btn" onclick="setStatus(event, ${idx}, 'checked')" style="background: #ecfdf5; color: var(--success);">H</button>
+                        <button class="student-status-btn" onclick="setStatus(event, ${idx}, 'izin')" style="background: #fffbeb; color: #b45309;">I</button>
+                        <button class="student-status-btn" onclick="setStatus(event, ${idx}, 'alpha')" style="background: #fef2f2; color: var(--danger);">A</button>
+                    </div>
+                `;
+                item.addEventListener('click', (e) => {
+                    if (e.target.classList.contains('student-status-btn')) return;
+                    const current = studentStatus[idx];
+                    const next = current === '' ? 'checked' : current === 'checked' ? 'izin' : current === 'izin' ? 'alpha' : '';
+                    setStatus(e, idx, next);
+                });
+                list.appendChild(item);
+            });
+
+            document.getElementById('count-total').textContent = students.length;
+            document.getElementById('student-section').style.display = 'block';
+            document.getElementById('student-placeholder').style.display = 'none';
+            updateCounts();
+        }
+
+        function setStatus(e, idx, status) {
+            studentStatus[idx] = status;
+            const item = document.getElementById(`student-${idx}`);
+            const chk = document.getElementById(`chk-${idx}`);
+            item.className = 'student-item' + (status ? ' ' + status : '');
+            const icon = chk.querySelector('i');
+            if (status === 'checked') {
+                icon.className = 'fas fa-check';
+                icon.style.display = '';
+            } else if (status === 'izin') {
+                icon.className = 'fas fa-clock';
+                icon.style.display = '';
+            } else if (status === 'alpha') {
+                icon.className = 'fas fa-times';
+                icon.style.display = '';
+            } else {
+                icon.style.display = 'none';
+            }
+            updateCounts();
+        }
+
+        function markAll(status) {
+            Object.keys(studentStatus).forEach(idx => setStatus(null, idx, status));
+        }
+
+        function updateCounts() {
+            const values = Object.values(studentStatus);
+            document.getElementById('count-hadir').textContent = values.filter(v => v === 'checked').length;
+            document.getElementById('count-izin').textContent = values.filter(v => v === 'izin').length;
+            document.getElementById('count-alpha').textContent = values.filter(v => v === 'alpha').length;
+        }
+
+        function submitPresensi() {
+            const tanggal = document.getElementById('input-tanggal').value;
+            const materi = document.getElementById('input-materi').value;
+            const mentorEl = document.getElementById('input-mentor');
+            const sekolahEl = document.getElementById('input-sekolah');
+            const kelasEl = document.getElementById('input-kelas');
+
+            if (!tanggal || !mentorEl.value || !sekolahEl.value || !kelasEl.value) {
+                showToast('Lengkapi semua data terlebih dahulu!', 'error');
+                return;
+            }
+
+            const hadir = parseInt(document.getElementById('count-hadir').textContent);
+            const izin = parseInt(document.getElementById('count-izin').textContent);
+            const alpha = parseInt(document.getElementById('count-alpha').textContent);
+            const total = parseInt(document.getElementById('count-total').textContent);
+
+            if (hadir + izin + alpha === 0) {
+                showToast('Tandai kehadiran siswa terlebih dahulu!', 'error');
+                return;
+            }
+
+            const mentorText = mentorEl.options[mentorEl.selectedIndex].text;
+            const sekolahText = sekolahEl.options[sekolahEl.selectedIndex].text;
+            const kelasText = kelasEl.value;
+            const materiText = materi || '-';
+
+            const tbody = document.getElementById('history-tbody');
+            // Remove placeholder row if exists
+            if (tbody.querySelector('td[colspan]')) tbody.innerHTML = '';
+
+            const tr = document.createElement('tr');
+            const dateFormatted = new Date(tanggal).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' });
+            tr.innerHTML = `
+                <td>${dateFormatted}</td>
+                <td>${mentorText}</td>
+                <td>${sekolahText}</td>
+                <td>${kelasText}</td>
+                <td>${materiText}</td>
+                <td><span style="color: var(--success); font-weight: 600;">${hadir}</span></td>
+                <td><span style="color: #b45309; font-weight: 600;">${izin}</span></td>
+                <td><span style="color: var(--danger); font-weight: 600;">${alpha}</span></td>
+                <td><span class="status-pill status-done">Tersimpan</span></td>
+            `;
+            tr.style.background = '#f0fdf4';
+            tbody.prepend(tr);
+            setTimeout(() => { tr.style.transition = 'background 2s'; tr.style.background = 'transparent'; }, 1500);
+
+            showToast(`Presensi ${kelasText} berhasil disimpan! (${hadir} hadir, ${izin} izin, ${alpha} alpha)`);
+            resetForm();
+        }
+
+        function resetForm() {
+            document.getElementById('input-tanggal').valueAsDate = new Date();
+            document.getElementById('input-materi').value = '';
+            document.getElementById('input-mentor').value = '';
+            document.getElementById('input-sekolah').value = '';
+            document.getElementById('input-kelas').value = '';
+            document.getElementById('input-catatan').value = '';
+            document.getElementById('student-list').innerHTML = '';
+            document.getElementById('student-section').style.display = 'none';
+            document.getElementById('student-placeholder').style.display = 'block';
+            studentStatus = {};
+            ['count-hadir','count-izin','count-alpha','count-total'].forEach(id => document.getElementById(id).textContent = '0');
+        }
+
+        function showToast(msg, type = 'success') {
+            const toast = document.getElementById('toast');
+            const icon = toast.querySelector('i');
+            document.getElementById('toast-msg').textContent = msg;
+            icon.style.color = type === 'error' ? '#f87171' : '#4ade80';
+            icon.className = type === 'error' ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 3500);
+        }
+    </script>
+</body>
+</html>

@@ -8,130 +8,227 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .dashboard-header-text {
+            font-size: 32px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .dashboard-subtitle {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 32px;
+        }
+    </style>
 </head>
-<body style="background: white;">
-    <!-- No Sidebar for School Dashboard as requested -->
+<body>
     
     <main class="main-content full-width">
-        <header style="border-bottom: 1px solid #eee; padding-bottom: 20px;">
+        <header>
             <div style="display: flex; align-items: center; gap: 20px;">
-                <div class="logo-icon" style="width: 50px; height: 50px; border-radius: 12px;">
+                <div class="logo-icon" style="width: 48px; height: 48px; border-radius: 16px;">
                     <div></div><div></div><div></div><div></div>
                 </div>
                 <div>
-                    <h1 style="font-size: 24px;">SMA Negeri 2 Cibinong</h1>
-                    <p style="color: var(--text-muted); font-size: 14px;">Monitoring Presensi Mentoring Siswa</p>
+                    <div style="font-weight: 700; font-size: 18px; color: var(--primary);">SKY CIRCLE</div>
+                    <div style="font-size: 13px; color: var(--text-muted);">School Portal</div>
                 </div>
             </div>
+
+            <div class="top-nav-pills">
+                <a href="#" class="pill-link active">Dashboard</a>
+                <a href="#" class="pill-link">Laporan Kelas</a>
+                <a href="#" class="pill-link">Jadwal Mentoring</a>
+            </div>
+
             <div class="header-actions">
-                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0; margin-right: 15px;">
+                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
-                <span class="badge badge-success">Periode: Mei 2024</span>
-                <button class="btn btn-primary"><i class="fas fa-print"></i> Cetak Laporan</button>
+                <div class="user-profile">
+                    <div class="avatar"><img src="https://ui-avatars.com/api/?name=SMA+2+Cibinong&background=1a1a1a&color=fff" alt="School"></div>
+                    <span style="font-weight: 600; font-size: 14px;">SMA N 2 Cibinong</span>
+                </div>
             </div>
         </header>
 
-        <div class="stats-grid" style="margin-top: 32px;">
-            <div class="card" style="border: 1px solid #eee; box-shadow: none;">
-                <span class="stat-label">JUMLAH SISWA BINAAN</span>
-                <div class="stat-value">156</div>
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; margin-top: 40px;">
+            <div>
+                <h1 class="dashboard-header-text" style="font-size: 28px;">Monitoring Presensi Siswa</h1>
+                <p class="dashboard-subtitle" style="margin-bottom: 0;">Laporan kehadiran mentoring per pertemuan dwimingguan</p>
             </div>
-            <div class="card" style="border: 1px solid #eee; box-shadow: none;">
-                <span class="stat-label">KEHADIRAN BULAN INI</span>
-                <div class="stat-value">94.5%</div>
-            </div>
-            <div class="card" style="border: 1px solid #eee; box-shadow: none;">
-                <span class="stat-label">TOTAL SESI SELESAI</span>
-                <div class="stat-value">12 Sesi</div>
+            <div class="filters-bar">
+                <select class="filter-select">
+                    <option>Tahun Ajaran 2024/2025</option>
+                    <option>Tahun Ajaran 2023/2024</option>
+                </select>
+                <select class="filter-select">
+                    <option>Semester Ganjil</option>
+                    <option>Semester Genap</option>
+                </select>
+                <button class="btn btn-primary" style="border-radius: 20px;"><i class="fas fa-download"></i> Export Data</button>
             </div>
         </div>
 
         <div class="grid-2-1">
-            <div class="card" style="border: 1px solid #eee; box-shadow: none;">
-                <div class="section-title"><span>Grafik Kehadiran Per Kelas</span></div>
-                <div class="chart-container" style="position: relative; height: 300px;">
-                    <canvas id="schoolBarChart"></canvas>
+            <!-- Left Column (Wider) -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- Main Chart Card -->
+                <div class="card" style="position: relative;">
+                    <div class="section-title" style="margin-bottom: 10px;">
+                        <span>Tren Kehadiran Siswa SMA N 2 Cibinong</span>
+                        <div class="badge badge-success" style="font-size: 14px;">Total 8 Pertemuan</div>
+                    </div>
+                    <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 24px;">
+                        156 <span style="font-size: 14px; font-weight: 400; color: var(--text-muted);">Siswa Aktif Semester Ini</span>
+                    </div>
+                    <canvas id="schoolAttendanceChart" height="100"></canvas>
                 </div>
+
+                <!-- Live Table Card -->
+                <div class="card">
+                    <div class="section-title">
+                        <span>Laporan per Kelas (Pertemuan Terakhir)</span>
+                        <button class="btn" style="background: transparent; color: var(--text-muted);">Lihat Detail <i class="fas fa-arrow-right"></i></button>
+                    </div>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Kelas</th>
+                                <th>Mentor Pendamping</th>
+                                <th>Siswa Hadir</th>
+                                <th>Status Laporan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="font-weight: 600;">X MIPA 1</td>
+                                <td>Kak Ahmad Fauzi</td>
+                                <td>30 / 30 Siswa</td>
+                                <td><span class="status-pill status-done">Lengkap</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">X MIPA 2</td>
+                                <td>Kak Siti Aminah</td>
+                                <td>28 / 30 Siswa</td>
+                                <td><span class="status-pill status-done">Lengkap</span></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight: 600;">X IPS 1</td>
+                                <td>Kak Budi Santoso</td>
+                                <td>25 / 32 Siswa</td>
+                                <td><span class="status-pill status-new">Menunggu Update</span></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
             </div>
-            <div class="card" style="border: 1px solid #eee; box-shadow: none;">
-                <div class="section-title"><span>Top Peserta Teraktif</span></div>
-                <div style="display: flex; flex-direction: column; gap: 16px;">
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 14px; font-weight: 500;">X MIPA 1 - Ahmad Fauzi</span>
-                        <span class="badge badge-success">100%</span>
+
+            <!-- Right Column (Narrower) -->
+            <div style="display: flex; flex-direction: column; gap: 24px;">
+                
+                <!-- Black CTA Card -->
+                <div class="card dark-card" style="background: #111111; position: relative; overflow: hidden;">
+                    <div style="position: relative; z-index: 2;">
+                        <span class="badge badge-success" style="background: rgba(40, 167, 69, 0.2); margin-bottom: 16px; display: inline-block;">Semester Ganjil Selesai</span>
+                        <h3 style="font-size: 22px; margin-bottom: 8px;">Rapor Mentoring</h3>
+                        <p style="font-size: 13px; color: #a0a0a0; margin-bottom: 24px;">Cetak rekap nilai & kehadiran mentoring untuk diserahkan ke wali kelas.</p>
+                        <button class="btn btn-primary" style="border-radius: 20px; width: 100%; justify-content: center;">Download Rapor (PDF) <i class="fas fa-file-pdf"></i></button>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 14px; font-weight: 500;">X MIPA 1 - Siti Aminah</span>
-                        <span class="badge badge-success">100%</span>
+                    <div style="position: absolute; right: -50px; top: -50px; width: 150px; height: 150px; background: rgba(0, 102, 255, 0.2); border-radius: 50%; blur: 20px;"></div>
+                </div>
+
+                <!-- Simple Stats Cards -->
+                <div style="display: grid; grid-template-columns: 1fr; gap: 16px;">
+                    <div class="card" style="padding: 24px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">Rata-rata Kehadiran</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--text-main);">92.4%</div>
+                        </div>
+                        <div style="width: 60px; height: 60px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
                     </div>
-                    <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="font-size: 14px; font-weight: 500;">X MIPA 3 - Rizky Pratama</span>
-                        <span class="badge badge-success">95%</span>
+                    <div class="card" style="padding: 24px; display: flex; align-items: center; justify-content: space-between;">
+                        <div>
+                            <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;">Sesi Diselenggarakan</div>
+                            <div style="font-size: 28px; font-weight: 700; color: var(--text-main);">8 <span style="font-size: 16px; font-weight: 500;">/ 8</span></div>
+                        </div>
+                        <div style="width: 60px; height: 60px; background: #e3f9e5; color: var(--success); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px;">
+                            <i class="fas fa-check-double"></i>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <div class="card" style="margin-top: 24px; border: 1px solid #eee; box-shadow: none;">
-            <div class="section-title"><span>Log Kehadiran Terakhir</span></div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Tanggal</th>
-                        <th>Mentor</th>
-                        <th>Materi</th>
-                        <th>Peserta Hadir</th>
-                        <th>Status</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>10 Mei 2024</td>
-                        <td>Kak Ahmad</td>
-                        <td>Adab Bergaul</td>
-                        <td>12 / 12</td>
-                        <td><span class="status-pill status-done">Selesai</span></td>
-                    </tr>
-                    <tr>
-                        <td>08 Mei 2024</td>
-                        <td>Kak Ahmad</td>
-                        <td>Manajemen Waktu</td>
-                        <td>11 / 12</td>
-                        <td><span class="status-pill status-done">Selesai</span></td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-
-        <footer style="margin-top: 60px; padding: 24px; border-top: 1px solid #eee; text-align: center; color: var(--text-muted); font-size: 12px;">
+        <footer style="margin-top: 60px; padding: 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px;">
             &copy; 2024 Sky Circle Mentoring System. Managed by Admin Sky Circle.
         </footer>
     </main>
 
     <script src="../js/app.js"></script>
     <script>
-        const ctx = document.getElementById('schoolBarChart');
-        if (ctx) {
+        // Init Chart for School Meetings (Pertemuan)
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
+            
+            // X-axis: Pertemuan 1 - 8 (1 semester)
+            const labels = ['Pert. 1', 'Pert. 2', 'Pert. 3', 'Pert. 4', 'Pert. 5', 'Pert. 6', 'Pert. 7', 'Pert. 8'];
+            
+            // Y-axis: Jumlah mentee yang hadir di sekolah ini
+            const dataHadir = [150, 156, 145, 150, 148, 140, 155, 152];
+
             new Chart(ctx, {
-                type: 'bar',
+                type: 'line',
                 data: {
-                    labels: ['X MIPA 1', 'X MIPA 2', 'X MIPA 3', 'X IPS 1', 'X IPS 2'],
-                    datasets: [{
-                        label: 'Persentase Kehadiran',
-                        data: [98, 85, 92, 88, 79],
-                        backgroundColor: '#007bff',
-                        borderRadius: 8
-                    }]
+                    labels: labels,
+                    datasets: [
+                        {
+                            label: 'Siswa Hadir',
+                            data: dataHadir,
+                            borderColor: '#0066ff',
+                            backgroundColor: 'rgba(0, 102, 255, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#0066ff',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            fill: true,
+                            tension: 0.4 // Smooth curve
+                        }
+                    ]
                 },
                 options: {
                     responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: { y: { beginAtZero: true, max: 100 } }
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    return context.raw + ' Siswa Hadir';
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            min: 100, // adjust based on expected minimum
+                            grid: { color: '#f0f0f0' },
+                            border: { display: false }
+                        },
+                        x: {
+                            grid: { display: false },
+                            border: { display: false }
+                        }
+                    }
                 }
             });
-        }
+        });
     </script>
 </body>
 </html>

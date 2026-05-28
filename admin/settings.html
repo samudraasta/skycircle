@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Integrasi WA Lite - Sky Circle</title>
+    <title>Sistem Integrasi - Sky Circle</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -20,13 +20,7 @@
             <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Database Siswa</span></a></li>
             <li class="nav-item"><a href="mentors.html" class="nav-link"><i class="fas fa-user-tie"></i><span>Database Mentor</span></a></li>
             <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Laporan Sekolah</span></a></li>
-            <li class="nav-item"><a href="settings.html" class="nav-link active"><i class="fas fa-plug"></i><span>WA Lite Settings</span></a></li>
-        </ul>
-        <div class="nav-label">Integrasi WA Lite</div>
-        <ul class="nav-menu">
-            <li class="nav-item"><a href="#" class="nav-link active"><i class="fas fa-plug"></i><span>API & Webhook</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-clock"></i><span>Reminder Schedule</span></a></li>
-            <li class="nav-item"><a href="#" class="nav-link"><i class="fas fa-reply-all"></i><span>Autoreply Rules</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link active"><i class="fas fa-cogs"></i><span>Sistem API</span></a></li>
         </ul>
     </nav>
 
@@ -36,105 +30,82 @@
                 <button class="btn" onclick="toggleSidebar()" style="background: transparent; font-size: 20px; padding: 0;">
                     <i class="fas fa-bars"></i>
                 </button>
-                <h1>Pengaturan Integrasi WA (Lite Plan)</h1>
+                <h1>Pengaturan Integrasi API</h1>
             </div>
             <div class="header-actions">
                 <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
                     <i class="fas fa-moon" id="theme-icon"></i>
                 </button>
-                <div class="badge badge-success" style="padding: 8px 16px;">
-                    <i class="fas fa-check-circle"></i> Kuota: 124 / 1.000 Pesan
-                </div>
             </div>
         </header>
 
         <div class="grid-2-1">
             <div style="display: flex; flex-direction: column; gap: 24px;">
-                <!-- API Configuration -->
+                <!-- AI Configuration -->
                 <div class="card">
                     <div class="section-title">
-                        <span>Konfigurasi API Gateway</span>
+                        <span><i class="fas fa-brain" style="color: var(--primary); margin-right: 8px;"></i> Konfigurasi Google AI Studio (Gemini)</span>
                     </div>
                     <div style="display: flex; flex-direction: column; gap: 16px;">
                         <div>
-                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">API Token / Key</label>
+                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">API Key Gemini</label>
                             <div style="display: flex; gap: 10px;">
-                                <input type="password" value="************************" class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;">
-                                <button class="btn btn-primary" style="padding: 10px;"><i class="fas fa-eye"></i></button>
+                                <input type="password" id="gemini-key" placeholder="Masukkan API Key dari Google AI Studio..." class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;">
                             </div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Dapatkan API Key gratis di <a href="https://aistudio.google.com" target="_blank">Google AI Studio</a>.</p>
                         </div>
-                        <div>
-                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">Webhook URL (Untuk Menerima Presensi)</label>
-                            <div style="display: flex; gap: 10px;">
-                                <input type="text" value="https://api.skycircle.com/v1/webhook" class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;" readonly>
-                                <button class="btn" style="background: #eee;"><i class="fas fa-copy"></i></button>
-                            </div>
-                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Salin URL ini ke dashboard Ruang WA / Fonnte Anda.</p>
-                        </div>
-                        <button class="btn btn-primary" style="width: fit-content; margin-top: 10px;">Simpan Perubahan</button>
                     </div>
                 </div>
 
-                <!-- Reminder Logic -->
+                <!-- Database Configuration -->
                 <div class="card">
                     <div class="section-title">
-                        <span>Jadwal Reminder Mentor (Schedule)</span>
-                        <button class="btn" style="background: var(--primary-light); color: var(--primary); font-size: 12px;"><i class="fas fa-plus"></i> Tambah Jadwal</button>
+                        <span><i class="fas fa-database" style="color: var(--success); margin-right: 8px;"></i> Endpoint Google Apps Script (Spreadsheet)</span>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Nama Reminder</th>
-                                <th>Waktu</th>
-                                <th>Target</th>
-                                <th>Status</th>
-                                <th>Aksi</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td style="font-weight: 500;">Reminder Sore</td>
-                                <td>Setiap Hari, 17:00</td>
-                                <td>Semua Mentor</td>
-                                <td><span class="status-pill status-done">Aktif</span></td>
-                                <td><i class="fas fa-ellipsis-v"></i></td>
-                            </tr>
-                            <tr>
-                                <td style="font-weight: 500;">Follow-up Minggu</td>
-                                <td>Minggu, 10:00</td>
-                                <td>Mentor Terlambat</td>
-                                <td><span class="status-pill status-new">Pending</span></td>
-                                <td><i class="fas fa-ellipsis-v"></i></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    <div style="display: flex; flex-direction: column; gap: 16px;">
+                        <div>
+                            <label style="display: block; font-size: 14px; margin-bottom: 8px; font-weight: 500;">Webhook URL Aplikasi Web</label>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="text" id="apps-script-url" placeholder="https://script.google.com/macros/s/.../exec" class="wa-input" style="background: #f8f9fa; border: 1px solid #ddd; flex-grow: 1;">
+                            </div>
+                            <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">URL ini didapatkan setelah Anda men-deploy <code>apps_script.js</code> di Google Spreadsheet.</p>
+                        </div>
+                    </div>
                 </div>
+
+                <button class="btn btn-primary" onclick="saveSettings()" style="width: fit-content; margin-top: 10px;">
+                    <i class="fas fa-save"></i> Simpan Konfigurasi
+                </button>
+                <div id="save-msg" style="color: var(--success); font-size: 14px; display: none; margin-top: 10px;">Pengaturan berhasil disimpan!</div>
             </div>
 
             <!-- Side Info -->
             <div style="display: flex; flex-direction: column; gap: 24px;">
-                <div class="card" style="background: #075e54; color: white;">
-                    <h3 style="margin-bottom: 12px;">WA Lite Status</h3>
-                    <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 20px;">
-                        <div style="width: 12px; height: 12px; border-radius: 50%; background: #25d366;"></div>
-                        <span>Device Connected</span>
-                    </div>
+                <div class="card" style="background: #4285F4; color: white;">
+                    <h3 style="margin-bottom: 12px;">Google Identity (Login)</h3>
                     <div style="font-size: 14px; opacity: 0.9;">
-                        Nomor: 0812-xxxx-xxxx<br>
-                        Server: Ruang WA API
+                        Untuk mengaktifkan fitur Login Google di Portal Mentor, Anda perlu membuat OAuth Client ID di Google Cloud Console.
                     </div>
-                </div>
-
-                <div class="card">
-                    <div class="section-title"><span>Template Pesan</span></div>
-                    <div style="background: #f1f2f6; padding: 12px; border-radius: 8px; font-size: 13px; margin-bottom: 10px;">
-                        "Halo {{nama}}, jangan lupa isi presensi mentoring hari ini di {{sekolah}} ya!"
-                    </div>
-                    <button class="btn" style="width: 100%; border: 1px dashed #ddd; justify-content: center;">Edit Template</button>
+                    <a href="https://console.cloud.google.com" target="_blank" class="btn" style="background: white; color: #4285F4; margin-top: 16px; text-decoration: none; text-align: center; justify-content: center;">Buka Google Cloud</a>
                 </div>
             </div>
         </div>
     </main>
+
     <script src="../js/app.js"></script>
+    <script>
+        // Load settings
+        document.getElementById('gemini-key').value = localStorage.getItem('gemini_api_key') || '';
+        document.getElementById('apps-script-url').value = localStorage.getItem('apps_script_url') || '';
+
+        function saveSettings() {
+            localStorage.setItem('gemini_api_key', document.getElementById('gemini-key').value);
+            localStorage.setItem('apps_script_url', document.getElementById('apps-script-url').value);
+            
+            const msg = document.getElementById('save-msg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 3000);
+        }
+    </script>
 </body>
 </html>

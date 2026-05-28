@@ -1,5 +1,5 @@
 :root {
-    --primary: #007bff;
+    --primary: #0066ff;
     --primary-light: #e6f0ff;
     --secondary: #6c757d;
     --success: #28a745;
@@ -7,15 +7,15 @@
     --warning: #ffc107;
     --danger: #dc3545;
     --light: #f8f9fa;
-    --dark: #343a40;
-    --bg-body: #f0f2f5;
+    --dark: #1a1a1a;
+    --bg-body: #f4f7fe;
     --bg-card: #ffffff;
-    --text-main: #2d3436;
-    --text-muted: #636e72;
+    --text-main: #2b3674;
+    --text-muted: #a3aed1;
     --border-color: rgba(0,0,0,0.05);
-    --sidebar-width: 260px;
-    --radius: 12px;
-    --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+    --sidebar-width: 280px;
+    --radius: 24px;
+    --shadow: 0px 18px 40px rgba(112, 144, 176, 0.12);
     --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -140,11 +140,61 @@ body {
     margin-left: 0;
 }
 
+.main-content.full-width {
+    margin-left: 0;
+    max-width: 100%;
+    padding: 40px 8%;
+    margin: 0 auto;
+}
+
 header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 32px;
+}
+
+/* Top Nav Pills */
+.top-nav-pills {
+    display: flex;
+    gap: 12px;
+    background: white;
+    padding: 8px;
+    border-radius: 40px;
+    box-shadow: var(--shadow);
+}
+
+.pill-link {
+    padding: 10px 24px;
+    border-radius: 30px;
+    text-decoration: none;
+    color: var(--text-muted);
+    font-weight: 500;
+    font-size: 14px;
+    transition: var(--transition);
+}
+
+.pill-link.active, .pill-link:hover {
+    background: var(--primary);
+    color: white;
+}
+
+/* Filters */
+.filters-bar {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+}
+
+.filter-select {
+    padding: 10px 16px;
+    border-radius: 20px;
+    border: 1px solid var(--border-color);
+    background: white;
+    color: var(--text-main);
+    font-weight: 500;
+    outline: none;
+    cursor: pointer;
 }
 
 .search-bar {
@@ -219,6 +269,32 @@ header {
     border-radius: var(--radius);
     box-shadow: var(--shadow);
     transition: var(--transition);
+}
+
+.card.dark-card {
+    background: var(--dark);
+    color: white;
+}
+
+.card.dark-card .stat-label {
+    color: rgba(255,255,255,0.7);
+}
+
+.card.dark-card .stat-value {
+    color: white;
+}
+
+.card.primary-card {
+    background: var(--primary);
+    color: white;
+}
+
+.card.primary-card .stat-label {
+    color: rgba(255,255,255,0.8);
+}
+
+.card.primary-card .stat-value {
+    color: white;
 }
 
 .card:hover {

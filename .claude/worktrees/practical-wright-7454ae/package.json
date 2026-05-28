@@ -1,0 +1,16 @@
+{
+  "name": "sky-circle-mentoring",
+  "version": "1.0.0",
+  "description": "Premium Mentoring Presence System with WhatsApp Integration Simulation",
+  "main": "index.html",
+  "scripts": {
+    "start": "serve public",
+    "dev": "serve public"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}

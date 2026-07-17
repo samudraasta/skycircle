@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Database Mentor - Sky Circle</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <nav class="sidebar">
+        <div class="logo">
+            <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
+            <span>SKY CIRCLE</span>
+        </div>
+        <div class="nav-label">Main Menu</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="dashboard.html" class="nav-link"><i class="fas fa-chart-line"></i><span>Rekap Data</span></a></li>
+            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Database Siswa</span></a></li>
+            <li class="nav-item"><a href="mentors.html" class="nav-link active"><i class="fas fa-user-tie"></i><span>Database Mentor</span></a></li>
+            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Laporan Sekolah</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-plug"></i><span>WA Lite Settings</span></a></li>
+        </ul>
+    </nav>
+
+    <main class="main-content">
+        <header>
+            <div style="display: flex; align-items: center; gap: 20px;">
+                <button class="btn" onclick="toggleSidebar()" style="background: transparent; font-size: 20px; padding: 0;">
+                    <i class="fas fa-bars"></i>
+                </button>
+                <h1>Database Mentor</h1>
+            </div>
+            <div class="header-actions">
+                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
+                    <i class="fas fa-moon" id="theme-icon"></i>
+                </button>
+                <button class="btn btn-primary"><i class="fas fa-user-plus"></i> Tambah Mentor</button>
+            </div>
+        </header>
+
+        <div class="card">
+            <div class="section-title"><span>Daftar Mentor</span></div>
+            <table>
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Nama Mentor</th>
+                        <th>Wilayah Binaan</th>
+                        <th>No. WhatsApp</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>M-01</td>
+                        <td>Kak Ahmad</td>
+                        <td>Cibinong</td>
+                        <td>08123456xxx</td>
+                        <td><span class="status-pill status-done">Online</span></td>
+                        <td><i class="fas fa-edit"></i></td>
+                    </tr>
+                    <tr>
+                        <td>M-02</td>
+                        <td>Kak Siti</td>
+                        <td>Bogor Kota</td>
+                        <td>08123456xxx</td>
+                        <td><span class="status-pill status-done">Online</span></td>
+                        <td><i class="fas fa-edit"></i></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </main>
+    <script src="../js/app.js"></script>
+</body>
+</html>

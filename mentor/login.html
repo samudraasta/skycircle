@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mentor Login - Sky Circle</title>
+    <title>Login Presensi - Sky Circle</title>
     <link rel="stylesheet" href="../css/styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -16,6 +16,7 @@
             background: var(--bg-body);
             margin: 0;
             flex-direction: column;
+            padding: 20px;
         }
         .login-card {
             background: var(--bg-card);
@@ -24,7 +25,7 @@
             box-shadow: var(--shadow);
             text-align: center;
             max-width: 400px;
-            width: 90%;
+            width: 100%;
         }
         .logo-icon {
             margin: 0 auto 20px;
@@ -38,15 +39,58 @@
             background: #fee2e2;
             border-radius: 8px;
         }
-        .back-link {
-            margin-top: 24px;
-            display: inline-block;
+        #loading-state {
+            display: none;
+            margin-top: 20px;
             color: var(--text-muted);
-            text-decoration: none;
             font-size: 14px;
         }
-        .back-link:hover {
-            color: var(--primary);
+        /* Registration Form Styles */
+        #registration-form {
+            display: none;
+            text-align: left;
+            margin-top: 24px;
+        }
+        .form-group {
+            margin-bottom: 16px;
+        }
+        .form-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-main);
+            margin-bottom: 6px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 10px 14px;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 14px;
+            box-sizing: border-box;
+            background: #f9f9f9;
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+        }
+        .btn-submit {
+            width: 100%;
+            padding: 12px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 15px;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: var(--transition);
+        }
+        .btn-submit:hover {
+            background: var(--primary-dark);
         }
     </style>
 </head>
@@ -54,43 +98,79 @@
 
     <div class="login-card">
         <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
-        <h2 style="margin-bottom: 8px;">Login Mentor</h2>
-        <p style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Masuk menggunakan akun Google Anda yang terdaftar di sistem Sky Circle.</p>
+        <h2 id="card-title" style="margin-bottom: 8px;">Login Mentor</h2>
+        <p id="card-subtitle" style="color: var(--text-muted); margin-bottom: 32px; font-size: 14px;">Masuk menggunakan akun Google Anda.</p>
         
-        <!-- Google Sign-In Button Container -->
-        <div id="g_id_onload"
-             data-client_id="ISI_DENGAN_GOOGLE_CLIENT_ID_KAKAK.apps.googleusercontent.com"
-             data-context="signin"
-             data-ux_mode="popup"
-             data-callback="handleCredentialResponse"
-             data-auto_prompt="false">
+        <div id="login-section">
+            <!-- Google Sign-In Button Container -->
+            <div id="g_id_onload"
+                 data-client_id="914419745119-7d3kqiojqd9qsqbmeqi20vqgdmsjdjae.apps.googleusercontent.com"
+                 data-context="signin"
+                 data-ux_mode="popup"
+                 data-callback="handleCredentialResponse"
+                 data-auto_prompt="false">
+            </div>
+
+            <div class="g_id_signin"
+                 data-type="standard"
+                 data-shape="rectangular"
+                 data-theme="outline"
+                 data-text="signin_with"
+                 data-size="large"
+                 data-logo_alignment="left"
+                 style="display: flex; justify-content: center;">
+            </div>
         </div>
 
-        <div class="g_id_signin"
-             data-type="standard"
-             data-shape="rectangular"
-             data-theme="outline"
-             data-text="signin_with"
-             data-size="large"
-             data-logo_alignment="left"
-             style="display: flex; justify-content: center;">
+        <div id="loading-state">
+            <i class="fas fa-spinner fa-spin" style="margin-right: 8px;"></i> Memeriksa data...
         </div>
 
-        <div id="error-message" class="error-msg">
-            Email tidak terdaftar sebagai Mentor. Hubungi Admin.
-        </div>
+        <div id="error-message" class="error-msg"></div>
 
-        <a href="../index.html" class="back-link">&larr; Kembali ke Portal Utama</a>
-        
-        <br><br>
-        <button onclick="skipLogin()" style="background: none; border: 1px dashed var(--primary); color: var(--primary); padding: 8px 16px; border-radius: 8px; cursor: pointer; font-size: 12px; font-weight: 500;">
-            Lihat Tampilan Chat (Mode Demo)
-        </button>
+        <form id="registration-form" onsubmit="submitRegistration(event)">
+            <div class="form-group">
+                <label>Email Terdaftar</label>
+                <input type="email" id="reg-email" class="form-control" readonly style="background: #e9ecef; cursor: not-allowed;">
+            </div>
+            <div class="form-group">
+                <label>Nama Lengkap</label>
+                <input type="text" id="reg-nama" class="form-control" required placeholder="Contoh: Budi Santoso">
+            </div>
+            <div class="form-group">
+                <label>No HP / WhatsApp</label>
+                <input type="tel" id="reg-hp" class="form-control" required placeholder="0812xxxx">
+            </div>
+            <div class="form-group">
+                <label>Jenis Kelamin</label>
+                <select id="reg-jk" class="form-control" required>
+                    <option value="" disabled selected>Pilih Jenis Kelamin</option>
+                    <option value="L">Laki-Laki (L)</option>
+                    <option value="P">Perempuan (P)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Angkatan (Tahun Masuk)</label>
+                <input type="number" id="reg-angkatan" class="form-control" required placeholder="Contoh: 33">
+            </div>
+            <div class="form-group">
+                <label>Tanggal Lahir</label>
+                <input type="date" id="reg-tgl" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Alamat Lengkap</label>
+                <textarea id="reg-alamat" class="form-control" required rows="3" placeholder="Alamat domisili saat ini"></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit" id="btn-submit">Daftar & Lanjutkan</button>
+        </form>
     </div>
 
-    <!-- JWT Decoder -->
+    <!-- Script -->
     <script>
-        function parseJwt (token) {
+        const APPS_SCRIPT_URL = localStorage.getItem('apps_script_url') || 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
+
+        function parseJwt(token) {
             var base64Url = token.split('.')[1];
             var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
             var jsonPayload = decodeURIComponent(window.atob(base64).split('').map(function(c) {
@@ -99,35 +179,95 @@
             return JSON.parse(jsonPayload);
         }
 
-        function handleCredentialResponse(response) {
+        async function handleCredentialResponse(response) {
             const data = parseJwt(response.credential);
             const userEmail = data.email;
             const userName = data.name;
-            const userPicture = data.picture;
 
-            // Simpan sementara di Session Storage (belum tervalidasi)
-            sessionStorage.setItem('temp_mentor_email', userEmail);
-            sessionStorage.setItem('temp_mentor_name', userName);
-            sessionStorage.setItem('temp_mentor_pic', userPicture);
+            document.getElementById('login-section').style.display = 'none';
+            document.getElementById('error-message').style.display = 'none';
+            document.getElementById('loading-state').style.display = 'block';
 
-            // Karena kita butuh validasi ke Spreadsheet, kita akan lakukan validasi di dashboard.html
-            // Atau bisa di sini jika Apps Script sudah disetup.
-            // Untuk flow termudah: kita lempar ke dashboard, dashboard yang mengecek.
-            
-            // Simpan token login (simulasi)
-            localStorage.setItem('mentor_logged_in', 'true');
-            localStorage.setItem('mentor_email', userEmail);
-            localStorage.setItem('mentor_name', userName);
-            
-            // Redirect ke Chat Dashboard
-            window.location.href = 'dashboard.html';
+            try {
+                // Check if mentor exists
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "check_mentor", email: userEmail })
+                });
+                
+                const result = await res.json();
+                
+                document.getElementById('loading-state').style.display = 'none';
+
+                if (result.status === 'found') {
+                    // Success Login
+                    localStorage.setItem('mentor_logged_in', 'true');
+                    localStorage.setItem('mentor_email', userEmail);
+                    localStorage.setItem('mentor_name', result.mentorName || userName);
+                    window.location.href = 'presensi.html';
+                } else {
+                    // Show Registration Form
+                    document.getElementById('card-title').innerText = "Lengkapi Data";
+                    document.getElementById('card-subtitle').innerText = "Sepertinya Anda mentor baru, yuk isi biodata dulu!";
+                    document.getElementById('registration-form').style.display = 'block';
+                    
+                    document.getElementById('reg-email').value = userEmail;
+                    document.getElementById('reg-nama').value = userName;
+                }
+
+            } catch(e) {
+                document.getElementById('loading-state').style.display = 'none';
+                document.getElementById('login-section').style.display = 'block';
+                showError("Gagal menghubungi server. Silakan coba lagi.");
+            }
         }
 
-        // Fungsi bypass untuk Demo Mode
-        function skipLogin() {
-            localStorage.setItem('mentor_logged_in', 'true');
-            localStorage.setItem('mentor_name', 'Kak Teguh (Demo)');
-            window.location.href = 'dashboard.html';
+        async function submitRegistration(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btn-submit');
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
+
+            const payload = {
+                action: "register_mentor",
+                email: document.getElementById('reg-email').value,
+                nama: document.getElementById('reg-nama').value,
+                nohp: document.getElementById('reg-hp').value,
+                jk: document.getElementById('reg-jk').value,
+                angkatan: document.getElementById('reg-angkatan').value,
+                tgl_lahir: document.getElementById('reg-tgl').value,
+                alamat: document.getElementById('reg-alamat').value
+            };
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    localStorage.setItem('mentor_logged_in', 'true');
+                    localStorage.setItem('mentor_email', payload.email);
+                    localStorage.setItem('mentor_name', payload.nama);
+                    window.location.href = 'presensi.html';
+                } else {
+                    showError("Gagal menyimpan data registrasi.");
+                    btn.innerText = "Daftar & Lanjutkan";
+                    btn.disabled = false;
+                }
+            } catch(e) {
+                showError("Koneksi bermasalah.");
+                btn.innerText = "Daftar & Lanjutkan";
+                btn.disabled = false;
+            }
+        }
+
+        function showError(msg) {
+            const errDiv = document.getElementById('error-message');
+            errDiv.innerText = msg;
+            errDiv.style.display = 'block';
         }
     </script>
 </body>

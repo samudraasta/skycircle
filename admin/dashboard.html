@@ -25,8 +25,14 @@
             margin-bottom: 40px;
         }
     </style>
+    <script>
+        if (localStorage.getItem("admin_auth") !== "luruskanniat") {
+            window.location.href = "../index.html";
+        }
+    </script>
 </head>
 <body>
+    <div class="app-container">
     <nav class="sidebar">
         <div class="logo">
             <div class="logo-icon"><div></div><div></div><div></div><div></div></div>
@@ -41,14 +47,24 @@
         <div class="nav-label">HOME</div>
         <ul class="nav-menu">
             <li class="nav-item"><a href="dashboard.html" class="nav-link active"><i class="fas fa-layer-group"></i><span>Overview</span></a></li>
-            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Database Mentee</span></a></li>
-            <li class="nav-item"><a href="mentors.html" class="nav-link"><i class="fas fa-user-tie"></i><span>Database Mentor</span></a></li>
-            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Laporan Sekolah</span></a></li>
+        </ul>
+
+        <div class="nav-label">MASTER DATA</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="mentors.html" class="nav-link"><i class="fas fa-user-tie"></i><span>Data Mentor</span></a></li>
+            <li class="nav-item"><a href="students.html" class="nav-link"><i class="fas fa-user-graduate"></i><span>Data Siswa</span></a></li>
+            <li class="nav-item"><a href="groups.html" class="nav-link"><i class="fas fa-users"></i><span>Kelompok Mentoring</span></a></li>
+        </ul>
+
+        <div class="nav-label">LAPORAN</div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a href="attendance.html" class="nav-link"><i class="fas fa-calendar-check"></i><span>Presensi Kehadiran</span></a></li>
+            <li class="nav-item"><a href="reports.html" class="nav-link"><i class="fas fa-file-invoice"></i><span>Rekap Nilai</span></a></li>
         </ul>
 
         <div class="nav-label">SYSTEM</div>
         <ul class="nav-menu">
-            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i><span>Pengaturan API</span></a></li>
+            <li class="nav-item"><a href="settings.html" class="nav-link"><i class="fas fa-cog"></i><span>Pengaturan Sistem</span></a></li>
         </ul>
 
         <!-- Promo/Info Card at bottom of sidebar -->
@@ -63,40 +79,82 @@
     </nav>
 
     <main class="main-content">
-        <header>
-            <div class="top-nav-pills">
-                <a href="#" class="pill-link active">Dashboard</a>
-                <a href="#" class="pill-link">Mentee</a>
-                <a href="#" class="pill-link">Sekolah</a>
-                <a href="#" class="pill-link">Calendar</a>
+        <header style="margin-bottom: 24px;">
+            <div class="search-bar" style="width: 300px;">
+                <i class="fas fa-search"></i>
+                <input type="text" placeholder="Search task" style="background: var(--bg-body);">
             </div>
 
             <div class="header-actions">
-                <button class="btn" onclick="toggleDarkMode()" style="background: var(--bg-card); box-shadow: var(--shadow); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
-                    <i class="fas fa-moon" id="theme-icon"></i>
+                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
+                    <i class="fas fa-envelope"></i>
                 </button>
-                <div class="user-profile">
-                    <div class="avatar"><img src="https://ui-avatars.com/api/?name=Admin+Sky&background=e6f0ff&color=0066ff" alt="Admin"></div>
-                    <span style="font-weight: 600; font-size: 14px;">Admin Sky Circle</span>
+                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
+                    <i class="fas fa-bell"></i>
+                </button>
+                <div class="user-profile" style="background: transparent; box-shadow: none; padding: 0; gap: 16px;">
+                    <div class="avatar" style="width: 40px; height: 40px;"><img src="https://ui-avatars.com/api/?name=Admin+Sky&background=e6f0ff&color=0066ff" alt="Admin"></div>
+                    <div style="display: flex; flex-direction: column;">
+                        <span style="font-weight: 600; font-size: 14px;">Admin Sky</span>
+                        <span style="font-size: 12px; color: var(--text-muted);">admin@skycircle.id</span>
+                    </div>
                 </div>
             </div>
         </header>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
-                <h1 class="dashboard-header-text" style="font-size: 28px;">Presensi Overview</h1>
-                <p class="dashboard-subtitle" style="margin-bottom: 0;">Rekap data mentoring dwimingguan</p>
+                <h1 class="dashboard-header-text" style="font-size: 32px; margin-bottom: 4px;">Dashboard</h1>
+                <p class="dashboard-subtitle" style="margin-bottom: 0;">Pantau, kelola, dan rekapitulasi data presensi mentoring dengan mudah.</p>
             </div>
             <div class="filters-bar">
-                <select class="filter-select">
-                    <option>Tahun Ajaran 2024/2025</option>
-                    <option>Tahun Ajaran 2023/2024</option>
-                </select>
-                <select class="filter-select">
-                    <option>Semester Ganjil</option>
-                    <option>Semester Genap</option>
-                </select>
-                <button class="btn" style="background: white; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;"><i class="fas fa-filter"></i></button>
+                <button class="btn btn-primary" style="border-radius: 20px;"><i class="fas fa-plus"></i> Add Mentor</button>
+                <button class="btn" style="background: white; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;">Import Data</button>
+            </div>
+        </div>
+
+        <!-- 4 Stats Cards Row (Donezo Style) -->
+        <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
+            <div class="card primary-card" style="padding: 24px; border-radius: 24px; position: relative; overflow: hidden;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="font-size: 14px; color: rgba(255,255,255,0.8);">Total Siswa Aktif</span>
+                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; transform: rotate(45deg);"></i></div>
+                </div>
+                <div style="font-size: 40px; font-weight: 700; margin-bottom: 16px; line-height: 1;">1,420</div>
+                <div style="font-size: 12px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">5 <i class="fas fa-caret-up"></i></span> Meningkat dari bulan lalu
+                </div>
+            </div>
+
+            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Mentor Bertugas</span>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                </div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">48</div>
+                <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">2 <i class="fas fa-caret-up"></i></span> Tambahan mentor baru
+                </div>
+            </div>
+
+            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Kelas Mentoring</span>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                </div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">112</div>
+                <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
+                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">1 <i class="fas fa-caret-up"></i></span> Menunggu verifikasi
+                </div>
+            </div>
+
+            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
+                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                </div>
+                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">2</div>
+                <div style="font-size: 12px; color: var(--warning); font-weight: 500;">Segera hubungi mentor</div>
             </div>
         </div>
 
@@ -163,29 +221,9 @@
             <!-- Right Column (Narrower) -->
             <div style="display: flex; flex-direction: column; gap: 24px;">
                 
-                <!-- Black CTA Card -->
-                <div class="card dark-card" style="background: #111111; position: relative; overflow: hidden;">
-                    <div style="position: relative; z-index: 2;">
-                        <span class="badge badge-success" style="background: rgba(40, 167, 69, 0.2); margin-bottom: 16px; display: inline-block;">+15% dari semester lalu</span>
-                        <h3 style="font-size: 22px; margin-bottom: 8px;">Pencapaian Mentoring</h3>
-                        <p style="font-size: 13px; color: #a0a0a0; margin-bottom: 24px;">Lebih dari 1,400 mentee telah aktif mengikuti kegiatan rutin.</p>
-                        <button class="btn btn-primary" style="border-radius: 20px; width: 100%; justify-content: center;">Cetak Laporan PDF <i class="fas fa-arrow-up-right-from-square"></i></button>
-                    </div>
-                    <!-- Decorative shape -->
-                    <div style="position: absolute; right: -50px; top: -50px; width: 150px; height: 150px; background: rgba(255,255,255,0.05); border-radius: 50%; blur: 20px;"></div>
-                </div>
 
-                <!-- Simple Stats Cards -->
-                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div class="card" style="padding: 20px;">
-                        <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;"><i class="fas fa-user-tie" style="margin-right: 6px;"></i> Mentor Aktif</div>
-                        <div style="font-size: 24px; font-weight: 700; color: var(--text-main);">48</div>
-                    </div>
-                    <div class="card" style="padding: 20px;">
-                        <div style="color: var(--text-muted); font-size: 13px; margin-bottom: 8px;"><i class="fas fa-school" style="margin-right: 6px;"></i> Sekolah</div>
-                        <div style="font-size: 24px; font-weight: 700; color: var(--text-main);">12</div>
-                    </div>
-                </div>
+
+
 
                 <!-- Attendance Donut / Gauge (Replaced Donut with pure Present metric) -->
                 <div class="card">
@@ -210,9 +248,24 @@
                     </div>
                 </div>
 
+                <!-- Black CTA Card (Moved to bottom) -->
+                <div class="card dark-card" style="background: #111111; position: relative; overflow: hidden; border-radius: 24px;">
+                    <div style="position: relative; z-index: 2;">
+                        <h3 style="font-size: 20px; margin-bottom: 24px;">Waktu Mentoring</h3>
+                        <div style="font-size: 36px; font-weight: 700; margin-bottom: 16px; font-family: monospace;">01:24:08</div>
+                        <div style="display: flex; gap: 12px; justify-content: center;">
+                            <button class="btn" style="background: white; color: black; border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;"><i class="fas fa-pause"></i></button>
+                            <button class="btn" style="background: #dc3545; color: white; border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;"><i class="fas fa-stop"></i></button>
+                        </div>
+                    </div>
+                    <!-- Decorative waves -->
+                    <div style="position: absolute; left: 0; bottom: 0; width: 100%; height: 100%; background: linear-gradient(to top, rgba(0, 102, 255, 0.2) 0%, transparent 100%); z-index: 1;"></div>
+                </div>
+
             </div>
         </div>
     </main>
+    </div>
 
     <script src="../js/app.js"></script>
     <script>

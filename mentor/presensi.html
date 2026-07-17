@@ -1,0 +1,537 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Presensi Mentor - Sky Circle</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        body {
+            background-color: var(--bg-body);
+            padding: 24px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+        .presensi-container {
+            background: var(--bg-card);
+            border-radius: 24px;
+            box-shadow: var(--shadow);
+            padding: 32px;
+            width: 100%;
+            max-width: 600px;
+            margin-top: 40px;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 32px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        .header-title h2 {
+            margin: 0;
+            color: var(--text-main);
+            font-size: 22px;
+        }
+        .header-title p {
+            margin: 4px 0 0 0;
+            color: var(--text-muted);
+            font-size: 14px;
+        }
+        .logout-btn {
+            background: #fee2e2;
+            color: var(--danger);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+        }
+        .logout-btn:hover {
+            background: #fca5a5;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        .form-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--text-main);
+            font-size: 14px;
+        }
+        .form-control {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 15px;
+            background: #f9f9f9;
+            transition: var(--transition);
+        }
+        .form-control:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: #fff;
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+        
+        .row {
+            display: flex;
+            gap: 16px;
+        }
+        .col {
+            flex: 1;
+        }
+        
+        /* Autocomplete Styles */
+        .autocomplete-wrapper {
+            position: relative;
+        }
+        .autocomplete-dropdown {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-height: 250px;
+            overflow-y: auto;
+            z-index: 100;
+            display: none;
+            margin-top: 4px;
+        }
+        .autocomplete-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f1f1;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .autocomplete-item:last-child {
+            border-bottom: none;
+        }
+        .autocomplete-item:hover {
+            background: var(--primary-light);
+        }
+        .autocomplete-item .student-name {
+            font-weight: 500;
+            color: var(--text-main);
+        }
+        .autocomplete-item .student-group {
+            font-size: 12px;
+            color: var(--text-muted);
+            background: #f0f0f0;
+            padding: 2px 8px;
+            border-radius: 10px;
+        }
+
+        /* Selected Students Chips */
+        .selected-students {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+        .student-chip {
+            background: var(--primary-light);
+            color: var(--primary);
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: fadeIn 0.2s ease-out;
+        }
+        .student-chip i {
+            cursor: pointer;
+            color: #ff4d4f;
+            transition: var(--transition);
+        }
+        .student-chip i:hover {
+            color: #d9363e;
+            transform: scale(1.1);
+        }
+        
+        .submit-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        .submit-btn:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,102,255,0.3);
+        }
+        .submit-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        /* Modal for Success/Error */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.5);
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            backdrop-filter: blur(4px);
+        }
+        .modal-content {
+            background: #fff;
+            padding: 32px;
+            border-radius: 24px;
+            text-align: center;
+            max-width: 320px;
+            width: 90%;
+            animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .modal-icon {
+            width: 64px;
+            height: 64px;
+            border-radius: 32px;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 32px;
+            margin: 0 auto 16px;
+        }
+        .modal-icon.error {
+            background: var(--danger);
+        }
+        .modal-title {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 8px;
+        }
+        .modal-desc {
+            color: var(--text-muted);
+            font-size: 14px;
+            margin-bottom: 24px;
+        }
+        .modal-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .loading-overlay {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 40px;
+            color: var(--text-muted);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="presensi-container">
+        <div class="header">
+            <div class="header-title">
+                <h2>Form Presensi Mentoring</h2>
+                <p id="mentor-welcome">Selamat datang, Mentor!</p>
+            </div>
+            <button class="logout-btn" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Keluar</button>
+        </div>
+
+        <div id="loading-initial" class="loading-overlay">
+            <i class="fas fa-spinner fa-spin fa-2x" style="margin-bottom: 12px; color: var(--primary);"></i>
+            <p>Memuat data siswa...</p>
+        </div>
+
+        <form id="presensi-form" style="display: none;" onsubmit="submitPresensi(event)">
+            <div class="row">
+                <div class="col form-group">
+                    <label>Pertemuan Ke</label>
+                    <select id="input-pertemuan" class="form-control" required>
+                        <option value="" disabled selected>Pilih...</option>
+                        <script>
+                            for(let i=1; i<=24; i++) {
+                                document.write(`<option value="${i}">Pertemuan ${i}</option>`);
+                            }
+                        </script>
+                    </select>
+                </div>
+                <div class="col form-group">
+                    <label>Tanggal Mentoring</label>
+                    <input type="date" id="input-tanggal" class="form-control" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Siswa/Siswi yang Hadir</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="input-siswa" class="form-control" placeholder="Ketik nama siswa..." autocomplete="off">
+                    <div id="autocomplete-list" class="autocomplete-dropdown"></div>
+                </div>
+                <div id="selected-students" class="selected-students">
+                    <!-- Chips will be added here -->
+                </div>
+            </div>
+
+            <button type="submit" id="btn-submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i> Kirim Presensi
+            </button>
+        </form>
+    </div>
+
+    <!-- Modal -->
+    <div id="result-modal" class="modal">
+        <div class="modal-content">
+            <div id="modal-icon" class="modal-icon"><i class="fas fa-check"></i></div>
+            <div id="modal-title" class="modal-title">Berhasil!</div>
+            <div id="modal-desc" class="modal-desc">Presensi berhasil dicatat.</div>
+            <button class="modal-btn" onclick="closeModal()">Tutup</button>
+        </div>
+    </div>
+
+    <script>
+        const APPS_SCRIPT_URL = localStorage.getItem('apps_script_url') || 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
+        
+        let allStudents = [];
+        let selectedStudents = [];
+
+        // Authentication Check
+        const isLoggedIn = localStorage.getItem('mentor_logged_in');
+        if (!isLoggedIn) {
+            window.location.href = 'login.html';
+        }
+
+        const mentorName = localStorage.getItem('mentor_name') || 'Mentor';
+        document.getElementById('mentor-welcome').innerText = `Halo Kak ${mentorName}, selamat bertugas!`;
+
+        // Set Default Date to Today
+        document.getElementById('input-tanggal').valueAsDate = new Date();
+
+        // Load Students
+        async function loadStudents() {
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: "get_students" })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    allStudents = result.students;
+                    document.getElementById('loading-initial').style.display = 'none';
+                    document.getElementById('presensi-form').style.display = 'block';
+                }
+            } catch (e) {
+                alert("Gagal memuat daftar siswa. Pastikan koneksi internet stabil.");
+            }
+        }
+
+        loadStudents();
+
+        // Autocomplete Logic
+        const inputSiswa = document.getElementById('input-siswa');
+        const listSiswa = document.getElementById('autocomplete-list');
+
+        inputSiswa.addEventListener('input', function() {
+            const val = this.value.toLowerCase().trim();
+            listSiswa.innerHTML = '';
+            
+            if (!val) {
+                listSiswa.style.display = 'none';
+                return;
+            }
+
+            // Filter students matching the input
+            const matches = allStudents.filter(s => 
+                s.nama.toLowerCase().includes(val) && 
+                !selectedStudents.includes(s.nama) // Don't show already selected
+            );
+
+            // Show top 5 matches
+            const topMatches = matches.slice(0, 5);
+
+            if (topMatches.length > 0) {
+                topMatches.forEach(student => {
+                    const div = document.createElement('div');
+                    div.className = 'autocomplete-item';
+                    
+                    // Highlight matching text (simple bold)
+                    const regex = new RegExp(`(${val})`, "gi");
+                    const highlightedName = student.nama.replace(regex, "<strong>$1</strong>");
+
+                    div.innerHTML = `
+                        <span class="student-name">${highlightedName}</span>
+                        <span class="student-group">${student.kelompok || 'Belum ada grup'}</span>
+                    `;
+                    
+                    div.addEventListener('click', () => {
+                        addStudent(student.nama);
+                        inputSiswa.value = '';
+                        listSiswa.style.display = 'none';
+                        inputSiswa.focus();
+                    });
+                    
+                    listSiswa.appendChild(div);
+                });
+                listSiswa.style.display = 'block';
+            } else {
+                listSiswa.innerHTML = '<div class="autocomplete-item"><span class="student-name" style="color:var(--text-muted)">Tidak ditemukan</span></div>';
+                listSiswa.style.display = 'block';
+            }
+        });
+
+        // Hide autocomplete when clicking outside
+        document.addEventListener('click', function (e) {
+            if (e.target !== inputSiswa && e.target !== listSiswa) {
+                listSiswa.style.display = 'none';
+            }
+        });
+
+        // Chip Logic
+        function addStudent(name) {
+            if (!selectedStudents.includes(name)) {
+                selectedStudents.push(name);
+                renderChips();
+            }
+        }
+
+        function removeStudent(name) {
+            selectedStudents = selectedStudents.filter(s => s !== name);
+            renderChips();
+        }
+
+        function renderChips() {
+            const container = document.getElementById('selected-students');
+            container.innerHTML = '';
+            
+            selectedStudents.forEach(name => {
+                const chip = document.createElement('div');
+                chip.className = 'student-chip';
+                chip.innerHTML = `
+                    <span>${name}</span>
+                    <i class="fas fa-times-circle" onclick="removeStudent('${name}')"></i>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        // Submit Form
+        async function submitPresensi(e) {
+            e.preventDefault();
+            
+            if (selectedStudents.length === 0) {
+                alert("Harap masukkan setidaknya 1 siswa yang hadir!");
+                return;
+            }
+
+            const btn = document.getElementById('btn-submit');
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Mengirim...';
+            btn.disabled = true;
+
+            const payload = {
+                action: "submit_presensi",
+                pertemuan: document.getElementById('input-pertemuan').value,
+                tanggal: document.getElementById('input-tanggal').value,
+                hadirList: selectedStudents
+            };
+
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify(payload)
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success') {
+                    showModal(true, "Berhasil!", result.message);
+                    // Reset Form
+                    document.getElementById('input-pertemuan').value = "";
+                    selectedStudents = [];
+                    renderChips();
+                } else {
+                    showModal(false, "Gagal", result.message || "Terjadi kesalahan pada server.");
+                }
+            } catch(e) {
+                showModal(false, "Error", "Gagal menghubungi server. Periksa koneksi internet Anda.");
+            } finally {
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Kirim Presensi';
+                btn.disabled = false;
+            }
+        }
+
+        // Modal Logic
+        function showModal(isSuccess, title, desc) {
+            const modal = document.getElementById('result-modal');
+            const icon = document.getElementById('modal-icon');
+            
+            if (isSuccess) {
+                icon.className = 'modal-icon';
+                icon.innerHTML = '<i class="fas fa-check"></i>';
+            } else {
+                icon.className = 'modal-icon error';
+                icon.innerHTML = '<i class="fas fa-times"></i>';
+            }
+
+            document.getElementById('modal-title').innerText = title;
+            document.getElementById('modal-desc').innerText = desc;
+            
+            modal.style.display = 'flex';
+        }
+
+        function closeModal() {
+            document.getElementById('result-modal').style.display = 'none';
+        }
+
+        function logout() {
+            localStorage.removeItem('mentor_logged_in');
+            localStorage.removeItem('mentor_email');
+            localStorage.removeItem('mentor_name');
+            window.location.href = 'login.html';
+        }
+    </script>
+</body>
+</html>

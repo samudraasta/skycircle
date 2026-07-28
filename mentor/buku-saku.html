@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="no-referrer">
+    <title>Buku Saku Mentee - Sky Circle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body, html {
+            height: 100%;
+            margin: 0; padding: 0;
+            font-family: 'Inter', sans-serif;
+            background: #075e54;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .phone-wrap {
+            width: 430px;
+            max-width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            max-height: 900px;
+            background: #efeae2;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 0 40px rgba(0,0,0,0.3);
+            color: #111;
+            position: relative;
+        }
+
+        /* HEADER */
+        .header {
+            background-color: #075e54;
+            color: #ffffff;
+            padding: 12px 16px;
+            padding-top: max(12px, env(safe-area-inset-top));
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-shrink: 0;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+        .header-back { font-size: 18px; cursor: pointer; color: #ffffff; }
+        .header-info { flex: 1; }
+        .header-title { font-size: 16px; font-weight: 700; color: #ffffff; }
+        .header-sub { font-size: 12px; color: rgba(255, 255, 255, 0.85); margin-top: 2px; }
+
+        @media (max-width: 600px) {
+            body, html {
+                align-items: flex-start;
+                background: #075e54;
+            }
+            .phone-wrap {
+                height: 100dvh;
+                height: 100vh;
+                max-height: 100%;
+                border-radius: 0;
+                box-shadow: none;
+            }
+        }
+
+        /* ---- LAYAR PICKER: 2 KOLOM ---- */
+        #screenPicker {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            background: #efeae2;
+        }
+
+        /* Row header kolom */
+        .col-headers {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            padding: 12px 14px 6px;
+            flex-shrink: 0;
+        }
+        .col-header {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.8px;
+            padding: 7px;
+            border-radius: 8px;
+        }
+        .col-header.gc { color: #be185d; background: rgba(244,114,182,0.12); }
+        .col-header.bc { color: #1d4ed8; background: rgba(96,165,250,0.12); }
+
+        /* Grid 2 kolom */
+        .two-col-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            padding: 0 14px 14px;
+            overflow-y: auto;
+            flex: 1;
+            scrollbar-width: none;
+        }
+        .two-col-grid::-webkit-scrollbar { display: none; }
+
+        .group-btn {
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #1f2937;
+            padding: 12px 8px;
+            border-radius: 14px;
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.12s;
+            line-height: 1.2;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
+        }
+        .group-btn:hover, .group-btn:active {
+            transform: scale(0.96);
+            background: #f0fdf9;
+            border-color: #075e54;
+        }
+        .group-btn.gc { border-left: 3px solid #ec4899; }
+        .group-btn.bc { border-left: 3px solid #3b82f6; }
+        .group-btn.circle-plus-gc {
+            background: #fdf2f8;
+            border: 1px solid #fbcfe8;
+            border-left: 3px solid #ec4899;
+            color: #be185d;
+            font-size: 13px;
+        }
+        .group-btn.circle-plus-gc i { color: #ec4899; }
+        .group-btn.circle-plus-bc {
+            background: #eff6ff;
+            border: 1px solid #bfdbfe;
+            border-left: 3px solid #3b82f6;
+            color: #1d4ed8;
+            font-size: 13px;
+        }
+        .group-btn.circle-plus-bc i { color: #3b82f6; }
+
+        /* ---- LAYAR LOADING ---- */
+        #screenLoading {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            background: #efeae2;
+        }
+        .spinner-ring {
+            width: 44px; height: 44px;
+            border: 4px solid rgba(7,94,84,0.15);
+            border-top: 4px solid #075e54;
+            border-radius: 50%;
+            animation: spin 0.85s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        #screenLoading p { font-size: 14px; color: #777; }
+        #screenLoading strong { color: #075e54; }
+
+        /* ---- LAYAR SLIDER ---- */
+        #screenSlider {
+            flex: 1;
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            background: #efeae2;
+        }
+        .slider-area {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+        .cards-track {
+            display: flex;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
+        }
+        .profile-card {
+            min-width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+        }
+        .card-photo-wrap {
+            width: 100%; height: 55%;
+            position: relative; overflow: hidden; flex-shrink: 0;
+        }
+        .card-photo-wrap img {
+            width: 100%; height: 100%;
+            object-fit: cover; object-position: top center;
+        }
+        .card-photo-wrap .no-photo {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: #e6f2eb; color: #128c7e; font-size: 80px;
+        }
+        .photo-loader {
+            width: 100%; height: 100%;
+            display: flex; align-items: center; justify-content: center;
+            background: #e6f2eb; color: #128c7e; font-size: 40px;
+        }
+        .card-photo-wrap::after {
+            content: ''; position: absolute;
+            bottom: 0; left: 0; right: 0; height: 55%;
+            background: linear-gradient(to top, #f8f9fa, transparent);
+            pointer-events: none;
+        }
+        .card-name-badge {
+            position: absolute; bottom: 14px; left: 20px; right: 20px; z-index: 2;
+        }
+        .card-name-badge h2 {
+            font-size: 26px; font-weight: 800; color: white;
+            text-shadow: 0 2px 12px rgba(0,0,0,0.6); margin-bottom: 6px;
+        }
+        .card-name-badge .badge {
+            display: inline-block;
+            background: rgba(18,140,126,0.85); backdrop-filter: blur(4px);
+            color: white; padding: 4px 12px; border-radius: 20px;
+            font-size: 12px; font-weight: 600;
+        }
+        .counter-badge {
+            position: absolute; bottom: 14px; right: 20px;
+            background: rgba(0,0,0,0.5); color: rgba(255,255,255,0.6);
+            font-size: 11px; padding: 4px 10px; border-radius: 12px; z-index: 3;
+        }
+        .card-info {
+            flex: 1; overflow-y: auto; padding: 14px 20px 16px;
+            display: flex; flex-direction: column; gap: 10px;
+            scrollbar-width: none; background: #fff;
+        }
+        .card-info::-webkit-scrollbar { display: none; }
+        .info-row { display: flex; flex-direction: column; gap: 2px; }
+        .info-row label {
+            font-size: 10px; text-transform: uppercase;
+            letter-spacing: 0.8px; color: #075e54; font-weight: 700;
+        }
+        .info-row p { font-size: 13px; color: #374151; line-height: 1.4; }
+        .info-ig {
+            display: inline-flex; align-items: center; gap: 6px;
+            color: #e1306c; font-size: 13px; text-decoration: none;
+        }
+        .nav-btn {
+            position: absolute; top: 24%; transform: translateY(-50%);
+            background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.4); color: #075e54;
+            width: 40px; height: 40px; border-radius: 50%; font-size: 15px;
+            cursor: pointer; z-index: 10; transition: all 0.2s;
+            display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+        }
+        .nav-btn:hover:not(:disabled) { background: #ffffff; transform: translateY(-50%) scale(1.08); }
+        .nav-btn:disabled { opacity: 0.15; cursor: default; }
+        .nav-btn.prev { left: 10px; }
+        .nav-btn.next { right: 10px; }
+        .dot-bar {
+            display: flex; justify-content: center; align-items: center;
+            gap: 6px; padding: 10px 0; background: #fff; min-height: 34px;
+            border-top: 1px solid #f0f0f0;
+        }
+        .dot {
+            width: 6px; height: 6px; border-radius: 50%;
+            background: #d1d5db; transition: all 0.3s; cursor: pointer;
+        }
+        .dot.active { background: #075e54; width: 20px; border-radius: 3px; }
+
+        .card-actions {
+            display: flex; align-items: center; justify-content: space-between;
+            gap: 10px; margin-top: 6px; padding-top: 10px;
+            border-top: 1px dashed #e5e7eb; flex-wrap: wrap;
+        }
+        .btn-share {
+            display: inline-flex; align-items: center; gap: 6px;
+            background: #25d366; color: white; border: none;
+            padding: 7px 14px; border-radius: 20px;
+            font-size: 12px; font-weight: 600; cursor: pointer;
+            transition: background 0.2s, transform 0.1s;
+            box-shadow: 0 2px 6px rgba(37, 211, 102, 0.25);
+            font-family: 'Inter', sans-serif;
+            margin-left: auto;
+        }
+        .btn-share:hover { background: #1eb956; }
+        .btn-share:active { transform: scale(0.96); }
+
+        .share-icon-btn {
+            position: absolute; top: 14px; right: 14px;
+            background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            color: white; border: 1px solid rgba(255, 255, 255, 0.25);
+            width: 38px; height: 38px; border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; cursor: pointer; z-index: 5;
+            transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .share-icon-btn:hover {
+            background: #25d366; border-color: #25d366;
+            transform: scale(1.08);
+        }
+        .share-icon-btn:active { transform: scale(0.94); }
+
+        .toast {
+            position: absolute; bottom: 50px; left: 50%;
+            transform: translateX(-50%) translateY(20px);
+            background: #1f2937; color: white;
+            padding: 9px 18px; border-radius: 20px;
+            font-size: 12px; font-weight: 500; opacity: 0;
+            visibility: hidden; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            z-index: 1000; box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+            white-space: nowrap; pointer-events: none;
+        }
+        .toast.show {
+            opacity: 1; visibility: visible;
+            transform: translateX(-50%) translateY(0);
+        }
+
+        .empty-screen {
+            flex: 1; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 12px; color: #9ca3af; text-align: center; padding: 30px;
+        }
+        .empty-screen i { font-size: 36px; }
+        .empty-screen p { font-size: 14px; line-height: 1.5; color: #6b7280; }
+        .back-btn {
+            margin-top: 16px; padding: 10px 22px; border-radius: 22px;
+            background: #075e54; color: #ffffff; border: none;
+            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+            cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
+            gap: 8px; box-shadow: 0 4px 12px rgba(7, 94, 84, 0.25);
+            transition: all 0.2s ease;
+        }
+        .back-btn i { font-size: 12px; }
+        .back-btn:hover { background: #128c7e; transform: translateY(-1px); }
+        .back-btn:active { transform: scale(0.96); }
+    </style>
+</head>
+<body>
+<div class="phone-wrap">
+
+    <!-- HEADER -->
+    <div class="header">
+        <i class="fas fa-arrow-left header-back" onclick="goBack()"></i>
+        <div class="header-info">
+            <div class="header-title" id="headerTitle">Buku Saku Mentee</div>
+            <div class="header-sub" id="headerSub">Pilih grup</div>
+        </div>
+    </div>
+
+    <!-- LAYAR 1: PICKER 2 KOLOM -->
+    <div id="screenPicker">
+        <div class="col-headers">
+            <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle</div>
+            <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle</div>
+        </div>
+        <div class="two-col-grid">
+            <!-- Row Atas: Circle+ GC (Pink) & Circle+ BC (Biru) -->
+            <button class="group-btn circle-plus-gc" onclick="selectGroup('Circle+ GC X')"><i class="fas fa-star"></i> Circle+ GC</button>
+            <button class="group-btn circle-plus-bc" onclick="selectGroup('Circle+ BC X')"><i class="fas fa-star"></i> Circle+ BC</button>
+
+            <!-- Row 1–12 GC & BC -->
+            <button class="group-btn gc" onclick="selectGroup('GC X-1')">GC X-1</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-1')">BC X-1</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-2')">GC X-2</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-2')">BC X-2</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-3')">GC X-3</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-3')">BC X-3</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-4')">GC X-4</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-4')">BC X-4</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-5')">GC X-5</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-5')">BC X-5</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-6')">GC X-6</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-6')">BC X-6</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-7')">GC X-7</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-7')">BC X-7</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-8')">GC X-8</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-8')">BC X-8</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-9')">GC X-9</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-9')">BC X-9</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-10')">GC X-10</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-10')">BC X-10</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-11')">GC X-11</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-11')">BC X-11</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-12')">GC X-12</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-12')">BC X-12</button>
+        </div>
+    </div>
+
+    <!-- LAYAR 2: LOADING -->
+    <div id="screenLoading">
+        <div class="spinner-ring"></div>
+        <p>Memuat profil <strong id="loadingName"></strong>...</p>
+    </div>
+
+    <!-- LAYAR 3: SLIDER -->
+    <div id="screenSlider">
+        <div class="slider-area" id="sliderArea">
+            <div class="cards-track" id="cardsTrack"></div>
+            <button class="nav-btn prev" id="btnPrev" onclick="slidePrev()" disabled><i class="fas fa-chevron-left"></i></button>
+            <button class="nav-btn next" id="btnNext" onclick="slideNext()" disabled><i class="fas fa-chevron-right"></i></button>
+        </div>
+        <div class="dot-bar" id="dotBar"></div>
+    </div>
+
+    <!-- TOAST NOTIFICATION -->
+    <div id="toast" class="toast">Link disalin!</div>
+
+</div>
+
+<script>
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
+
+    let screen = 'picker';
+    let displayedProfiles = [];
+    let currentIndex = 0;
+
+    let touchStartX = 0;
+    document.getElementById('sliderArea').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
+    document.getElementById('sliderArea').addEventListener('touchend', e => {
+        const diff = touchStartX - e.changedTouches[0].clientX;
+        if (Math.abs(diff) > 50) diff > 0 ? slideNext() : slidePrev();
+    });
+    document.addEventListener('keydown', e => {
+        if (e.key === 'ArrowRight') slideNext();
+        if (e.key === 'ArrowLeft') slidePrev();
+    });
+
+    function showScreen(name) {
+        screen = name;
+        document.getElementById('screenPicker').style.display  = name === 'picker'  ? 'flex' : 'none';
+        document.getElementById('screenLoading').style.display = name === 'loading' ? 'flex' : 'none';
+        document.getElementById('screenSlider').style.display  = name === 'slider'  ? 'flex' : 'none';
+        if (name === 'picker') document.getElementById('screenPicker').style.flexDirection = 'column';
+        if (name === 'slider') document.getElementById('screenSlider').style.flexDirection = 'column';
+        if (name === 'loading') document.getElementById('screenLoading').style.flexDirection = 'column';
+    }
+
+    function goBack() {
+        if (screen === 'picker') { window.location.href = 'presensi.html'; return; }
+        showScreen('picker');
+        document.getElementById('headerTitle').textContent = 'Buku Saku Mentee';
+        document.getElementById('headerSub').textContent = 'Pilih grup';
+    }
+
+    async function selectGroup(groupName) {
+        document.getElementById('headerTitle').textContent = groupName;
+        document.getElementById('headerSub').textContent = 'Memuat...';
+        document.getElementById('screenLoading').innerHTML = `
+            <div class="spinner-ring"></div>
+            <p>Memuat profil <strong>${groupName}</strong>...</p>
+        `;
+        showScreen('loading');
+
+        try {
+            const res = await fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                body: JSON.stringify({ action: 'get_profiles' })
+            });
+            const data = await res.json();
+
+            if (data.status === 'success') {
+                displayedProfiles = data.profiles.filter(p =>
+                    (p.kelas || '').trim().toLowerCase() === groupName.trim().toLowerCase()
+                );
+
+                if (displayedProfiles.length === 0) {
+                    document.getElementById('headerSub').textContent = 'Belum ada data';
+                    document.getElementById('screenLoading').innerHTML = `
+                        <div class="empty-screen">
+                            <i class="fas fa-user-slash"></i>
+                            <p>Belum ada mentee di <strong style="color:#075e54">${groupName}</strong> yang mengisi profil.</p>
+                            <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Kembali ke Menu</button>
+                        </div>`;
+                    document.getElementById('screenLoading').style.display = 'flex';
+                    return;
+                }
+
+                document.getElementById('headerSub').textContent = `${displayedProfiles.length} mentee`;
+                renderSlider();
+                showScreen('slider');
+
+                // Jika dibuka via link share dengan parameter nama mentee, lompat langsung ke slidenya
+                if (autoTargetNama) {
+                    const targetLower = autoTargetNama.trim().toLowerCase();
+                    const idx = displayedProfiles.findIndex(p => (p.nama || '').trim().toLowerCase() === targetLower);
+                    if (idx !== -1) {
+                        goToSlide(idx);
+                    }
+                    autoTargetNama = null;
+                }
+            } else {
+                document.getElementById('screenLoading').innerHTML = `<div class="empty-screen"><i class="fas fa-exclamation-circle"></i><p>Gagal memuat data.</p><button class="back-btn" onclick="goBack()">Kembali</button></div>`;
+                document.getElementById('screenLoading').style.display = 'flex';
+            }
+        } catch(e) {
+            document.getElementById('screenLoading').innerHTML = `<div class="empty-screen"><i class="fas fa-wifi"></i><p>Koneksi terputus.</p><button class="back-btn" onclick="goBack()">Coba Lagi</button></div>`;
+            document.getElementById('screenLoading').style.display = 'flex';
+        }
+    }
+
+    function renderSlider() {
+        console.log('=== DATA PROFIL ===', displayedProfiles);
+        
+        const track = document.getElementById('cardsTrack');
+        const dotBar = document.getElementById('dotBar');
+        track.innerHTML = ''; dotBar.innerHTML = '';
+
+        displayedProfiles.forEach((p, i) => {
+            let finalFileId = '';
+            if (p.fotoUrl) {
+                const matchFileD = p.fotoUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+                const matchId = p.fotoUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+                if (matchFileD && matchFileD[1]) finalFileId = matchFileD[1];
+                else if (matchId && matchId[1]) finalFileId = matchId[1];
+            }
+            
+            const directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
+            
+            const imgHtml = finalFileId
+                ? `<img src="${directUrl}" data-fileid="${finalFileId}" id="img-${finalFileId}" alt="foto" onerror="handleImgError(this, '${finalFileId}')">
+                   <div class="photo-loader" id="loader-${finalFileId}" style="display:none;"><i class="fas fa-spinner fa-spin"></i></div>
+                   <div class="no-photo" id="fallback-${finalFileId}" style="display:none;"><i class="fas fa-user"></i></div>`
+                : `<div class="no-photo"><i class="fas fa-user"></i></div>`;
+
+            const igHtml = p.instagram
+                ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="info-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : '';
+
+            let rowsHtml = '';
+            if (p.extraFields && p.extraFields.length > 0) {
+                p.extraFields.forEach(ef => {
+                    const lLower = ef.label.toLowerCase();
+                    if ((lLower.includes('nama') && !lLower.includes('orang') && !lLower.includes('ortu')) ||
+                        lLower.includes('kelas') || lLower.includes('kelompok') || lLower.includes('grup') ||
+                        lLower.includes('instagram') || lLower === 'ig') {
+                        return;
+                    }
+                    rowsHtml += `<div class="info-row"><label>${ef.label}</label><p>${ef.value || '-'}</p></div>`;
+                });
+            }
+            
+            if (!rowsHtml) {
+                rowsHtml = `
+                    <div class="info-row"><label>Alamat</label><p>${p.alamat||'-'}</p></div>
+                    ${p.tanggalLahir ? `<div class="info-row"><label>Tanggal Lahir</label><p>${p.tanggalLahir}</p></div>` : ''}
+                    <div class="info-row"><label>Orang Tua &amp; No. HP</label><p>${p.ortu||'-'}</p></div>
+                    <div class="info-row"><label>Hobi &amp; Aktivitas</label><p>${(p.hobi?p.hobi+', ':'')}${p.aktivitas||'-'}</p></div>
+                    <div class="info-row"><label>Karakter</label><p>${p.karakter||'-'}</p></div>
+                    <div class="info-row"><label>Tidak Disukai</label><p>${p.tidakDisukai||'-'}</p></div>
+                    <div class="info-row"><label>Liburan Favorit</label><p>${p.liburan||'-'}</p></div>
+                    <div class="info-row"><label>Ingin Mempelajari</label><p>${p.mempelajari||'-'}</p></div>
+                `;
+            }
+
+            const card = document.createElement('div');
+            card.className = 'profile-card';
+            card.innerHTML = `
+                <div class="card-photo-wrap">
+                    ${imgHtml}
+                    <button class="share-icon-btn" title="Bagikan Profil" onclick="shareProfile('${(p.nama||'').replace(/'/g, "\\'")}', '${(p.kelas||'').replace(/'/g, "\\'")}')">
+                        <i class="fas fa-share-alt"></i>
+                    </button>
+                    <div class="card-name-badge">
+                        <h2>${p.nama || 'Tanpa Nama'}</h2>
+                        <span class="badge"><i class="fas fa-users"></i> ${p.kelas || '-'}</span>
+                    </div>
+                    <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
+                </div>
+                <div class="card-info">
+                    ${rowsHtml}
+                    ${igHtml ? `<div class="card-actions">${igHtml}</div>` : ''}
+                </div>`;
+            track.appendChild(card);
+
+            if (displayedProfiles.length > 1) {
+                const dot = document.createElement('div');
+                dot.className = 'dot' + (i===0?' active':'');
+                dot.onclick = () => goToSlide(i);
+                dotBar.appendChild(dot);
+            }
+        });
+        goToSlide(0);
+    }
+
+    function goToSlide(i) {
+        currentIndex = i;
+        document.getElementById('cardsTrack').style.transform = `translateX(-${i*100}%)`;
+        document.querySelectorAll('.dot').forEach((d,j) => d.classList.toggle('active', j===i));
+        document.getElementById('btnPrev').disabled = i === 0;
+        document.getElementById('btnNext').disabled = i === displayedProfiles.length - 1;
+    }
+    function slidePrev() { if (currentIndex > 0) goToSlide(currentIndex - 1); }
+    function slideNext() { if (currentIndex < displayedProfiles.length - 1) goToSlide(currentIndex + 1); }
+
+    function handleImgError(img, fileId) {
+        img.style.display = 'none';
+        const loader = document.getElementById('loader-' + fileId);
+        const fallback = document.getElementById('fallback-' + fileId);
+        if (loader) loader.style.display = 'flex';
+
+        fetch(APPS_SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({ action: 'get_image', fileId: fileId })
+        })
+        .then(res => res.json())
+        .then(res => {
+            if (loader) loader.style.display = 'none';
+            if (res.status === 'success' && res.dataUri) {
+                img.onerror = null; // Mencegah infinite loop error
+                img.src = res.dataUri;
+                img.style.display = 'block';
+            } else {
+                if (fallback) fallback.style.display = 'flex';
+            }
+        })
+        .catch(err => {
+            console.error("Gagal load foto via Base64:", fileId, err);
+            if (loader) loader.style.display = 'none';
+            if (fallback) fallback.style.display = 'flex';
+        });
+    }
+
+    // --- STRATEGI SHARE PROFIL & DEEP LINKING ---
+    let autoTargetNama = null;
+
+    function shareProfile(nama, kelas) {
+        const url = new URL(window.location.href);
+        url.searchParams.set('grup', kelas);
+        url.searchParams.set('nama', nama);
+        const shareUrl = url.toString();
+
+        const shareData = {
+            title: `Profil Mentee: ${nama}`,
+            text: `Lihat profil mentee ${nama} (${kelas}) di Buku Saku Sky Circle:`,
+            url: shareUrl
+        };
+
+        if (navigator.share) {
+            navigator.share(shareData).catch(err => {
+                if (err.name !== 'AbortError') {
+                    copyToClipboard(shareUrl, nama);
+                }
+            });
+        } else {
+            copyToClipboard(shareUrl, nama);
+        }
+    }
+
+    function copyToClipboard(text, nama) {
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+            navigator.clipboard.writeText(text).then(() => {
+                showToast(`Link profil ${nama} berhasil disalin!`);
+            }).catch(() => {
+                fallbackCopy(text, nama);
+            });
+        } else {
+            fallbackCopy(text, nama);
+        }
+    }
+
+    function fallbackCopy(text, nama) {
+        const textArea = document.createElement("textarea");
+        textArea.value = text;
+        textArea.style.position = "fixed";
+        document.body.appendChild(textArea);
+        textArea.focus();
+        textArea.select();
+        try {
+            document.execCommand('copy');
+            showToast(`Link profil ${nama} berhasil disalin!`);
+        } catch (err) {
+            showToast(`Gagal menyalin link.`);
+        }
+        document.body.removeChild(textArea);
+    }
+
+    function showToast(msg) {
+        const toast = document.getElementById('toast');
+        if (!toast) return;
+        toast.textContent = msg;
+        toast.classList.add('show');
+        setTimeout(() => {
+            toast.classList.remove('show');
+        }, 2600);
+    }
+
+    function checkQueryParamsOnLoad() {
+        const params = new URLSearchParams(window.location.search);
+        const grupParam = params.get('grup');
+        const namaParam = params.get('nama');
+
+        if (grupParam) {
+            autoTargetNama = namaParam;
+            selectGroup(grupParam);
+        } else {
+            showScreen('picker');
+        }
+    }
+
+    checkQueryParamsOnLoad();
+</script>
+</body>
+</html>

@@ -151,8 +151,7 @@ body {
 .main-content.full-width {
     margin-left: 0;
     max-width: 100%;
-    padding: 40px 8%;
-    margin: 0 auto;
+    padding: 40px 48px;
 }
 
 header {
@@ -518,4 +517,28 @@ td {
     border: 2px solid var(--primary);
     border-radius: 4px;
     pointer-events: none;
+}
+
+
+/* Portrait Mobile Overlay */
+@media screen and (max-width: 768px) and (orientation: portrait) {
+    body.require-landscape::before {
+        content: 'Tolong putar HP Anda ke posisi Landscape (Miring) untuk melihat Dashboard ini dengan rapi.';
+        position: fixed;
+        top: 0; left: 0; right: 0; bottom: 0;
+        background: #f4f5f7;
+        color: #0066ff;
+        z-index: 9999;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        padding: 40px;
+        font-size: 20px;
+        font-weight: bold;
+        font-family: inherit;
+    }
+    body.require-landscape > * {
+        display: none !important;
+    }
 }

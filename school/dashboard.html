@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard SMA Negeri 2 Cibinong - Sky Circle</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -20,139 +20,193 @@
             font-size: 14px;
             margin-bottom: 32px;
         }
+
+        .tingkat-tab-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            font-family: inherit;
+        }
+        .tingkat-tab-btn:hover {
+            background: #f0f6ff;
+            border-color: #0066ff;
+            color: #0066ff;
+        }
+        .tingkat-tab-btn.active {
+            background: #0066ff;
+            border-color: #0066ff;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
+        }
+
+        .subclass-tabs-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+            scrollbar-width: none;
+        }
+        .subclass-tabs-container::-webkit-scrollbar { display: none; }
+        .subclass-tab-chip {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 5px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            font-family: inherit;
+        }
+        .subclass-tab-chip:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+        .subclass-tab-chip.active {
+            background: #1e40af;
+            border-color: #1e40af;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+        }
     </style>
 </head>
-<body>
+<body class="require-landscape">
     <div class="app-container">
     <main class="main-content full-width">
-        <header style="margin-bottom: 24px; padding-bottom: 24px; border-bottom: 1px solid rgba(0,0,0,0.05);">
-            <div class="search-bar" style="width: 300px;">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search task" style="background: var(--bg-body);">
-            </div>
-            <div style="display: flex; align-items: center; gap: 20px;">
-                <div class="logo-icon" style="width: 48px; height: 48px; border-radius: 16px;">
-                    <div></div><div></div><div></div><div></div>
-                </div>
+        <!-- Header & Top Filter Controls (2-Tier Navigation) -->
+        <div style="margin-bottom: 20px; margin-top: 20px;">
+            <!-- Title & Gender Filter Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 16px;">
                 <div>
-                    <div style="font-weight: 700; font-size: 18px; color: var(--primary);">SKY CIRCLE</div>
-                    <div style="font-size: 13px; color: var(--text-muted);">School Portal</div>
+                    <h1 class="dashboard-header-text" style="font-size: 26px; margin: 0;">Monitoring Presensi Siswa</h1>
+                </div>
+
+                <!-- Gender Checkboxes -->
+                <div style="display: flex; align-items: center; gap: 14px; background: #ffffff; padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 13px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+                    <span style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Filter Gender:</span>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #1d4ed8;">
+                        <input type="checkbox" id="cb-gender-l" checked onchange="renderSchoolTable()" style="cursor: pointer; width: 16px; height: 16px; accent-color: #0066ff;">
+                        <i class="fas fa-mars"></i> Boys
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #be185d;">
+                        <input type="checkbox" id="cb-gender-p" checked onchange="renderSchoolTable()" style="cursor: pointer; width: 16px; height: 16px; accent-color: #ec4899;">
+                        <i class="fas fa-venus"></i> Girls
+                    </label>
                 </div>
             </div>
 
-
-
-            <div class="header-actions">
-                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
-                    <i class="fas fa-envelope"></i>
-                </button>
-                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
-                    <i class="fas fa-bell"></i>
-                </button>
-                <div class="user-profile" style="background: transparent; box-shadow: none; padding: 0; gap: 16px;">
-                    <div class="avatar" style="width: 40px; height: 40px;"><img src="https://ui-avatars.com/api/?name=School+Admin&background=e6f0ff&color=0066ff" alt="Admin"></div>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600; font-size: 14px;">Bina Karya</span>
-                        <span style="font-size: 12px; color: var(--text-muted);">sekolah@binakarya.id</span>
-                    </div>
-                </div>
+            <!-- Tier 1 Tabs: Semua, Kelas X, Kelas XI, Kelas XII -->
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Tingkat:</span>
+                <button class="tingkat-tab-btn active" id="tingkat-tab-Semua" onclick="switchTingkatTab('Semua')">Semua</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-X" onclick="switchTingkatTab('X')">Kelas X</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-XI" onclick="switchTingkatTab('XI')">Kelas XI</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-XII" onclick="switchTingkatTab('XII')">Kelas XII</button>
             </div>
-        </header>
 
-        <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 24px; margin-top: 40px;">
-            <div>
-                <h1 class="dashboard-header-text" style="font-size: 28px;">Monitoring Presensi Siswa</h1>
-                <p class="dashboard-subtitle" style="margin-bottom: 0;">Laporan kehadiran mentoring per pertemuan dwimingguan</p>
-            </div>
-            <div class="filters-bar">
-                <select class="filter-select">
-                    <option>Tahun Ajaran 2024/2025</option>
-                    <option>Tahun Ajaran 2023/2024</option>
-                </select>
-                <select class="filter-select">
-                    <option>Semester Ganjil</option>
-                    <option>Semester Genap</option>
-                </select>
-
+            <!-- Tier 2 Tabs: Sub-Kelas Chips (Dynamically Generated) -->
+            <div class="subclass-tabs-container" id="subclass-chips-container">
+                <!-- Injected dynamically by renderSubClassChips() -->
             </div>
         </div>
 
-        <!-- Side-by-Side Layout -->
-        <div style="display: grid; grid-template-columns: 280px 1fr; gap: 24px; margin-bottom: 32px;">
-            <!-- Left Column: 4 Stats Cards -->
-            <div style="display: flex; flex-direction: column; gap: 16px; justify-content: space-between; height: 100%;">
-            <div class="card primary-card" style="padding: 24px; border-radius: 24px; position: relative; overflow: hidden;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: rgba(255,255,255,0.8);">Kehadiran Rata-rata</span>
-                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; transform: rotate(45deg);"></i></div>
-                </div>
-                <div style="font-size: 40px; font-weight: 700; margin-bottom: 16px; line-height: 1;">94%</div>
-                <div style="font-size: 12px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px;">
-                    <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">2% <i class="fas fa-caret-up"></i></span> Naik dari bulan lalu
-                </div>
-            </div>
-
-            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Total Siswa Terdaftar</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
-                </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">380</div>
-                <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">+12 <i class="fas fa-caret-up"></i></span> Siswa baru semester ini
-                </div>
-            </div>
-
-            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Kelompok Aktif</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
-                </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">12</div>
-                <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">Lengkap</span> Semua hadir pekan ini
-                </div>
-            </div>
-
-            <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
-                </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">0</div>
-                <div style="font-size: 12px; color: var(--success); font-weight: 500;">Semua kelas sudah update</div>
-            </div>
-            </div>
-
-            <!-- Right Column: Main Chart Card -->
-            <div style="display: flex; flex-direction: column; gap: 24px; height: 100%;">
-                <div class="card" style="position: relative; height: 100%; display: flex; flex-direction: column;">
-                    <div class="section-title" style="margin-bottom: 10px;">
-                        <span>Tren Kehadiran Siswa SMA N 2 Cibinong</span>
-                        <div class="badge badge-success" style="font-size: 14px;">Total 8 Pertemuan</div>
-                    </div>
-                    <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 24px;">
-                        156 <span style="font-size: 14px; font-weight: 400; color: var(--text-muted);">Siswa Aktif Semester Ini</span>
-                    </div>
-                    <div style="flex-grow: 1; position: relative; min-height: 200px;">
-                        <canvas id="schoolAttendanceChart"></canvas>
+        <!-- Row 1: 4 Stat Cards in a Horizontal Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <!-- Card 1: Kehadiran Rata-rata -->
+            <div class="card" style="background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%); color: white; padding: 18px 20px; border-radius: 16px; box-shadow: 0 8px 16px rgba(0,102,255,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: 500; opacity: 0.9;">Kehadiran Rata-rata</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-arrow-up" style="font-size: 10px; transform: rotate(45deg);"></i>
                     </div>
                 </div>
+                <div id="stat-avg" style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1;">0%</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 6px;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">Update <i class="fas fa-sync" style="font-size: 9px;"></i></span> Data terkini
+                </div>
+            </div>
+
+            <!-- Card 2: Total Siswa -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Total Siswa</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users" style="font-size: 10px; color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                <div id="stat-total" style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--text-muted);">
+                    Siswa terdaftar di kelas ini
+                </div>
+            </div>
+
+            <!-- Card 3: Kelompok Aktif -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Kelompok Aktif</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-layer-group" style="font-size: 10px; color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                <div id="stat-groups" style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--text-muted);">
+                    Grup Mentoring
+                </div>
+            </div>
+
+            <!-- Card 4: Laporan Tertunda -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check-circle" style="font-size: 10px; color: var(--success);"></i>
+                    </div>
+                </div>
+                <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--success); font-weight: 500;">
+                    Semua update
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Main Chart Card -->
+        <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">Tren Kehadiran Siswa</span>
+                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 12 Pertemuan</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-muted);">
+                    <strong id="stat-active" style="font-size: 16px; color: var(--text-main);">0</strong> Siswa Aktif Semester Ini
+                </div>
+            </div>
+            <div style="height: 240px; position: relative;">
+                <canvas id="schoolAttendanceChart"></canvas>
             </div>
         </div>
         <!-- Data Table Section -->
         <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none; overflow-x: auto; margin-bottom: 32px;">
             <div class="section-title" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
                 <span>Detail Kehadiran Siswa</span>
-                <button class="btn btn-primary" style="border-radius: 20px; font-size: 13px;"><i class="fas fa-download"></i> Export Data</button>
             </div>
-            <!-- Table Toolbar -->
+            <!-- Table Toolbar: Row Limit & Search Only -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; gap: 16px; flex-wrap: wrap;">
                 
                 <!-- Left: Show Entries -->
                 <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted);">
                     Tampilkan 
-                    <select style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; background: #fff; cursor: pointer;">
+                    <select id="row-limit" onchange="renderSchoolTable()" style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; background: #fff; cursor: pointer;">
                         <option>10</option>
                         <option>25</option>
                         <option selected>50</option>
@@ -161,129 +215,366 @@
                     baris
                 </div>
 
-                <!-- Right: Filters & Search -->
-                <div style="display: flex; gap: 12px; align-items: center;">
-                    <!-- Filter Angkatan -->
-                    <select style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; background: #fff; font-size: 13px; cursor: pointer; color: var(--text-main);">
-                        <option value="">Semua Angkatan</option>
-                        <option value="33">Angkatan 33</option>
-                        <option value="32">Angkatan 32</option>
-                    </select>
-                    
-                    <!-- Filter Kelas -->
-                    <select style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; background: #fff; font-size: 13px; cursor: pointer; color: var(--text-main);">
-                        <option value="">Semua Kelas</option>
-                        <option value="X">Kelas X</option>
-                        <option value="XI">Kelas XI</option>
-                    </select>
-
-                    <!-- Filter L/P -->
-                    <select style="padding: 8px 16px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; background: #fff; font-size: 13px; cursor: pointer; color: var(--text-main);">
-                        <option value="">Laki-laki & Perempuan</option>
-                        <option value="L">Laki-laki (L)</option>
-                        <option value="P">Perempuan (P)</option>
-                    </select>
-
-                    <!-- Search Bar -->
-                    <div style="position: relative;">
-                        <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px;"></i>
-                        <input type="text" placeholder="Cari siswa..." style="padding: 8px 16px 8px 36px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; font-size: 13px; width: 200px;">
-                    </div>
+                <!-- Right: Search Bar -->
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px;"></i>
+                    <input id="search-input" onkeyup="renderSchoolTable()" type="text" placeholder="Cari siswa..." style="padding: 8px 16px 8px 36px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; font-size: 13px; width: 220px;">
                 </div>
             </div>
             
+            <!-- Class Tabs Moved to Top -->
             <table style="min-width: 1200px;">
                 <thead>
                     <tr>
-                        <th style="cursor: pointer; white-space: nowrap;">Angkatan <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
-                        <th style="cursor: pointer; white-space: nowrap;">Kelas <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
-                        <th style="cursor: pointer; min-width: 200px;">Nama Lengkap <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
-                        <th style="cursor: pointer; text-align: center;">L/P <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
-                        <th style="text-align: center;">P1</th>
-                        <th style="text-align: center;">P2</th>
-                        <th style="text-align: center;">P3</th>
-                        <th style="text-align: center;">P4</th>
-                        <th style="text-align: center;">P5</th>
-                        <th style="text-align: center;">P6</th>
-                        <th style="text-align: center;">P7</th>
-                        <th style="cursor: pointer; text-align: center;">Kehadiran <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
-                        <th style="cursor: pointer; text-align: center;">Nilai <i class="fas fa-sort" style="color: #ccc; margin-left: 4px;"></i></th>
+                        <th onclick="toggleSort('nama')" style="cursor: pointer; user-select: none;">Nama Siswa <i id="sort-icon-nama" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('kelas')" style="cursor: pointer; user-select: none;">Kelas <i id="sort-icon-kelas" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('kelompok')" style="cursor: pointer; user-select: none;">Kelompok <i id="sort-icon-kelompok" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th>P1</th>
+                        <th>P2</th>
+                        <th>P3</th>
+                        <th>P4</th>
+                        <th>P5</th>
+                        <th>P6</th>
+                        <th>P7</th>
+                        <th>P8</th>
+                        <th>P9</th>
+                        <th>P10</th>
+                        <th>P11</th>
+                        <th>P12</th>
+                        <th onclick="toggleSort('kehadiran')" style="cursor: pointer; user-select: none; text-align: center;">Kehadiran <i id="sort-icon-kehadiran" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr style="transition: background 0.2s; cursor: default;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
-                        <td>33</td>
-                        <td>X-A</td>
-                        <td style="font-weight: 600; color: var(--text-main);">Ahmad Fawwaz</td>
-                        <td style="text-align: center;">L</td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center;"><span class="status-pill status-done">100%</span></td>
-                        <td style="text-align: center; font-weight: 700; color: var(--primary);">A</td>
-                    </tr>
-                    <tr style="transition: background 0.2s; cursor: default;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
-                        <td>33</td>
-                        <td>X-A</td>
-                        <td style="font-weight: 600; color: var(--text-main);">Siti Aisyah</td>
-                        <td style="text-align: center;">P</td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--danger);"><i class="fas fa-times-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center;"><span class="status-pill" style="background: #fff3cd; color: #856404;">87.5%</span></td>
-                        <td style="text-align: center; font-weight: 700; color: var(--primary);">B+</td>
-                    </tr>
-                    <tr style="transition: background 0.2s; cursor: default;" onmouseover="this.style.background='#f8f9fa'" onmouseout="this.style.background='transparent'">
-                        <td>32</td>
-                        <td>XI-B</td>
-                        <td style="font-weight: 600; color: var(--text-main);">Muhammad Reyhan</td>
-                        <td style="text-align: center;">L</td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>
-                        <td style="text-align: center; color: #f39c12;"><i class="fas fa-info-circle"></i></td>
-                        <td style="text-align: center;"><span class="status-pill status-done">100%</span></td>
-                        <td style="text-align: center; font-weight: 700; color: var(--primary);">A-</td>
-                    </tr>
+                <tbody id="student-table-body">
+                    <tr><td colspan="12" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
                 </tbody>
             </table>
         </div>
 
         <footer style="margin-top: 60px; padding: 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px;">
-            &copy; 2024 Sky Circle Mentoring System. Managed by Admin Sky Circle.
+            &copy; 2026 Sky Circle Mentoring System. Managed by Admin Sky Circle.
         </footer>
     </main>
     </div>
 
     <script src="../js/app.js"></script>
     <script>
-        // Init Chart for School Meetings (Pertemuan)
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
-            
-            // X-axis: Pertemuan 1 - 8 (1 semester)
-            const labels = ['Pert. 1', 'Pert. 2', 'Pert. 3', 'Pert. 4', 'Pert. 5', 'Pert. 6', 'Pert. 7', 'Pert. 8'];
-            
-            // Y-axis: Jumlah mentee yang hadir di sekolah ini
-            const dataHadir = [150, 156, 145, 150, 148, 140, 155, 152];
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec";
+        let allStudents = [];
+        let currentTingkat = 'Semua'; // 'Semua', 'X', 'XI', 'XII'
+        let currentSubClass = 'Semua'; // 'Semua', 'X-1', 'X-2', dll
 
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
+        async function fetchSchoolData() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "get_school_data" })
+                });
+                const data = await response.json();
+                if(data.status === "success") {
+                    allStudents = data.students;
+                    switchTingkatTab('Semua');
+                } else {
+                    document.getElementById('student-table-body').innerHTML = `<tr><td colspan="16" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="16" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
+            }
+        }
+
+        function switchTingkatTab(tingkat) {
+            currentTingkat = tingkat;
+            currentSubClass = 'Semua';
+            
+            document.querySelectorAll('.tingkat-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tingkat-tab-' + tingkat);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            renderSubClassChips();
+            renderSchoolTable();
+        }
+
+        function switchSubClassTab(sc) {
+            currentSubClass = sc;
+            
+            document.querySelectorAll('.subclass-tab-chip').forEach(btn => btn.classList.remove('active'));
+            const activeSubBtn = document.getElementById('subclass-tab-' + String(sc).replace(/\s+/g, '-'));
+            if (activeSubBtn) activeSubBtn.classList.add('active');
+            
+            renderSchoolTable();
+        }
+
+        function renderSubClassChips() {
+            const container = document.getElementById('subclass-chips-container');
+            container.innerHTML = '';
+            
+            if (currentTingkat === 'Semua') {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            let subClasses = ['Semua'];
+            
+            if (currentTingkat === 'X') {
+                // Tampilkan X-1 s/d X-12
+                subClasses = ['Semua', 'X-1', 'X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8', 'X-9', 'X-10', 'X-11', 'X-12'];
+            } else {
+                // Ambil kelas dinamis untuk XI atau XII dari data
+                let uniqueClasses = new Set();
+                allStudents.forEach(s => {
+                    let k = String(s.kelas || '').toUpperCase().trim();
+                    let matches = false;
+                    if (currentTingkat === 'XII') matches = k.startsWith('XII');
+                    else if (currentTingkat === 'XI') matches = k.startsWith('XI') && !k.startsWith('XII');
+                    if (matches && s.kelas) uniqueClasses.add(s.kelas);
+                });
+                
+                Array.from(uniqueClasses).sort((a, b) => {
+                    let numA = parseInt(String(a).replace(/\D/g, '')) || 0;
+                    let numB = parseInt(String(b).replace(/\D/g, '')) || 0;
+                    return numA - numB;
+                }).forEach(cls => subClasses.push(cls));
+            }
+            
+            subClasses.forEach(sc => {
+                const btn = document.createElement('button');
+                const chipId = 'subclass-tab-' + String(sc).replace(/\s+/g, '-');
+                btn.id = chipId;
+                btn.className = 'subclass-tab-chip' + (sc === currentSubClass ? ' active' : '');
+                btn.innerText = sc;
+                btn.onclick = () => switchSubClassTab(sc);
+                container.appendChild(btn);
+            });
+        }
+
+        let currentSortField = null; // Default: urut kelompok / nama secara alami
+        let currentSortDir = null;
+
+        function toggleSort(field) {
+            if (currentSortField === field) {
+                if (currentSortDir === 'desc') {
+                    currentSortDir = 'asc';
+                } else if (currentSortDir === 'asc') {
+                    currentSortField = null;
+                    currentSortDir = null;
+                } else {
+                    currentSortDir = 'desc';
+                }
+            } else {
+                currentSortField = field;
+                currentSortDir = 'desc';
+            }
+            renderSchoolTable();
+        }
+
+        function updateSortIcons() {
+            ['nama', 'kelas', 'kelompok', 'kehadiran'].forEach(f => {
+                const icon = document.getElementById('sort-icon-' + f);
+                if (icon) {
+                    if (currentSortField === f) {
+                        icon.className = currentSortDir === 'desc' ? 'fas fa-sort-down' : 'fas fa-sort-up';
+                        icon.style.color = '#0066ff';
+                    } else {
+                        icon.className = 'fas fa-sort';
+                        icon.style.color = '#ccc';
+                    }
+                }
+            });
+        }
+
+        let schoolChart;
+        
+        function renderSchoolTable() {
+            const tbody = document.getElementById('student-table-body');
+            tbody.innerHTML = '';
+            
+            const searchQuery = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+            const cbLaki = document.getElementById('cb-gender-l');
+            const cbPerempuan = document.getElementById('cb-gender-p');
+            const isLakiChecked = cbLaki ? cbLaki.checked : true;
+            const isPerempuanChecked = cbPerempuan ? cbPerempuan.checked : true;
+            
+            const filtered = allStudents.filter(s => {
+                let k = String(s.kelas || '').toUpperCase().trim();
+
+                // 1. Filter Tier 1 (Tingkat Kelas)
+                if (currentTingkat !== 'Semua') {
+                    let matchesTingkat = false;
+                    if (currentTingkat === 'XII') matchesTingkat = k.startsWith('XII');
+                    else if (currentTingkat === 'XI') matchesTingkat = k.startsWith('XI') && !k.startsWith('XII');
+                    else if (currentTingkat === 'X') matchesTingkat = k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+
+                    if (!matchesTingkat) return false;
+                }
+
+                // 2. Filter Tier 2 (Sub-Kelas)
+                if (currentSubClass !== 'Semua') {
+                    let targetK = String(currentSubClass).toUpperCase().trim();
+                    let kNorm = k.replace(/[\s-]/g, '');
+                    let targetNorm = targetK.replace(/[\s-]/g, '');
+                    if (kNorm !== targetNorm) return false;
+                }
+                
+                // 3. Filter Gender Checkbox
+                let g = String(s.gender || '').toUpperCase().trim();
+                let isBoys = g === 'L' || g === 'LAKI-LAKI' || (s.kelompok && s.kelompok.toUpperCase().startsWith('BC'));
+                let isGirls = g === 'P' || g === 'PEREMPUAN' || (s.kelompok && s.kelompok.toUpperCase().startsWith('GC'));
+
+                if (!isLakiChecked && isBoys) return false;
+                if (!isPerempuanChecked && isGirls) return false;
+                if (!isLakiChecked && !isPerempuanChecked) return false;
+                
+                // 4. Search query
+                if (searchQuery && !String(s.nama).toLowerCase().includes(searchQuery)) return false;
+                
+                return true;
+            });
+            
+            // Hitung persentase kehadiran per siswa untuk sorting
+            filtered.forEach(s => {
+                let hadirCount = 0;
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                marks.forEach(m => {
+                    if (String(m).toLowerCase() === 'hadir') hadirCount++;
+                });
+                s._percent = Math.round((hadirCount / 12) * 100);
+            });
+
+            // Urutkan tabel sesuai currentSortField dan currentSortDir
+            if (currentSortField) {
+                filtered.sort((a, b) => {
+                    let valA, valB;
+                    if (currentSortField === 'kehadiran') {
+                        valA = a._percent;
+                        valB = b._percent;
+                        return currentSortDir === 'desc' ? valB - valA : valA - valB;
+                    } else if (currentSortField === 'nama') {
+                        valA = String(a.nama || '');
+                        valB = String(b.nama || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
+                    } else if (currentSortField === 'kelas') {
+                        valA = String(a.kelas || '');
+                        valB = String(b.kelas || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
+                    } else if (currentSortField === 'kelompok') {
+                        valA = String(a.kelompok || '');
+                        valB = String(b.kelompok || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
+                    }
+                    return 0;
+                });
+            } else {
+                // Default sorting berdasarkan kelompok
+                filtered.sort((a, b) => {
+                    let grpA = String(a.kelompok || '');
+                    let grpB = String(b.kelompok || '');
+                    return grpA.localeCompare(grpB, undefined, {numeric: true});
+                });
+            }
+
+            updateSortIcons();
+            
+            // --- Update Statistik Dinamis ---
+            document.getElementById('stat-total').innerText = filtered.length;
+            
+            let uniqueGroups = new Set();
+            let totalKehadiranSemua = 0;
+            let countKehadiran = 0;
+            let chartDataHadir = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            
+            filtered.forEach(s => {
+                if(s.kelompok) uniqueGroups.add(s.kelompok);
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                marks.forEach((m, idx) => {
+                    if (String(m).toLowerCase() === 'hadir') {
+                        chartDataHadir[idx]++;
+                        totalKehadiranSemua++;
+                    }
+                    if (m !== "") countKehadiran++;
+                });
+            });
+            
+            document.getElementById('stat-groups').innerText = uniqueGroups.size;
+            
+            // Hitung jumlah pertemuan maksimal yang sudah berjalan
+            let maxMeeting = 0;
+            filtered.forEach(s => {
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                marks.forEach((m, idx) => {
+                    if (m && m.trim() !== "") {
+                        if (idx + 1 > maxMeeting) maxMeeting = idx + 1;
+                    }
+                });
+            });
+            
+            let denominator = filtered.length * maxMeeting;
+            let avg = denominator > 0 ? Math.round((totalKehadiranSemua / denominator) * 100) : 0;
+            document.getElementById('stat-avg').innerText = avg + "%";
+            document.getElementById('stat-active').innerText = filtered.length;
+            
+            // Ubah data jumlah hadir menjadi persentase
+            let chartDataPersentase = chartDataHadir.map(count => {
+                return filtered.length > 0 ? Math.round((count / filtered.length) * 100) : 0;
+            });
+
+            // --- Update Chart Dinamis ---
+            updateChart(chartDataPersentase);
+            // -----------------------------
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="12" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
+                return;
+            }
+
+            const limit = parseInt(document.getElementById('row-limit').value) || 50;
+            filtered.slice(0, limit).forEach(s => {
+                let hadirCount = 0;
+                let totalPertemuan = 12;
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                
+                let pCells = marks.map(p => {
+                    if(String(p).toLowerCase() === 'hadir') {
+                        hadirCount++;
+                        return `<td style="text-align: center; color: var(--success);"><i class="fas fa-check-circle"></i></td>`;
+                    } else if (p) { // Izin/Sakit/Alpha
+                        return `<td style="text-align: center; color: var(--danger);"><i class="fas fa-times-circle"></i></td>`;
+                    } else {
+                        return `<td style="text-align: center; color: #ccc;">-</td>`;
+                    }
+                }).join('');
+
+                let percent = Math.round((hadirCount / totalPertemuan) * 100);
+                let pillClass = percent >= 75 ? 'status-pill status-done' : 'status-pill';
+                let pillStyle = percent >= 75 ? '' : (percent > 0 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;');
+                
+                let bgStyle = "transition: background 0.2s;";
+                let kelompokDisplay = s.kelompok ? s.kelompok : `<span style="color: var(--text-muted); font-size: 12px;">Belum ada mentor</span>`;
+
+                let tr = document.createElement('tr');
+                tr.style = bgStyle;
+                tr.innerHTML = `
+                    <td style="font-weight: 600; color: var(--text-main);">${s.nama}</td>
+                    <td>${String(s.kelas).replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</td>
+                    <td>${kelompokDisplay}</td>
+                    ${pCells}
+                    <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${percent}%</span></td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function updateChart(dataHadir) {
+            const ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
+            if (schoolChart) {
+                schoolChart.data.datasets[0].data = dataHadir;
+                schoolChart.update();
+            } else {
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                schoolChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
                             label: 'Siswa Hadir',
                             data: dataHadir,
                             borderColor: '#0066ff',
@@ -294,37 +585,43 @@
                             pointBorderWidth: 2,
                             pointRadius: 5,
                             fill: true,
-                            tension: 0.4 // Smooth curve
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.raw + ' Siswa Hadir';
-                                }
-                            }
-                        }
+                            tension: 0.4
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: false,
-                            min: 100, // adjust based on expected minimum
-                            grid: { color: '#f0f0f0' },
-                            border: { display: false }
-                        },
-                        x: {
-                            grid: { display: false },
-                            border: { display: false }
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                max: 100,
+                                grid: { color: '#f0f0f0' }, 
+                                border: { display: false },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false }, border: { display: false } }
                         }
                     }
+                });
+            }
+        }
+
+        // Init Fetch
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close group dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('group-dropdown-menu');
+                if (menu && menu.style.display === 'block' && !event.target.closest('#group-dropdown-menu') && !event.target.closest('button[onclick*="group-dropdown-menu"]')) {
+                    menu.style.display = 'none';
                 }
             });
+
+            fetchSchoolData();
         });
     </script>
 </body>

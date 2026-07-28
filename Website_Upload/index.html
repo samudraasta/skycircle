@@ -74,18 +74,18 @@
         </div>
 
         <div class="portal-options">
-            <a href="mentor/login.html" class="option-btn">
-                <i class="fas fa-chalkboard-teacher" style="color: #00a884;"></i>
+            <a href="mentor/presensi.html" class="option-btn">
+                <i class="fas fa-clipboard-list" style="color: #00a884;"></i>
                 <div>
-                    <span class="option-title">Mentor Portal (Web Chat)</span>
-                    <span class="option-desc">Lapor presensi via AI Chat Assistant.</span>
+                    <span class="option-title">Presensi</span>
+                    <span class="option-desc">Lapor kehadiran mentee dengan mudah.</span>
                 </div>
             </a>
-            <a href="admin/dashboard.html" class="option-btn">
-                <i class="fas fa-user-shield"></i>
+            <a href="mentor/dashboard.html" class="option-btn">
+                <i class="fas fa-users-cog"></i>
                 <div>
-                    <span class="option-title">Admin Dashboard</span>
-                    <span class="option-desc">Monitoring kehadiran & kelola data.</span>
+                    <span class="option-title">Mentor Dashboard</span>
+                    <span class="option-desc">Monitoring progress kehadiran mentoring.</span>
                 </div>
             </a>
             <a href="school/dashboard.html" class="option-btn">
@@ -95,11 +95,31 @@
                     <span class="option-desc">Monitoring khusus SMA N 2 Cibinong.</span>
                 </div>
             </a>
+            <a href="#" target="_blank" class="option-btn" title="Nanti ganti tanda # dengan Link Google Drive">
+                <i class="fas fa-book-open" style="color: #6366f1;"></i>
+                <div>
+                    <span class="option-title">Materi Mentoring</span>
+                    <span class="option-desc">Kumpulan modul dan bahan ajar mentor.</span>
+                </div>
+            </a>
         </div>
         
         <p style="margin-top: 40px; font-size: 12px; color: var(--text-muted);">
             &copy; 2024 Sky Circle Mentoring System
         </p>
     </div>
+
+    <script>
+        function checkAdminPassword(e) {
+            e.preventDefault();
+            const pw = prompt("Masukkan Password Admin:");
+            if (pw === "luruskanniat") {
+                localStorage.setItem("admin_auth", pw);
+                window.location.href = "admin/dashboard.html";
+            } else if (pw !== null && pw.trim() !== "") {
+                alert("Mohon maaf, Password salah!");
+            }
+        }
+    </script>
 </body>
 </html>

@@ -21,7 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 3. Konfigurasi API
     // Membaca dari local storage admin, atau menggunakan fallback API Key yang sudah di-hardcode
     const GEMINI_API_KEY = localStorage.getItem('gemini_api_key') || 'AQ.Ab8RN6Iypv2DzqD7aBnvFXfW9blhkPW7WmqLZA3bEQ3Xf9CDeA';
-    const APPS_SCRIPT_URL = localStorage.getItem('apps_script_url') || 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
+    const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
 
     // Elemen Chat
     const chatBox = document.getElementById('chat-box');

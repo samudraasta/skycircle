@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - Sky Circle</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -25,6 +25,11 @@
             margin-bottom: 40px;
         }
     </style>
+    <script>
+        if (localStorage.getItem("admin_auth") !== "luruskanniat") {
+            window.location.href = "../index.html";
+        }
+    </script>
 </head>
 <body>
     <div class="app-container">
@@ -74,81 +79,59 @@
     </nav>
 
     <main class="main-content">
-        <header style="margin-bottom: 24px;">
-            <div class="search-bar" style="width: 300px;">
-                <i class="fas fa-search"></i>
-                <input type="text" placeholder="Search task" style="background: var(--bg-body);">
-            </div>
-
-            <div class="header-actions">
-                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
-                    <i class="fas fa-envelope"></i>
-                </button>
-                <button class="btn" style="background: transparent; border: 1px solid var(--border-color); border-radius: 50%; width: 40px; height: 40px; justify-content: center; padding: 0;">
-                    <i class="fas fa-bell"></i>
-                </button>
-                <div class="user-profile" style="background: transparent; box-shadow: none; padding: 0; gap: 16px;">
-                    <div class="avatar" style="width: 40px; height: 40px;"><img src="https://ui-avatars.com/api/?name=Admin+Sky&background=e6f0ff&color=0066ff" alt="Admin"></div>
-                    <div style="display: flex; flex-direction: column;">
-                        <span style="font-weight: 600; font-size: 14px;">Admin Sky</span>
-                        <span style="font-size: 12px; color: var(--text-muted);">admin@skycircle.id</span>
-                    </div>
-                </div>
-            </div>
-        </header>
-
         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 32px;">
             <div>
                 <h1 class="dashboard-header-text" style="font-size: 32px; margin-bottom: 4px;">Dashboard</h1>
                 <p class="dashboard-subtitle" style="margin-bottom: 0;">Pantau, kelola, dan rekapitulasi data presensi mentoring dengan mudah.</p>
             </div>
-            <div class="filters-bar">
-                <button class="btn btn-primary" style="border-radius: 20px;"><i class="fas fa-plus"></i> Add Mentor</button>
-                <button class="btn" style="background: white; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px;">Import Data</button>
+            <div class="filters-bar" style="display: flex; gap: 8px;">
+                <button class="btn btn-primary" id="admin-tab-X" onclick="switchAdminTab('X')" style="border-radius: 20px; font-size: 14px; padding: 8px 16px;">Kelas X</button>
+                <button class="btn" id="admin-tab-XI" onclick="switchAdminTab('XI')" style="background: white; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px; font-size: 14px; padding: 8px 16px;">Kelas XI</button>
+                <button class="btn" id="admin-tab-XII" onclick="switchAdminTab('XII')" style="background: white; border: 1px solid var(--border-color); color: var(--text-main); border-radius: 20px; font-size: 14px; padding: 8px 16px;">Kelas XII</button>
             </div>
         </div>
 
-        <!-- 4 Stats Cards Row (Donezo Style) -->
+        <!-- 4 Stats Cards Row -->
         <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
             <div class="card primary-card" style="padding: 24px; border-radius: 24px; position: relative; overflow: hidden;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: rgba(255,255,255,0.8);">Total Siswa Aktif</span>
-                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; transform: rotate(45deg);"></i></div>
+                    <span style="font-size: 14px; color: rgba(255,255,255,0.8);">Total Kelompok</span>
+                    <div style="width: 32px; height: 32px; background: rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-layer-group" style="font-size: 12px;"></i></div>
                 </div>
-                <div style="font-size: 40px; font-weight: 700; margin-bottom: 16px; line-height: 1;">1,420</div>
+                <div id="stat-groups" style="font-size: 40px; font-weight: 700; margin-bottom: 16px; line-height: 1;">0</div>
                 <div style="font-size: 12px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 8px;">
-                    <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">5 <i class="fas fa-caret-up"></i></span> Meningkat dari bulan lalu
+                    Sesuai tab kelas yang dipilih
                 </div>
             </div>
 
             <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Mentor Bertugas</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-user-tie" style="font-size: 12px; color: var(--text-muted);"></i></div>
                 </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">48</div>
+                <div id="stat-mentors" style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">0</div>
                 <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">2 <i class="fas fa-caret-up"></i></span> Tambahan mentor baru
+                    Total mentor di kelas ini
                 </div>
             </div>
 
             <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
-                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Kelas Mentoring</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                    <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Sudah Absen</span>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-check" style="font-size: 12px; color: var(--text-muted);"></i></div>
                 </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">112</div>
+                <div id="stat-done" style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">0</div>
                 <div style="font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 8px;">
-                    <span style="border: 1px solid var(--border-color); padding: 2px 6px; border-radius: 4px; font-weight: 600; color: var(--success);">1 <i class="fas fa-caret-up"></i></span> Menunggu verifikasi
+                    Pada pertemuan yang dipilih
                 </div>
             </div>
 
             <div class="card" style="padding: 24px; border-radius: 24px; border: 1px solid var(--border-color); box-shadow: none;">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;">
                     <span style="font-size: 14px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
-                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-arrow-up" style="font-size: 12px; color: var(--text-muted); transform: rotate(45deg);"></i></div>
+                    <div style="width: 32px; height: 32px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;"><i class="fas fa-exclamation-triangle" style="font-size: 12px; color: var(--text-muted);"></i></div>
                 </div>
-                <div style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">2</div>
+                <div id="stat-pending" style="font-size: 40px; font-weight: 700; color: var(--text-main); margin-bottom: 16px; line-height: 1;">0</div>
                 <div style="font-size: 12px; color: var(--warning); font-weight: 500;">Segera hubungi mentor</div>
             </div>
         </div>
@@ -160,55 +143,55 @@
                 <!-- Main Chart Card -->
                 <div class="card" style="position: relative;">
                     <div class="section-title" style="margin-bottom: 10px;">
-                        <span>Tren Kehadiran Mentee</span>
-                        <div class="badge badge-success" style="font-size: 14px;">Total 8 Pertemuan</div>
+                        <span>Tren Laporan Mentor Masuk</span>
+                        <div class="badge badge-success" style="font-size: 14px;">Total 12 Pertemuan</div>
                     </div>
                     <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 24px;">
-                        1,420 <span style="font-size: 14px; font-weight: 400; color: var(--text-muted);">Mentee Hadir Semester Ini</span>
+                        <span id="stat-active-mentors">0</span> <span style="font-size: 14px; font-weight: 400; color: var(--text-muted);">Mentor Aktif Semester Ini</span>
                     </div>
                     <canvas id="attendanceChart" height="100"></canvas>
                 </div>
 
                 <!-- Live Table Card -->
                 <div class="card">
-                    <div class="section-title">
-                        <span>Aktivitas Laporan Terbaru</span>
-                        <button class="btn" style="background: transparent; color: var(--text-muted);">Lihat Semua <i class="fas fa-arrow-right"></i></button>
+                    <div class="section-title" style="margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;">
+                        <span>Monitoring Presensi Mentor</span>
                     </div>
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Waktu</th>
-                                <th>Mentor</th>
-                                <th>Sekolah</th>
-                                <th>Total Hadir</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="attendance-table-body">
-                            <tr>
-                                <td>Hari ini, 14:20</td>
-                                <td>Kak Ahmad</td>
-                                <td>SMA N 2 Cibinong</td>
-                                <td style="font-weight: 600;">12 Siswa</td>
-                                <td><span class="status-pill status-done">Terekam</span></td>
-                            </tr>
-                            <tr>
-                                <td>Hari ini, 11:05</td>
-                                <td>Kak Siti</td>
-                                <td>SMK Bina Karya</td>
-                                <td style="font-weight: 600;">8 Siswa</td>
-                                <td><span class="status-pill status-done">Terekam</span></td>
-                            </tr>
-                            <tr>
-                                <td>Kemarin, 16:30</td>
-                                <td>Kak Budi</td>
-                                <td>SMA N 1 Bojong</td>
-                                <td style="font-weight: 600;">15 Siswa</td>
-                                <td><span class="status-pill status-done">Terekam</span></td>
-                            </tr>
-                        </tbody>
-                    </table>
+                    
+                    <div style="margin-bottom: 16px;">
+                        <label for="pertemuanSelect" style="font-size: 12px; font-weight: 600; margin-right: 8px;">Cek Pertemuan Ke:</label>
+                        <select id="pertemuanSelect" onchange="renderAdminTable()" style="padding: 6px 12px; border-radius: 8px; border: 1px solid var(--border-color); outline: none;">
+                            <option value="p1">Pertemuan 1</option>
+                            <option value="p2">Pertemuan 2</option>
+                            <option value="p3">Pertemuan 3</option>
+                            <option value="p4">Pertemuan 4</option>
+                            <option value="p5">Pertemuan 5</option>
+                            <option value="p6">Pertemuan 6</option>
+                            <option value="p7">Pertemuan 7</option>
+                            <option value="p8">Pertemuan 8</option>
+                            <option value="p9">Pertemuan 9</option>
+                            <option value="p10">Pertemuan 10</option>
+                            <option value="p11">Pertemuan 11</option>
+                            <option value="p12">Pertemuan 12</option>
+                        </select>
+                    </div>
+
+                    <div style="overflow-x: auto;">
+                        <table style="min-width: 600px;">
+                            <thead>
+                                <tr>
+                                    <th>Mentor</th>
+                                    <th>Kelompok</th>
+                                    <th>No HP</th>
+                                    <th>Status (P)</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="mentor-table-body">
+                                <tr><td colspan="5" style="text-align: center; padding: 40px;">Memuat data mentor...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
 
             </div>
@@ -264,55 +247,176 @@
 
     <script src="../js/app.js"></script>
     <script>
-        // Init Chart for Meetings (Pertemuan)
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('attendanceChart').getContext('2d');
-            
-            // X-axis: Pertemuan 1 - 8 (1 semester)
-            const labels = ['Pert. 1', 'Pert. 2', 'Pert. 3', 'Pert. 4', 'Pert. 5', 'Pert. 6', 'Pert. 7', 'Pert. 8'];
-            
-            // Y-axis: Jumlah mentee yang hadir
-            const dataHadir = [180, 185, 175, 190, 188, 170, 182, 195];
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec";
+        let allMentors = [];
+        let currentAdminTab = 'X';
 
-            new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: labels,
-                    datasets: [
-                        {
-                            label: 'Jumlah Mentee Hadir',
-                            data: dataHadir,
+        async function fetchAdminData() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "get_admin_data" })
+                });
+                const data = await response.json();
+                if (data.status === "success") {
+                    allMentors = data.mentors;
+                    renderAdminTable();
+                } else {
+                    document.getElementById('mentor-table-body').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById('mentor-table-body').innerHTML = `<tr><td colspan="5" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
+            }
+        }
+
+        function switchAdminTab(kelas) {
+            currentAdminTab = kelas;
+            document.getElementById('admin-tab-X').className = kelas === 'X' ? 'btn btn-primary' : 'btn';
+            document.getElementById('admin-tab-XI').className = kelas === 'XI' ? 'btn btn-primary' : 'btn';
+            document.getElementById('admin-tab-XII').className = kelas === 'XII' ? 'btn btn-primary' : 'btn';
+            
+            ['X', 'XI', 'XII'].forEach(k => {
+                let el = document.getElementById('admin-tab-' + k);
+                if(k === kelas) {
+                    el.style.background = '';
+                    el.style.color = '';
+                } else {
+                    el.style.background = 'white';
+                    el.style.color = 'var(--text-main)';
+                }
+            });
+            renderAdminTable();
+        }
+
+        function formatPhoneForWA(phone) {
+            if(!phone) return "";
+            let cleaned = String(phone).replace(/\D/g, '');
+            if(cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+            return cleaned;
+        }
+
+        let adminChart;
+        
+        function renderAdminTable() {
+            const tbody = document.getElementById('mentor-table-body');
+            tbody.innerHTML = '';
+            
+            const pKey = document.getElementById('pertemuanSelect').value + '_filled';
+            const pLabel = document.getElementById('pertemuanSelect').options[document.getElementById('pertemuanSelect').selectedIndex].text;
+
+            const filtered = allMentors.filter(m => {
+                let k = String(m.kelas).toUpperCase();
+                if (currentAdminTab === 'XII') return k.startsWith('XII');
+                if (currentAdminTab === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
+                if (currentAdminTab === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+                return false;
+            });
+            
+            // --- Update Statistik Dinamis ---
+            let uniqueGroups = new Set();
+            let pendingCount = 0;
+            let doneCount = 0;
+            let chartDataFilled = [0,0,0,0,0,0,0,0,0,0,0,0];
+            
+            filtered.forEach(m => {
+                if(m.kelompok) uniqueGroups.add(m.kelompok);
+                if (m[pKey]) doneCount++;
+                else pendingCount++;
+                
+                if(m.p1_filled) chartDataFilled[0]++;
+                if(m.p2_filled) chartDataFilled[1]++;
+                if(m.p3_filled) chartDataFilled[2]++;
+                if(m.p4_filled) chartDataFilled[3]++;
+                if(m.p5_filled) chartDataFilled[4]++;
+                if(m.p6_filled) chartDataFilled[5]++;
+                if(m.p7_filled) chartDataFilled[6]++;
+                if(m.p8_filled) chartDataFilled[7]++;
+                if(m.p9_filled) chartDataFilled[8]++;
+                if(m.p10_filled) chartDataFilled[9]++;
+                if(m.p11_filled) chartDataFilled[10]++;
+                if(m.p12_filled) chartDataFilled[11]++;
+            });
+            
+            document.getElementById('stat-groups').innerText = uniqueGroups.size;
+            document.getElementById('stat-mentors').innerText = filtered.length;
+            document.getElementById('stat-done').innerText = doneCount;
+            document.getElementById('stat-pending').innerText = pendingCount;
+            document.getElementById('stat-active-mentors').innerText = filtered.length;
+            
+            updateAdminChart(chartDataFilled);
+            // --------------------------------
+
+            if (filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" style="text-align:center; padding: 30px;">Belum ada data kelompok/mentor untuk kelas ini.</td></tr>`;
+                return;
+            }
+
+            filtered.forEach(m => {
+                const isFilled = m[pKey];
+                const statusHtml = isFilled 
+                    ? `<span class="status-pill status-done"><i class="fas fa-check"></i> Sudah</span>` 
+                    : `<span class="status-pill" style="background: #f8d7da; color: #721c24;"><i class="fas fa-times"></i> Belum</span>`;
+                
+                let actionHtml = `-`;
+                if (!isFilled) {
+                    if (m.noHp) {
+                        const waNumber = formatPhoneForWA(m.noHp);
+                        const message = encodeURIComponent(`Halo Kak ${m.mentor}, mohon segera input presensi untuk ${pLabel} ya!`);
+                        const waLink = `https://wa.me/${waNumber}?text=${message}`;
+                        actionHtml = `<a href="${waLink}" target="_blank" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px; border-radius: 12px; display: inline-flex;"><i class="fab fa-whatsapp"></i> Remind</a>`;
+                    } else {
+                        actionHtml = `<span style="font-size: 11px; color: var(--text-muted);">No HP tidak ada</span>`;
+                    }
+                }
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="font-weight: 600;">${m.mentor}</td>
+                    <td>${m.kelompok}</td>
+                    <td>${m.noHp || '-'}</td>
+                    <td>${statusHtml}</td>
+                    <td>${actionHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function updateAdminChart(dataFilled) {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            if(adminChart) {
+                adminChart.data.datasets[0].data = dataFilled;
+                adminChart.update();
+            } else {
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                adminChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Jumlah Mentor yang Melapor',
+                            data: dataFilled,
                             backgroundColor: '#0066ff',
                             borderRadius: 6,
                             barPercentage: 0.6
-                        }
-                    ]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return context.raw + ' Mentee Hadir';
-                                }
-                            }
-                        }
+                        }]
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            grid: { color: '#f0f0f0' },
-                            border: { display: false }
-                        },
-                        x: {
-                            grid: { display: false },
-                            border: { display: false }
+                    options: {
+                        responsive: true,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { beginAtZero: true, grid: { color: '#f0f0f0' }, border: { display: false } },
+                            x: { grid: { display: false }, border: { display: false } }
                         }
                     }
-                }
-            });
+                });
+            }
+        }
+
+        // Init Chart & Fetch
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchAdminData();
         });
     </script>
 </body>

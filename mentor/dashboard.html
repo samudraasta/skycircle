@@ -2,224 +2,640 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>AI Presensi Chat - Sky Circle</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Mentor - Sky Circle</title>
+    <link rel="stylesheet" href="../css/styles.css?v=2">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        html, body {
-            background-color: #efeae2; /* WA web bg color */
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-        }
-        .chat-container {
-            position: fixed;
-            top: 0;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            margin: 0 auto;
-            width: 100%;
-            max-width: 600px;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
-        }
-        .chat-header {
-            background: #008069; /* WA web header color */
-            color: white;
-            padding: 16px;
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-        .mentor-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: #fff;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #008069;
-            font-weight: bold;
-            font-size: 18px;
-        }
-        .mentor-info {
-            flex-grow: 1;
-        }
-        .mentor-name {
-            font-weight: 600;
-            font-size: 16px;
-            display: block;
-        }
-        .mentor-status {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        .logout-btn {
-            color: white;
-            text-decoration: none;
-            font-size: 20px;
-        }
-        .chat-body {
-            flex-grow: 1;
-            padding: 20px;
-            overflow-y: auto;
-            background-image: url('https://user-images.githubusercontent.com/15075759/28719144-86dc0f70-73b1-11e7-911d-60d70fcded21.png');
-            background-repeat: repeat;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            -webkit-overflow-scrolling: touch;
-        }
-        .message {
-            max-width: 85%;
-            padding: 10px 14px;
-            border-radius: 12px;
-            font-size: 14px;
-            line-height: 1.4;
-            position: relative;
-        }
-        .msg-ai {
-            align-self: flex-start;
-            background: white;
-            border-top-left-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .msg-mentor {
-            align-self: flex-end;
-            background: #d9fdd3;
-            border-top-right-radius: 0;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-        .msg-time {
-            font-size: 10px;
-            color: #667781;
-            float: right;
-            margin-top: 4px;
-            margin-left: 12px;
-        }
-        .chat-footer {
-            background: #f0f2f5;
-            padding: 12px 16px;
-            display: flex;
-            gap: 12px;
-            align-items: center;
-            flex-shrink: 0;
-            z-index: 10;
-        }
-        .chat-input {
-            flex-grow: 1;
-            padding: 14px 20px;
-            border-radius: 24px;
-            outline: none;
-            font-size: 16px;
-            background: white;
-            overflow-y: auto;
-            max-height: 100px;
-            line-height: 20px;
-            word-wrap: break-word;
-            white-space: pre-wrap;
-        }
-        .chat-input:empty:before {
-            content: attr(data-placeholder);
-            color: #999;
-            pointer-events: none;
-        }
-        .send-btn {
-            background: #00a884;
-            color: white;
-            border: none;
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
+        .tingkat-tab-btn {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 7px 18px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 700;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.03);
+            font-family: inherit;
         }
-        .send-btn:hover {
-            background: #008f6f;
+        .tingkat-tab-btn:hover {
+            background: #f0f6ff;
+            border-color: #0066ff;
+            color: #0066ff;
         }
-        .send-btn:disabled {
-            background: #cccccc;
-            cursor: not-allowed;
+        .tingkat-tab-btn.active {
+            background: #0066ff;
+            border-color: #0066ff;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 102, 255, 0.25);
         }
-        /* Typing Indicator */
-        .typing {
-            display: none;
-            align-items: center;
-            gap: 4px;
-            padding: 12px 16px;
-            background: white;
-            border-radius: 12px;
-            align-self: flex-start;
-            margin-bottom: 12px;
-        }
-        .typing.active {
+
+        .subclass-tabs-container {
             display: flex;
+            align-items: center;
+            gap: 8px;
+            overflow-x: auto;
+            padding: 4px 0;
+            scrollbar-width: none;
         }
-        .typing span {
-            width: 6px;
-            height: 6px;
-            background: #888;
-            border-radius: 50%;
-            animation: bounce 1.4s infinite ease-in-out both;
+        .subclass-tabs-container::-webkit-scrollbar { display: none; }
+        .subclass-tab-chip {
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            color: var(--text-muted);
+            padding: 5px 14px;
+            border-radius: 14px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            transition: all 0.2s ease;
+            font-family: inherit;
         }
-        .typing span:nth-child(1) { animation-delay: -0.32s; }
-        .typing span:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes bounce {
-            0%, 80%, 100% { transform: scale(0); }
-            40% { transform: scale(1); }
+        .subclass-tab-chip:hover {
+            background: #eff6ff;
+            border-color: #3b82f6;
+            color: #1d4ed8;
+        }
+        .subclass-tab-chip.active {
+            background: #1e40af;
+            border-color: #1e40af;
+            color: #ffffff;
+            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
         }
     </style>
 </head>
-<body>
-
-    <div class="chat-container">
-        <!-- Header -->
-        <div class="chat-header">
-            <div class="mentor-avatar" id="avatar-initial">A</div>
-            <div class="mentor-info">
-                <span class="mentor-name" id="display-name">Memuat...</span>
-                <span class="mentor-status">Asisten Presensi AI - Online</span>
+<body class="require-landscape">
+    <!-- Password Overlay -->
+    <div id="password-overlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 255, 255, 0.95); z-index: 9999; display: flex; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(10px);">
+        <div style="background: white; padding: 40px; border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.1); text-align: center; max-width: 400px; width: 90%; border: 1px solid var(--border-color);">
+            <div style="width: 64px; height: 64px; background: var(--primary-light); color: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 24px; margin: 0 auto 24px;">
+                <i class="fas fa-lock"></i>
             </div>
-            <a href="#" id="logout-btn" class="logout-btn" title="Keluar"><i class="fas fa-sign-out-alt"></i></a>
-        </div>
-
-        <!-- Chat Area -->
-        <div class="chat-body" id="chat-box">
-            <div class="message msg-ai">
-                Halo Kak <strong id="welcome-name">Mentor</strong>! 👋<br>
-                Saya adalah Kak Ukhti, Asisten Presensi Sky Circle.<br><br>
-                Silakan ketik laporan kehadiran hari ini. (Contoh: "P1. Bima, Farid hadir").
-                <span class="msg-time" id="welcome-time">10:00</span>
-            </div>
-            
-            <div class="typing" id="typing-indicator">
-                <span></span><span></span><span></span>
-            </div>
-        </div>
-
-        <!-- Input Area -->
-        <div class="chat-footer">
-            <div id="chat-input" class="chat-input" contenteditable="true" data-placeholder="Ketik pesan laporan presensi..." spellcheck="false"></div>
-            <button id="send-btn" class="send-btn"><i class="fas fa-paper-plane"></i></button>
+            <h2 style="margin-bottom: 8px; font-size: 24px; color: var(--text-main);">Area Terbatas</h2>
+            <p style="color: var(--text-muted); margin-bottom: 24px; font-size: 14px;">Masukkan kata sandi untuk mengakses Mentor Dashboard.</p>
+            <input type="password" id="mentor-password-input" placeholder="Kata Sandi" style="width: 100%; padding: 12px 20px; border: 2px solid var(--border-color); border-radius: 12px; outline: none; margin-bottom: 16px; font-size: 15px; text-align: center; transition: border-color 0.3s;" onfocus="this.style.borderColor='var(--primary)'" onblur="this.style.borderColor='var(--border-color)'">
+            <p id="password-error" style="color: var(--danger); font-size: 12px; margin-bottom: 16px; display: none;">Kata sandi salah!</p>
+            <button onclick="checkPassword()" class="btn btn-primary" style="width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600;">Buka Kunci</button>
+            <button onclick="window.location.href='../index.html'" class="btn" style="width: 100%; padding: 12px; border-radius: 12px; font-size: 15px; font-weight: 600; margin-top: 12px; background: transparent; color: var(--text-muted); border: 1px solid var(--border-color);">Kembali ke Beranda</button>
         </div>
     </div>
 
-    <!-- Script Logic -->
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <script src="../js/mentor-chat.js?v=2"></script>
+    <div class="app-container">
+    <main class="main-content full-width">
+        <!-- Header & Top Filter Controls (2-Tier Navigation) -->
+        <div style="margin-bottom: 20px; margin-top: 20px;">
+            <!-- Title & Gender Filter Bar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; flex-wrap: wrap; gap: 16px;">
+                <div>
+                    <h1 class="dashboard-header-text" style="font-size: 26px; margin: 0;">Dashboard Mentor</h1>
+                </div>
+
+                <!-- Gender Checkboxes -->
+                <div style="display: flex; align-items: center; gap: 14px; background: #ffffff; padding: 6px 16px; border-radius: 20px; border: 1px solid var(--border-color); font-size: 13px; font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.04);">
+                    <span style="color: var(--text-muted); font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px;">Filter Gender:</span>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #1d4ed8;">
+                        <input type="checkbox" id="cb-gender-l" checked onchange="renderSchoolTable()" style="cursor: pointer; width: 16px; height: 16px; accent-color: #0066ff;">
+                        <i class="fas fa-mars"></i> Boys
+                    </label>
+                    <label style="display: flex; align-items: center; gap: 6px; cursor: pointer; color: #be185d;">
+                        <input type="checkbox" id="cb-gender-p" checked onchange="renderSchoolTable()" style="cursor: pointer; width: 16px; height: 16px; accent-color: #ec4899;">
+                        <i class="fas fa-venus"></i> Girls
+                    </label>
+                </div>
+            </div>
+
+            <!-- Tier 1 Tabs: Semua, Kelas X, Kelas XI, Kelas XII -->
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; align-items: center;">
+                <span style="font-size: 12px; font-weight: 600; color: var(--text-muted); margin-right: 4px; text-transform: uppercase; letter-spacing: 0.5px;">Tingkat:</span>
+                <button class="tingkat-tab-btn active" id="tingkat-tab-Semua" onclick="switchTingkatTab('Semua')">Semua</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-X" onclick="switchTingkatTab('X')">Kelas X</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-XI" onclick="switchTingkatTab('XI')">Kelas XI</button>
+                <button class="tingkat-tab-btn" id="tingkat-tab-XII" onclick="switchTingkatTab('XII')">Kelas XII</button>
+            </div>
+
+            <!-- Tier 2 Tabs: Sub-Kelas Chips (Hidden on 'Semua') -->
+            <div class="subclass-tabs-container" id="subclass-chips-container" style="display: none;">
+                <!-- Injected dynamically by renderSubClassChips() -->
+            </div>
+        </div>
+
+        <!-- Row 1: 4 Stat Cards in a Horizontal Grid -->
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 16px; margin-bottom: 24px;">
+            <!-- Card 1: Kehadiran Rata-rata -->
+            <div class="card" style="background: linear-gradient(135deg, #0066ff 0%, #0052cc 100%); color: white; padding: 18px 20px; border-radius: 16px; box-shadow: 0 8px 16px rgba(0,102,255,0.15);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; font-weight: 500; opacity: 0.9;">Kehadiran Rata-rata</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid rgba(255,255,255,0.3); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-arrow-up" style="font-size: 10px; transform: rotate(45deg);"></i>
+                    </div>
+                </div>
+                <div id="stat-avg" style="font-size: 28px; font-weight: 700; margin-bottom: 8px; line-height: 1;">0%</div>
+                <div style="font-size: 11px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 6px;">
+                    <span style="background: rgba(255,255,255,0.2); padding: 2px 6px; border-radius: 4px; font-weight: 600;">Update <i class="fas fa-sync" style="font-size: 9px;"></i></span> Data terkini
+                </div>
+            </div>
+
+            <!-- Card 2: Total Mentor -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Total Mentor</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-users" style="font-size: 10px; color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                <div id="stat-total" style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--text-muted);">
+                    Mentor terdaftar di kelas ini
+                </div>
+            </div>
+
+            <!-- Card 3: Kelompok Aktif -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Kelompok Aktif</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-layer-group" style="font-size: 10px; color: var(--text-muted);"></i>
+                    </div>
+                </div>
+                <div id="stat-groups" style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--text-muted);">
+                    Grup Mentoring
+                </div>
+            </div>
+
+            <!-- Card 4: Laporan Tertunda -->
+            <div class="card" style="padding: 18px 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02);">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
+                    <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                        <i class="fas fa-check-circle" style="font-size: 10px; color: var(--success);"></i>
+                    </div>
+                </div>
+                <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div style="font-size: 11px; color: var(--success); font-weight: 500;">
+                    Semua update
+                </div>
+            </div>
+        </div>
+
+        <!-- Row 2: Main Chart Card -->
+        <div class="card" style="padding: 20px; border-radius: 16px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); margin-bottom: 24px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">Tren Pelaporan Mentor</span>
+                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 12 Pertemuan</span>
+                </div>
+                <div style="font-size: 13px; color: var(--text-muted);">
+                    <strong id="stat-active" style="font-size: 16px; color: var(--text-main);">0</strong> Mentor Aktif Semester Ini
+                </div>
+            </div>
+            <div style="height: 240px; position: relative;">
+                <canvas id="schoolAttendanceChart"></canvas>
+            </div>
+        </div>
+
+        <!-- Data Table Section -->
+        <div class="card" style="padding: 24px; border-radius: 20px; border: 1px solid var(--border-color); box-shadow: 0 2px 4px rgba(0,0,0,0.02); overflow-x: auto; margin-bottom: 32px;">
+            <div class="section-title" style="margin-bottom: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">Detail Pelaporan Mentor</span>
+            </div>
+            <!-- Table Toolbar -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; gap: 16px; flex-wrap: wrap;">
+                
+                <!-- Left: Show Entries -->
+                <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: var(--text-muted);">
+                    Tampilkan 
+                    <select id="row-limit" onchange="renderSchoolTable()" style="padding: 6px 12px; border: 1px solid var(--border-color); border-radius: 8px; outline: none; background: #fff; cursor: pointer;">
+                        <option>10</option>
+                        <option>25</option>
+                        <option selected>50</option>
+                        <option>100</option>
+                    </select>
+                    baris
+                </div>
+
+                <!-- Right: Search Bar -->
+                <div style="position: relative;">
+                    <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 12px;"></i>
+                    <input id="search-input" onkeyup="renderSchoolTable()" type="text" placeholder="Cari mentor..." style="padding: 8px 16px 8px 36px; border: 1px solid var(--border-color); border-radius: 20px; outline: none; font-size: 13px; width: 220px;">
+                </div>
+            </div>
+            
+            <table style="min-width: 1200px;">
+                <thead>
+                    <tr>
+                        <th style="width: 4%;">No</th>
+                        <th onclick="toggleSort('mentor')" style="cursor: pointer; user-select: none;">Nama Mentor <i id="sort-icon-mentor" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('kelompok')" style="cursor: pointer; user-select: none;">Kelompok <i id="sort-icon-kelompok" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th>P1</th>
+                        <th>P2</th>
+                        <th>P3</th>
+                        <th>P4</th>
+                        <th>P5</th>
+                        <th>P6</th>
+                        <th>P7</th>
+                        <th>P8</th>
+                        <th>P9</th>
+                        <th>P10</th>
+                        <th>P11</th>
+                        <th>P12</th>
+                        <th onclick="toggleSort('total')" style="cursor: pointer; user-select: none; text-align: center;">Total Laporan <i id="sort-icon-total" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th style="text-align: center;">Aksi WA</th>
+                    </tr>
+                </thead>
+                <tbody id="mentor-table-body">
+                    <tr><td colspan="17" style="text-align: center; padding: 40px;">Memuat data mentor dari database...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <footer style="margin-top: 60px; padding: 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px;">
+            &copy; 2026 Sky Circle Mentoring System. Managed by Admin Sky Circle.
+        </footer>
+    </main>
+    </div>
+
+    <script src="../js/app.js"></script>
+    <script>
+        const APPS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec";
+        let allMentors = [];
+        let currentTingkat = 'Semua'; // 'Semua', 'X', 'XI', 'XII'
+        let currentSubClass = 'Semua'; // 'Semua', 'X-1', 'X-2', dll
+        let currentSortField = null;
+        let currentSortDir = null;
+
+        async function fetchMentorData() {
+            try {
+                const response = await fetch(APPS_SCRIPT_URL, {
+                    method: "POST",
+                    body: JSON.stringify({ action: "get_admin_data" })
+                });
+                const data = await response.json();
+                if(data.status === "success") {
+                    allMentors = data.mentors;
+                    switchTingkatTab('Semua');
+                } else {
+                    document.getElementById('mentor-table-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
+                }
+            } catch (e) {
+                document.getElementById('mentor-table-body').innerHTML = `<tr><td colspan="6" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
+            }
+        }
+
+        function switchTingkatTab(tingkat) {
+            currentTingkat = tingkat;
+            currentSubClass = 'Semua';
+            
+            document.querySelectorAll('.tingkat-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtn = document.getElementById('tingkat-tab-' + tingkat);
+            if (activeBtn) activeBtn.classList.add('active');
+            
+            renderSubClassChips();
+            renderSchoolTable();
+        }
+
+        function switchSubClassTab(sc) {
+            currentSubClass = sc;
+            
+            document.querySelectorAll('.subclass-tab-chip').forEach(btn => btn.classList.remove('active'));
+            const activeSubBtn = document.getElementById('subclass-tab-' + String(sc).replace(/\s+/g, '-'));
+            if (activeSubBtn) activeSubBtn.classList.add('active');
+            
+            renderSchoolTable();
+        }
+
+        function renderSubClassChips() {
+            const container = document.getElementById('subclass-chips-container');
+            container.innerHTML = '';
+            
+            if (currentTingkat === 'Semua') {
+                container.style.display = 'none';
+                return;
+            }
+            
+            container.style.display = 'flex';
+            let subClasses = ['Semua'];
+            
+            if (currentTingkat === 'X') {
+                subClasses = ['Semua', 'X-1', 'X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8', 'X-9', 'X-10', 'X-11', 'X-12'];
+            } else {
+                let uniqueClasses = new Set();
+                allMentors.forEach(m => {
+                    let k = String(m.kelas || '').toUpperCase().trim();
+                    let matches = false;
+                    if (currentTingkat === 'XII') matches = k.startsWith('XII');
+                    else if (currentTingkat === 'XI') matches = k.startsWith('XI') && !k.startsWith('XII');
+                    if (matches && m.kelas) uniqueClasses.add(m.kelas);
+                });
+                
+                Array.from(uniqueClasses).sort((a, b) => {
+                    let numA = parseInt(String(a).replace(/\D/g, '')) || 0;
+                    let numB = parseInt(String(b).replace(/\D/g, '')) || 0;
+                    return numA - numB;
+                }).forEach(cls => subClasses.push(cls));
+            }
+            
+            subClasses.forEach(sc => {
+                const btn = document.createElement('button');
+                const chipId = 'subclass-tab-' + String(sc).replace(/\s+/g, '-');
+                btn.id = chipId;
+                btn.className = 'subclass-tab-chip' + (sc === currentSubClass ? ' active' : '');
+                btn.innerText = sc;
+                btn.onclick = () => switchSubClassTab(sc);
+                container.appendChild(btn);
+            });
+        }
+
+        function toggleSort(field) {
+            if (currentSortField === field) {
+                if (currentSortDir === 'desc') {
+                    currentSortDir = 'asc';
+                } else if (currentSortDir === 'asc') {
+                    currentSortField = null;
+                    currentSortDir = null;
+                } else {
+                    currentSortDir = 'desc';
+                }
+            } else {
+                currentSortField = field;
+                currentSortDir = 'desc';
+            }
+            renderSchoolTable();
+        }
+
+        function updateSortIcons() {
+            ['mentor', 'kelompok', 'total'].forEach(f => {
+                const icon = document.getElementById('sort-icon-' + f);
+                if (icon) {
+                    if (currentSortField === f) {
+                        icon.className = currentSortDir === 'desc' ? 'fas fa-sort-down' : 'fas fa-sort-up';
+                        icon.style.color = '#0066ff';
+                    } else {
+                        icon.className = 'fas fa-sort';
+                        icon.style.color = '#ccc';
+                    }
+                }
+            });
+        }
+
+        let mentorChart;
+
+        function formatPhoneForWA(phone) {
+            if(!phone) return "";
+            let cleaned = String(phone).replace(/\D/g, '');
+            if(cleaned.startsWith('0')) {
+                cleaned = '62' + cleaned.substring(1);
+            }
+            return cleaned;
+        }
+        
+        function renderSchoolTable() {
+            const tbody = document.getElementById('mentor-table-body');
+            tbody.innerHTML = '';
+            
+            const searchQuery = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+            const cbLaki = document.getElementById('cb-gender-l');
+            const cbPerempuan = document.getElementById('cb-gender-p');
+            const isLakiChecked = cbLaki ? cbLaki.checked : true;
+            const isPerempuanChecked = cbPerempuan ? cbPerempuan.checked : true;
+            
+            const filtered = allMentors.filter(m => {
+                let k = String(m.kelas || '').toUpperCase().trim();
+
+                // 1. Filter Tier 1 (Tingkat Kelas)
+                if (currentTingkat !== 'Semua') {
+                    let matchesTingkat = false;
+                    if (currentTingkat === 'XII') matchesTingkat = k.startsWith('XII');
+                    else if (currentTingkat === 'XI') matchesTingkat = k.startsWith('XI') && !k.startsWith('XII');
+                    else if (currentTingkat === 'X') matchesTingkat = k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+
+                    if (!matchesTingkat) return false;
+                }
+
+                // 2. Filter Tier 2 (Sub-Kelas)
+                if (currentSubClass !== 'Semua') {
+                    let targetK = String(currentSubClass).toUpperCase().trim();
+                    let kNorm = k.replace(/[\s-]/g, '');
+                    let targetNorm = targetK.replace(/[\s-]/g, '');
+                    if (kNorm !== targetNorm) return false;
+                }
+                
+                // 3. Filter Gender Checkbox (Boys / Girls)
+                let mentorGrp = String(m.kelompok || '').toUpperCase();
+                let isBoys = mentorGrp.startsWith('BC');
+                let isGirls = mentorGrp.startsWith('GC');
+
+                if (!isLakiChecked && isBoys) return false;
+                if (!isPerempuanChecked && isGirls) return false;
+                if (!isLakiChecked && !isPerempuanChecked) return false;
+                
+                // 4. Search query
+                if (searchQuery && !String(m.mentor).toLowerCase().includes(searchQuery)) return false;
+                
+                return true;
+            });
+            
+            // Hitung total laporan terisi per mentor untuk sorting & display
+            filtered.forEach(m => {
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                m._filledCount = pList.filter(Boolean).length;
+            });
+
+            // Sorting logic
+            if (currentSortField) {
+                filtered.sort((a, b) => {
+                    let valA, valB;
+                    if (currentSortField === 'mentor') {
+                        valA = String(a.mentor || '');
+                        valB = String(b.mentor || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
+                    } else if (currentSortField === 'kelompok') {
+                        valA = String(a.kelompok || '');
+                        valB = String(b.kelompok || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
+                    } else if (currentSortField === 'total') {
+                        valA = a._filledCount;
+                        valB = b._filledCount;
+                        return currentSortDir === 'desc' ? valB - valA : valA - valB;
+                    }
+                    return 0;
+                });
+            } else {
+                // Default natural sort by kelompok
+                filtered.sort((a, b) => {
+                    let grpA = String(a.kelompok || '');
+                    let grpB = String(b.kelompok || '');
+                    return grpA.localeCompare(grpB, undefined, {numeric: true});
+                });
+            }
+
+            updateSortIcons();
+            
+            // --- Update Statistik Dinamis ---
+            document.getElementById('stat-total').innerText = filtered.length;
+            
+            let uniqueGroups = new Set();
+            let chartDataFilled = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            
+            filtered.forEach(m => {
+                if(m.kelompok) uniqueGroups.add(m.kelompok);
+                if(m.p1_filled) chartDataFilled[0]++;
+                if(m.p2_filled) chartDataFilled[1]++;
+                if(m.p3_filled) chartDataFilled[2]++;
+                if(m.p4_filled) chartDataFilled[3]++;
+                if(m.p5_filled) chartDataFilled[4]++;
+                if(m.p6_filled) chartDataFilled[5]++;
+                if(m.p7_filled) chartDataFilled[6]++;
+                if(m.p8_filled) chartDataFilled[7]++;
+                if(m.p9_filled) chartDataFilled[8]++;
+                if(m.p10_filled) chartDataFilled[9]++;
+                if(m.p11_filled) chartDataFilled[10]++;
+                if(m.p12_filled) chartDataFilled[11]++;
+            });
+            
+            document.getElementById('stat-groups').innerText = uniqueGroups.size;
+            document.getElementById('stat-active').innerText = filtered.length;
+            
+            // Ubah data jumlah hadir menjadi persentase
+            let chartDataPersentase = chartDataFilled.map(count => {
+                return filtered.length > 0 ? Math.round((count / filtered.length) * 100) : 0;
+            });
+
+            // --- Update Chart Dinamis ---
+            updateChart(chartDataPersentase);
+
+            if(filtered.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding: 30px;">Belum ada data mentor untuk kelas ini.</td></tr>`;
+                return;
+            }
+
+            const limit = parseInt(document.getElementById('row-limit').value) || 50;
+            let counter = 1;
+            filtered.slice(0, limit).forEach(m => {
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                
+                let pCells = pList.map(filled => {
+                    if (filled) {
+                        return `<td style="text-align: center; color: var(--success); font-size: 13px;"><i class="fas fa-check-circle"></i></td>`;
+                    } else {
+                        return `<td style="text-align: center; color: #ccc;">-</td>`;
+                    }
+                }).join('');
+
+                let firstMissingIndex = pList.findIndex(f => !f);
+                let actionHtml = '-';
+                if (firstMissingIndex !== -1 && m.noHp) {
+                    let missingP = firstMissingIndex + 1;
+                    let waNumber = formatPhoneForWA(m.noHp);
+                    let message = encodeURIComponent(`Halo Kak ${m.mentor}, mohon segera input presensi untuk Pertemuan ${missingP} ya! Terima kasih.`);
+                    let waLink = `https://wa.me/${waNumber}?text=${message}`;
+                    actionHtml = `<a href="${waLink}" target="_blank" class="btn btn-primary" style="padding: 4px 10px; font-size: 11px; border-radius: 12px; display: inline-flex; align-items:center; gap:4px; background: #00a884; border-color: #00a884;"><i class="fab fa-whatsapp"></i> Remind P.${missingP}</a>`;
+                } else if (firstMissingIndex === -1) {
+                    actionHtml = `<span style="font-size: 11px; color: var(--success); font-weight: 600;"><i class="fas fa-check"></i> Lengkap</span>`;
+                } else {
+                    actionHtml = `<span style="font-size: 11px; color: var(--text-muted);">No HP tak ada</span>`;
+                }
+
+                let percent = Math.round((m._filledCount / 12) * 100);
+                let pillClass = percent >= 75 ? 'status-pill status-done' : 'status-pill';
+                let pillStyle = percent >= 75 ? '' : (percent > 0 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;');
+
+                let tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td style="color: var(--text-muted);">${counter++}</td>
+                    <td style="font-weight: 600; color: var(--text-main);">${m.mentor}</td>
+                    <td>${m.kelompok}</td>
+                    ${pCells}
+                    <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${m._filledCount}/12</span></td>
+                    <td style="text-align: center;">${actionHtml}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function updateChart(dataHadir) {
+            const ctx = document.getElementById('schoolAttendanceChart').getContext('2d');
+            if (mentorChart) {
+                mentorChart.data.datasets[0].data = dataHadir;
+                mentorChart.update();
+            } else {
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                mentorChart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: labels,
+                        datasets: [{
+                            label: 'Mentor yang Melapor (%)',
+                            data: dataHadir,
+                            borderColor: '#00a884',
+                            backgroundColor: 'rgba(0, 168, 132, 0.1)',
+                            borderWidth: 3,
+                            pointBackgroundColor: '#fff',
+                            pointBorderColor: '#00a884',
+                            pointBorderWidth: 2,
+                            pointRadius: 5,
+                            fill: true,
+                            tension: 0.4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { legend: { display: false } },
+                        scales: {
+                            y: { 
+                                beginAtZero: true, 
+                                max: 100,
+                                grid: { color: '#f0f0f0' }, 
+                                border: { display: false },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: { grid: { display: false }, border: { display: false } }
+                        }
+                    }
+                });
+            }
+        }
+
+        // Init Fetch
+        document.addEventListener('DOMContentLoaded', function() {
+            // Close group dropdown when clicking outside
+            document.addEventListener('click', function(event) {
+                const menu = document.getElementById('group-dropdown-menu');
+                if (menu && menu.style.display === 'block' && !event.target.closest('#group-dropdown-menu') && !event.target.closest('button[onclick*="group-dropdown-menu"]')) {
+                    menu.style.display = 'none';
+                }
+            });
+        });
+        
+        // Password Logic
+        document.body.style.overflow = 'hidden'; // Lock scroll initially
+        
+        function checkPassword() {
+            const pwd = document.getElementById('mentor-password-input').value;
+            if (pwd === 'luruskanniat') {
+                document.getElementById('password-overlay').style.display = 'none';
+                document.body.style.overflow = ''; // Unlock scroll
+            } else {
+                document.getElementById('password-error').style.display = 'block';
+                document.getElementById('mentor-password-input').style.borderColor = 'var(--danger)';
+            }
+        }
+        
+        document.getElementById('mentor-password-input').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') checkPassword();
+        });
+        
+        fetchMentorData();
+    </script>
 </body>
 </html>

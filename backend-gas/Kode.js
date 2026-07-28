@@ -17,12 +17,20 @@ function doPost(e) {
       return handleGetHistory(payload);
     }
     
-    // NEW ACTIONS UNTUK SISTEM PRESENSI BARU
     if (payload.action === "check_mentor") {
       return handleCheckMentor(payload);
     }
     if (payload.action === "register_mentor") {
       return handleRegisterMentor(payload);
+    }
+    if (payload.action === "get_mentee") {
+      return handleGetMentee(payload);
+    }
+    if (payload.action === "get_profiles") {
+      return handleGetProfiles(payload);
+    }
+    if (payload.action === "get_image") {
+      return handleGetImage(payload);
     }
     if (payload.action === "get_students") {
       return handleGetStudents(payload);
@@ -35,6 +43,14 @@ function doPost(e) {
     }
     if (payload.action === "get_admin_data") {
       return handleGetAdminData(payload);
+    }
+    
+    // ACTION: FITUR PROFIL MENTEE
+    if (payload.action === "submit_profile") {
+      return handleSubmitProfile(payload);
+    }
+    if (payload.action === "get_profiles") {
+      return handleGetProfiles(payload);
     }
     
     // ACTION: AUTO-FIX SPREADSHEET (Triggered by AI)
@@ -714,15 +730,16 @@ function handleSubmitPresensi(payload) {
   if (!logSheet) {
       logSheet = ss.insertSheet(logSheetName);
       // Buat Header untuk sheet baru
-      logSheet.appendRow(["Waktu Input", "Tanggal Mentoring", "Nama Mentor", "Pertemuan Ke", "Jumlah Hadir", "Daftar Siswa Hadir"]);
-      logSheet.getRange("A1:F1").setFontWeight("bold").setBackground("#d9ead3");
+      logSheet.appendRow(["Waktu Input", "Tanggal Mentoring", "Nama Mentor", "Email Mentor", "Pertemuan Ke", "Jumlah Hadir", "Daftar Siswa Hadir"]);
+      logSheet.getRange("A1:G1").setFontWeight("bold").setBackground("#d9ead3");
   }
 
   // Tambahkan baris log baru
   var timeStamp = new Date();
   var mentorName = payload.mentorName || "Unknown";
+  var mentorEmail = payload.mentorEmail || "Tanpa Email";
   var daftarHadirStr = hadirNames.join(", ");
-  logSheet.appendRow([timeStamp, tanggal, mentorName, "Pertemuan " + pertemuanNum, updatedCount, daftarHadirStr]);
+  logSheet.appendRow([timeStamp, tanggal, mentorName, mentorEmail, "Pertemuan " + pertemuanNum, updatedCount, daftarHadirStr]);
   // ------------------------------
   
   return ContentService.createTextOutput(JSON.stringify({
@@ -970,8 +987,8 @@ function generateGroupsForKelasX() {
   
   // Proses penamaan kelompok
   for (var kelasAsli in studentsByClass) {
-    // Normalisasi nama kelas (contoh: "X 1" -> "X-1") agar rapi di grup
-    var kelasFormat = kelasAsli.replace(/\s+/g, '-');
+    // Normalisasi nama kelas (contoh: "X - 1" -> "X-1") agar rapi di grup dan tidak ada double strip
+    var kelasFormat = kelasAsli.replace(/[\s-]+/g, '-');
     
     var boys = studentsByClass[kelasAsli].L;
     for (var j = 0; j < boys.length; j++) {
@@ -981,14 +998,9 @@ function generateGroupsForKelasX() {
     }
     
     var girls = studentsByClass[kelasAsli].P;
-    var midPoint = Math.ceil(girls.length / 2);
     for (var j = 0; j < girls.length; j++) {
       var rIdx = girls[j].rowIndex;
-      if (j < midPoint) {
-        data[rIdx][kelompokColIdx] = "GC1 " + kelasFormat + " 34";
-      } else {
-        data[rIdx][kelompokColIdx] = "GC2 " + kelasFormat + " 34";
-      }
+      data[rIdx][kelompokColIdx] = "GC " + kelasFormat + " 34";
       updates++;
     }
   }
@@ -1004,5 +1016,228 @@ function generateGroupsForKelasX() {
     Logger.log("Berhasil membuat kelompok untuk " + updates + " siswa Kelas X.");
   } else {
     Logger.log("Tidak ada siswa Kelas X yang diproses (cek apakah kolom kelas berawalan 'X').");
+  }
+}
+
+// ==========================================
+// FITUR BUKU SAKU (PROFIL MENTEE)
+// ==========================================
+
+function handleSubmitProfile(payload) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Profil Mentee");
+  
+  if (!sheet) {
+    sheet = ss.insertSheet("Profil Mentee");
+    sheet.appendRow([
+      "Timestamp", "Nama", "Kelas", "Alamat", "Ortu & No HP", "Hobi", 
+      "Aktivitas Harian", "Paling Tidak Disukai", "Karakter", "Liburan", 
+      "Tertarik Mempelajari", "Instagram", "Foto URL"
+    ]);
+    sheet.getRange("A1:M1").setFontWeight("bold").setBackground("#d9ead3");
+  }
+  
+  var nama = payload.nama || "";
+  var kelas = payload.kelas || "";
+  var alamat = payload.alamat || "";
+  var ortu = payload.ortu || "";
+  var hobi = payload.hobi || "";
+  var aktivitas = payload.aktivitas || "";
+  var tidakDisukai = payload.tidakDisukai || "";
+  var karakter = payload.karakter || "";
+  var liburan = payload.liburan || "";
+  var mempelajari = payload.mempelajari || "";
+  var instagram = payload.instagram || "";
+  
+  var fotoBase64 = payload.fotoBase64 || "";
+  var fotoUrl = "";
+  
+  try {
+    if (fotoBase64) {
+      // Decode Base64
+      var splitBase = fotoBase64.split(',');
+      var typeStr = splitBase[0]; // data:image/jpeg;base64
+      var ext = typeStr.indexOf("png") !== -1 ? ".png" : ".jpg";
+      var mimeType = ext === ".png" ? MimeType.PNG : MimeType.JPEG;
+      
+      var decodedData = Utilities.base64Decode(splitBase[1]);
+      var blob = Utilities.newBlob(decodedData, mimeType, nama + ext);
+      
+      // Get or create Folder "Foto Profil Mentee"
+      var folders = DriveApp.getFoldersByName("Foto Profil Mentee");
+      var folder;
+      if (folders.hasNext()) {
+        folder = folders.next();
+      } else {
+        folder = DriveApp.createFolder("Foto Profil Mentee");
+        folder.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+      }
+      
+      // Save file
+      var file = folder.createFile(blob);
+      fotoUrl = file.getUrl();
+    }
+  } catch (e) {
+    // Foto error, abaikan
+    fotoUrl = "Error: " + e.toString();
+  }
+  
+  // Update or insert
+  var data = sheet.getDataRange().getValues();
+  var updated = false;
+  var rowData = [
+    new Date(), nama, kelas, alamat, ortu, hobi, aktivitas, 
+    tidakDisukai, karakter, liburan, mempelajari, instagram, fotoUrl
+  ];
+
+  for (var i = 1; i < data.length; i++) {
+    if (String(data[i][1]).trim().toLowerCase() === nama.trim().toLowerCase()) {
+      sheet.getRange(i + 1, 1, 1, rowData.length).setValues([rowData]);
+      updated = true;
+      break;
+    }
+  }
+  
+  if (!updated) {
+    sheet.appendRow(rowData);
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    "status": "success",
+    "message": "Profil berhasil disimpan!",
+    "fotoUrl": fotoUrl
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleGetProfiles(payload) {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName("Profile"); // Disesuaikan dengan nama sheet Google Form
+  if (!sheet) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "profiles": []
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  if (data.length < 2) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "profiles": []
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+
+  var headers = data[0].map(function(h) { return String(h || "").trim(); });
+  var tz = ss.getSpreadsheetTimeZone() || "Asia/Jakarta";
+
+  function getVal(row, keywords) {
+    for (var i = 0; i < headers.length; i++) {
+      var h = headers[i].toLowerCase();
+      for (var k = 0; k < keywords.length; k++) {
+        if (h.indexOf(keywords[k].toLowerCase()) !== -1) {
+          var val = row[i];
+          if (val instanceof Date) {
+            return Utilities.formatDate(val, tz, "dd MMMM yyyy");
+          }
+          return String(val || "").trim();
+        }
+      }
+    }
+    return "";
+  }
+
+  function getFotoUrl(row) {
+    for (var i = 0; i < headers.length; i++) {
+      var cellVal = String(row[i] || "").trim();
+      if (cellVal.indexOf("drive.google.com") !== -1 || cellVal.indexOf("open?id=") !== -1 || cellVal.indexOf("/file/d/") !== -1) {
+        var matchFileD = cellVal.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);
+        var matchId = cellVal.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+        var fileId = matchFileD ? matchFileD[1] : (matchId ? matchId[1] : "");
+        if (fileId) {
+          return "https://drive.google.com/uc?export=view&id=" + fileId;
+        }
+      }
+    }
+    return "";
+  }
+
+  var profiles = [];
+  
+  for (var r = 1; r < data.length; r++) {
+    var row = data[r];
+    
+    var nama = getVal(row, ["Nama"]);
+    var kelas = getVal(row, ["Kelas", "Kelompok", "Grup"]);
+    var alamat = getVal(row, ["Alamat"]);
+    var ortu = getVal(row, ["Orang Tua", "Ortu", "No. HP", "HP", "Telepon"]);
+    var hobi = getVal(row, ["Hobi"]);
+    var aktivitas = getVal(row, ["Aktivitas", "Kegiatan"]);
+    var tidakDisukai = getVal(row, ["Tidak Disukai", "Benci"]);
+    var karakter = getVal(row, ["Karakter", "Sifat"]);
+    var liburan = getVal(row, ["Liburan"]);
+    var mempelajari = getVal(row, ["Mempelajari", "Ingin Mempelajari"]);
+    var instagram = getVal(row, ["Instagram", "IG"]);
+    var tanggalLahir = getVal(row, ["Tanggal Lahir", "TGL Lahir", "Lahir"]);
+    var fotoUrl = getFotoUrl(row);
+
+    var extraFields = [];
+    for (var c = 0; c < headers.length; c++) {
+      var hName = headers[c];
+      var val = row[c];
+      var valStr = String(val || "").trim();
+      
+      if (!hName || hName.toLowerCase() === "timestamp" || valStr.indexOf("drive.google.com") !== -1) continue;
+      
+      if (val instanceof Date) {
+        valStr = Utilities.formatDate(val, tz, "dd MMMM yyyy");
+      }
+      
+      if (valStr) {
+        extraFields.push({ label: hName, value: valStr });
+      }
+    }
+
+    profiles.push({
+      nama: nama || (row[1] ? String(row[1]) : ""),
+      kelas: kelas || (row[2] ? String(row[2]) : ""),
+      alamat: alamat || (row[3] ? String(row[3]) : ""),
+      ortu: ortu || (row[4] ? String(row[4]) : ""),
+      hobi: hobi || (row[5] ? String(row[5]) : ""),
+      aktivitas: aktivitas || (row[6] ? String(row[6]) : ""),
+      tidakDisukai: tidakDisukai || (row[7] ? String(row[7]) : ""),
+      karakter: karakter || (row[8] ? String(row[8]) : ""),
+      liburan: liburan || (row[9] ? String(row[9]) : ""),
+      mempelajari: mempelajari || (row[10] ? String(row[10]) : ""),
+      instagram: instagram || (row[11] ? String(row[11]) : ""),
+      tanggalLahir: tanggalLahir,
+      fotoUrl: fotoUrl || (row[12] ? String(row[12]) : ""),
+      extraFields: extraFields
+    });
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    "status": "success",
+    "profiles": profiles
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+function handleGetImage(payload) {
+  var fileId = payload.fileId;
+  if (!fileId) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": "fileId is required"})).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  try {
+    var file = DriveApp.getFileById(fileId);
+    var blob = file.getBlob();
+    var base64 = Utilities.base64Encode(blob.getBytes());
+    var mime = blob.getContentType() || "image/jpeg";
+    var dataUri = "data:" + mime + ";base64," + base64;
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "dataUri": dataUri
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (e) {
+    return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": e.message})).setMimeType(ContentService.MimeType.JSON);
   }
 }

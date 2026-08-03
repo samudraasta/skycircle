@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
     <style>
         .dashboard-header-text {
             font-size: 32px;
@@ -153,6 +154,9 @@
                     </a>
                     <a href="../mentor/buku-saku.html" title="Materi & Buku Saku" style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" onmouseover="this.style.color='var(--primary)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-color)'">
                         <i class="fas fa-book-open"></i>
+                    </a>
+                    <a href="#" onclick="exportToExcel(); return false;" title="Export ke Excel" style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: #10b981; text-decoration: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" onmouseover="this.style.backgroundColor='#10b981'; this.style.color='#fff'; this.style.borderColor='#10b981'" onmouseout="this.style.backgroundColor='#ffffff'; this.style.color='#10b981'; this.style.borderColor='var(--border-color)'">
+                        <i class="fas fa-file-excel"></i>
                     </a>
                 </div>
             </div>
@@ -548,6 +552,7 @@
         }
 
         let schoolChart;
+        let currentFilteredStudents = [];
         
         function renderSchoolTable() {
             updateAllAlertBadges();
@@ -584,6 +589,8 @@
                 
                 return true;
             });
+            
+            currentFilteredStudents = filtered;
             
             // Hitung persentase kehadiran per siswa & label gender
             filtered.forEach(s => {
@@ -834,6 +841,47 @@
                     }
                 });
             }
+        }
+
+        function exportToExcel() {
+            if (!currentFilteredStudents || currentFilteredStudents.length === 0) {
+                alert('Tidak ada data untuk di-export!');
+                return;
+            }
+            
+            // Format data for Excel
+            const excelData = currentFilteredStudents.map((s, index) => ({
+                'No': index + 1,
+                'Nama Mentee': s.nama || '',
+                'Gender': s._genderLabel || '',
+                'Kelas': s.kelas || '',
+                'Kelompok': s.kelompok || '',
+                'P1': s.p1 || '',
+                'P2': s.p2 || '',
+                'P3': s.p3 || '',
+                'P4': s.p4 || '',
+                'P5': s.p5 || '',
+                'P6': s.p6 || '',
+                'P7': s.p7 || '',
+                'P8': s.p8 || '',
+                'P9': s.p9 || '',
+                'P10': s.p10 || '',
+                'P11': s.p11 || '',
+                'P12': s.p12 || '',
+                'Kehadiran (%)': s._pct ? s._pct.toFixed(1) + '%' : '0%'
+            }));
+
+            // Create worksheet & workbook
+            const ws = XLSX.utils.json_to_sheet(excelData);
+            const wb = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(wb, ws, "Data Mentee");
+
+            // Generate filename based on current filter
+            let filename = `Data_Mentee_${currentTingkat}_${currentSubClass}`;
+            if (currentTingkat === 'Semua') filename = 'Data_Mentee_Semua';
+            
+            // Trigger download
+            XLSX.writeFile(wb, `${filename}.xlsx`);
         }
 
         // Init Fetch

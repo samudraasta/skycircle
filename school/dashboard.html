@@ -391,6 +391,7 @@
             ['Semua', 'X', 'XI', 'XII'].forEach(t => {
                 const btn = document.getElementById('tingkat-tab-' + t);
                 if (!btn) return;
+                btn.dataset.tingkat = t;
                 let matching = allStudents.filter(s => isStudentInTingkat(s, t));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
@@ -405,7 +406,8 @@
 
             // 2. Update tombol Subkelas chip (X-1, X-7, dll.)
             document.querySelectorAll('.subclass-tab-chip').forEach(btn => {
-                let sc = btn.innerText.trim();
+                let sc = btn.dataset.subclass;
+                if (!sc) return;
                 let matching = allStudents.filter(s => matchStudentSubClass(s, sc));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
@@ -435,7 +437,7 @@
             currentSubClass = sc;
             
             document.querySelectorAll('.subclass-tab-chip').forEach(btn => {
-                btn.classList.toggle('active', btn.innerText.trim() === sc);
+                btn.classList.toggle('active', btn.dataset.subclass === sc);
             });
             
             renderSchoolTable();
@@ -477,6 +479,7 @@
             const allBtn = document.createElement('button');
             allBtn.id = 'subclass-tab-Semua';
             allBtn.className = 'subclass-tab-chip' + (currentSubClass === 'Semua' ? ' active' : '');
+            allBtn.dataset.subclass = 'Semua';
             allBtn.innerText = 'Semua';
             allBtn.onclick = () => switchSubClassTab('Semua');
             container.appendChild(allBtn);
@@ -486,6 +489,7 @@
                 const chipId = 'subclass-tab-' + String(sc).replace(/\s+/g, '-');
                 btn.id = chipId;
                 btn.className = 'subclass-tab-chip' + (sc === currentSubClass ? ' active' : '');
+                btn.dataset.subclass = sc;
                 btn.innerText = sc;
                 btn.onclick = () => switchSubClassTab(sc);
 

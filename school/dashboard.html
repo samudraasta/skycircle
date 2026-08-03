@@ -33,6 +33,8 @@
             transition: all 0.2s ease;
             box-shadow: 0 1px 2px rgba(0,0,0,0.03);
             font-family: inherit;
+            position: relative;
+            overflow: visible;
         }
         .tingkat-tab-btn:hover {
             background: #f0f6ff;
@@ -67,6 +69,8 @@
             white-space: nowrap;
             transition: all 0.2s ease;
             font-family: inherit;
+            position: relative;
+            overflow: visible;
         }
         .subclass-tab-chip:hover {
             background: #eff6ff;
@@ -78,6 +82,26 @@
             border-color: #1e40af;
             color: #ffffff;
             box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+        }
+        .badge-alert {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            width: 17px;
+            height: 17px;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 10px;
+            font-weight: 800;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid #ffffff;
+            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.45);
+            line-height: 1;
+            pointer-events: none;
+            z-index: 10;
         }
     </style>
 </head>
@@ -281,6 +305,106 @@
             }
         }
 
+        function checkHasPendingReports(studentList) {
+            let maxMeeting = 0;
+            allStudents.forEach(s => {
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                marks.forEach((m, idx) => {
+                    let val = String(m || '').trim().toLowerCase();
+                    if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
+                        if (idx + 1 > maxMeeting) maxMeeting = idx + 1;
+                    }
+                });
+            });
+            if (maxMeeting === 0) return false;
+
+            let groupStats = {};
+            studentList.forEach(s => {
+                let grp = s.kelompok || (s.kelas + ' - ' + s.nama);
+                if (!groupStats[grp]) {
+                    groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
+                }
+                groupStats[grp].total++;
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                marks.forEach((m, idx) => {
+                    let val = String(m || '').trim().toLowerCase();
+                    if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
+                        groupStats[grp].pFilled[idx]++;
+                    }
+                });
+            });
+
+            for (let grp in groupStats) {
+                let g = groupStats[grp];
+                for (let p = 0; p < maxMeeting; p++) {
+                    if (g.pFilled[p] === 0) return true;
+                }
+            }
+            return false;
+        }
+
+        function filterByGender(studentList) {
+            const showL = document.getElementById('cb-gender-l') ? document.getElementById('cb-gender-l').checked : true;
+            const showP = document.getElementById('cb-gender-p') ? document.getElementById('cb-gender-p').checked : true;
+            return studentList.filter(s => {
+                let g = String(s.gender || '').toUpperCase().trim();
+                let isBoys = g === 'L' || g === 'LAKI-LAKI' || (s.kelompok && s.kelompok.toUpperCase().startsWith('BC'));
+                if (isBoys && !showL) return false;
+                if (!isBoys && !showP) return false;
+                return true;
+            });
+        }
+
+        function updateAllAlertBadges() {
+            // 1. Update tombol Tingkat (Semua, X, XI, XII)
+            ['Semua', 'X', 'XI', 'XII'].forEach(t => {
+                const btn = document.getElementById('tingkat-tab-' + t);
+                if (!btn) return;
+                let matching = allStudents.filter(s => {
+                    let k = String(s.kelas || '').toUpperCase().trim();
+                    if (t === 'Semua') return true;
+                    if (t === 'XII') return k.startsWith('XII');
+                    if (t === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
+                    if (t === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+                    return false;
+                });
+                let existing = btn.querySelector('.badge-alert');
+                if (existing) existing.remove();
+                if (checkHasPendingReports(filterByGender(matching))) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-alert';
+                    badge.title = 'Ada laporan tertunda';
+                    badge.innerText = '!';
+                    btn.appendChild(badge);
+                }
+            });
+
+            // 2. Update tombol Subkelas chip (X-1, X-7, dll.)
+            document.querySelectorAll('.subclass-tab-chip').forEach(btn => {
+                let sc = btn.innerText.trim();
+                let matching = allStudents.filter(s => {
+                    let k = String(s.kelas || '').toUpperCase().trim();
+                    if (sc === 'Semua') {
+                        if (currentTingkat === 'Semua') return true;
+                        if (currentTingkat === 'XII') return k.startsWith('XII');
+                        if (currentTingkat === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
+                        if (currentTingkat === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+                        return false;
+                    }
+                    return k === String(sc).toUpperCase().trim() || k.replace(/-/g, ' ') === String(sc).toUpperCase().replace(/-/g, ' ');
+                });
+                let existing = btn.querySelector('.badge-alert');
+                if (existing) existing.remove();
+                if (checkHasPendingReports(filterByGender(matching))) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-alert';
+                    badge.title = 'Ada laporan tertunda di kelas ini';
+                    badge.innerText = '!';
+                    btn.appendChild(badge);
+                }
+            });
+        }
+
         function switchTingkatTab(tingkat) {
             currentTingkat = tingkat;
             currentSubClass = 'Semua';
@@ -343,6 +467,27 @@
                 btn.className = 'subclass-tab-chip' + (sc === currentSubClass ? ' active' : '');
                 btn.innerText = sc;
                 btn.onclick = () => switchSubClassTab(sc);
+
+                // Cek apakah subkelas ini memiliki laporan tertunda
+                let matching = allStudents.filter(s => {
+                    let k = String(s.kelas || '').toUpperCase().trim();
+                    if (sc === 'Semua') {
+                        if (currentTingkat === 'Semua') return true;
+                        if (currentTingkat === 'XII') return k.startsWith('XII');
+                        if (currentTingkat === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
+                        if (currentTingkat === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
+                        return false;
+                    }
+                    return k === String(sc).toUpperCase().trim() || k.replace(/-/g, ' ') === String(sc).toUpperCase().replace(/-/g, ' ');
+                });
+                if (checkHasPendingReports(filterByGender(matching))) {
+                    const badge = document.createElement('span');
+                    badge.className = 'badge-alert';
+                    badge.title = 'Ada laporan tertunda di kelas ini';
+                    badge.innerText = '!';
+                    btn.appendChild(badge);
+                }
+
                 container.appendChild(btn);
             });
         }
@@ -385,6 +530,7 @@
         let schoolChart;
         
         function renderSchoolTable() {
+            updateAllAlertBadges();
             const tbody = document.getElementById('student-table-body');
             tbody.innerHTML = '';
             

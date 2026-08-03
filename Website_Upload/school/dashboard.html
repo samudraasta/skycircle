@@ -305,6 +305,15 @@
             }
         }
 
+        function getStudentGroup(s) {
+            let gNorm = s.kelompok ? String(s.kelompok).trim().toUpperCase() : '';
+            if (gNorm) return gNorm;
+            let k = String(s.kelas || 'TANPA KELAS').trim().toUpperCase();
+            let g = String(s.gender || '').trim().toUpperCase();
+            let isBoys = g === 'L' || g === 'LAKI-LAKI';
+            return (isBoys ? 'BC ' : 'GC ') + k;
+        }
+
         function checkHasPendingReports(studentList) {
             let maxMeeting = 0;
             allStudents.forEach(s => {
@@ -320,7 +329,7 @@
 
             let groupStats = {};
             studentList.forEach(s => {
-                let grp = s.kelompok ? String(s.kelompok).trim().toUpperCase() : (String(s.kelas || '') + ' - ' + String(s.nama || '')).trim().toUpperCase();
+                let grp = getStudentGroup(s);
                 if (!groupStats[grp]) {
                     groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                 }
@@ -622,10 +631,7 @@
             let chartDataHadir = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             
             filtered.forEach(s => {
-                if(s.kelompok) {
-                    let gNorm = String(s.kelompok).trim().toUpperCase();
-                    if(gNorm) uniqueGroups.add(gNorm);
-                }
+                uniqueGroups.add(getStudentGroup(s));
                 let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
                 marks.forEach((m, idx) => {
                     if (String(m).toLowerCase() === 'hadir') {
@@ -658,7 +664,7 @@
             if (maxMeeting > 0) {
                 let groupStats = {};
                 filtered.forEach(s => {
-                    let grp = s.kelompok ? String(s.kelompok).trim().toUpperCase() : (String(s.kelas || '') + ' - ' + String(s.nama || '')).trim().toUpperCase();
+                    let grp = getStudentGroup(s);
                     if (!groupStats[grp]) {
                         groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                     }

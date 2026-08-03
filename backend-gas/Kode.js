@@ -1175,11 +1175,12 @@ function handleGetProfiles(payload) {
   }
 
   function getVal(row, keywords) {
-    for (var i = 0; i < headers.length; i++) {
-      if (hiddenCols[i]) continue; // Abaikan kolom yang di-hide di Google Sheets
-      var h = headers[i].toLowerCase();
-      for (var k = 0; k < keywords.length; k++) {
-        if (h.indexOf(keywords[k].toLowerCase()) !== -1) {
+    for (var k = 0; k < keywords.length; k++) {
+      var kw = keywords[k].toLowerCase();
+      for (var i = 0; i < headers.length; i++) {
+        if (hiddenCols[i]) continue; // Abaikan kolom yang di-hide di Google Sheets
+        var h = headers[i].toLowerCase();
+        if (h.indexOf(kw) !== -1) {
           var val = row[i];
           if (val instanceof Date) {
             return Utilities.formatDate(val, tz, "dd MMMM yyyy");
@@ -1211,20 +1212,20 @@ function handleGetProfiles(payload) {
   for (var r = 1; r < data.length; r++) {
     var row = data[r];
     
-    var nama = getVal(row, ["Nama Lengkap", "Nama"]);
-    var panggilan = getVal(row, ["Nama Panggilan", "Panggilan", "Sapaan", "Nama Sapaan", "Nick"]);
-    var kelas = getVal(row, ["Kelas", "Kelompok", "Grup"]);
-    var alamat = getVal(row, ["Alamat"]);
-    var noHp = getVal(row, ["No HP", "No. HP", "HP", "WhatsApp", "WA", "No Telepon", "Telepon", "No. WA"]);
-    var ortu = getVal(row, ["Orang Tua", "Ortu", "Nama Ortu", "Ayah", "Ibu"]);
-    var hobi = getVal(row, ["Hobi"]);
-    var aktivitas = getVal(row, ["Aktivitas", "Kegiatan"]);
-    var tidakDisukai = getVal(row, ["Tidak Disukai", "Benci"]);
-    var karakter = getVal(row, ["Karakter", "Sifat"]);
-    var liburan = getVal(row, ["Liburan"]);
-    var mempelajari = getVal(row, ["Mempelajari", "Ingin Mempelajari"]);
-    var instagram = getVal(row, ["Instagram", "IG"]);
-    var tanggalLahir = getVal(row, ["Tanggal Lahir", "TGL Lahir", "TTL", "Lahir", "Tgl/Bln/Thn", "Tanggal/Bulan/Tahun"]);
+    var nama = getVal(row, ["Nama Lengkap", "Nama Siswa", "Nama Mentee", "Nama"]);
+    var panggilan = getVal(row, ["Nama Panggilan", "Panggilan", "Sapaan", "Nama Sapaan", "Nick", "Akrab"]);
+    var kelas = getVal(row, ["Kelas", "Kelompok", "Grup", "Sub Kelas", "Rombel", "Tingkat"]);
+    var alamat = getVal(row, ["Alamat Lengkap", "Alamat Rumah", "Alamat Domisili", "Alamat", "Domisili", "Tempat Tinggal", "Rumah", "Tinggal", "Lokasi", "Dimana"]);
+    var noHp = getVal(row, ["No HP", "No. HP", "HP", "WhatsApp", "WA", "No Telepon", "Telepon", "No. WA", "Handphone", "Nomor", "Nomor HP", "Nomor WA", "Kontak"]);
+    var ortu = getVal(row, ["Orang Tua", "Ortu", "Nama Ortu", "Ayah", "Ibu", "Wali", "Orangtua", "Nama Orang Tua", "Nama Ayah", "Nama Ibu", "Orang Tua / Wali"]);
+    var hobi = getVal(row, ["Hobi", "Kegiatan yang disukai", "Kesukaan", "Hobby", "Minat", "Yang disukai"]);
+    var aktivitas = getVal(row, ["Aktivitas", "Kegiatan", "Aktivitas Harian", "Kegiatan Sehari-hari", "Kesibukan", "Kegiatan harian"]);
+    var tidakDisukai = getVal(row, ["Tidak Disukai", "Benci", "Hal yang tidak disukai", "Paling tidak disukai", "Kurang disukai", "Tidak suka", "Paling tidak suka"]);
+    var karakter = getVal(row, ["Karakter", "Sifat", "Karakter yang", "Sifat yang", "Kepribadian", "Karakteristik"]);
+    var liburan = getVal(row, ["Liburan", "Saat liburan", "Kegiatan favorit", "Waktu luang", "Favorit saat liburan", "Ketika libur"]);
+    var mempelajari = getVal(row, ["Mempelajari", "Ingin Mempelajari", "Tertarik", "Belajar", "Hal yang ingin", "Penasaran", "Ingin dipelajari"]);
+    var instagram = getVal(row, ["Instagram", "IG", "Akun IG", "Akun Instagram", "Sosmed", "Media Sosial"]);
+    var tanggalLahir = getVal(row, ["Tanggal Lahir", "TGL Lahir", "TTL", "Lahir", "Tgl/Bln/Thn", "Tanggal/Bulan/Tahun", "Tempat dan Tanggal Lahir", "Tempat, Tanggal Lahir", "Tgl Lahir", "Tempat/Tanggal Lahir"]);
     var fotoUrl = getFotoUrl(row);
 
     var extraFields = [];
@@ -1246,21 +1247,21 @@ function handleGetProfiles(payload) {
     }
 
     profiles.push({
-      nama: nama || (row[1] ? String(row[1]) : ""),
+      nama: nama,
       panggilan: panggilan,
-      kelas: kelas || (row[2] ? String(row[2]) : ""),
-      alamat: alamat || (row[3] ? String(row[3]) : ""),
+      kelas: kelas,
+      alamat: alamat,
       noHp: noHp,
-      ortu: ortu || (row[4] ? String(row[4]) : ""),
-      hobi: hobi || (row[5] ? String(row[5]) : ""),
-      aktivitas: aktivitas || (row[6] ? String(row[6]) : ""),
-      tidakDisukai: tidakDisukai || (row[7] ? String(row[7]) : ""),
-      karakter: karakter || (row[8] ? String(row[8]) : ""),
-      liburan: liburan || (row[9] ? String(row[9]) : ""),
-      mempelajari: mempelajari || (row[10] ? String(row[10]) : ""),
-      instagram: instagram || (row[11] ? String(row[11]) : ""),
+      ortu: ortu,
+      hobi: hobi,
+      aktivitas: aktivitas,
+      tidakDisukai: tidakDisukai,
+      karakter: karakter,
+      liburan: liburan,
+      mempelajari: mempelajari,
+      instagram: instagram,
       tanggalLahir: tanggalLahir,
-      fotoUrl: fotoUrl || (row[12] ? String(row[12]) : ""),
+      fotoUrl: fotoUrl,
       extraFields: extraFields
     });
   }

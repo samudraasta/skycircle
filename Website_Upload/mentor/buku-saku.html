@@ -353,46 +353,30 @@
         <i class="fas fa-arrow-left header-back" onclick="goBack()"></i>
         <div class="header-info">
             <div class="header-title" id="headerTitle">Buku Saku Mentee</div>
-            <div class="header-sub" id="headerSub">Pilih grup</div>
+            <div class="header-sub" id="headerSub">Pilih kelas</div>
         </div>
     </div>
 
-    <!-- LAYAR 1: PICKER 2 KOLOM -->
+    <!-- LAYAR 1: PICKER DENGAN TOMBOL KELAS -->
     <div id="screenPicker">
         <div class="col-headers">
-            <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle</div>
-            <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle</div>
+            <div class="col-header class-hdr" style="color: #075e54; background: rgba(7,94,84,0.1); width: 100%; text-align: center;"><i class="fas fa-chalkboard-teacher"></i> Pilih Kelas Mentee</div>
         </div>
-        <div class="two-col-grid">
-            <!-- Row Atas: Circle+ GC (Pink) & Circle+ BC (Biru) -->
-            <button class="group-btn circle-plus-gc" onclick="selectGroup('Circle+ GC X')"><i class="fas fa-star"></i> Circle+ GC</button>
-            <button class="group-btn circle-plus-bc" onclick="selectGroup('Circle+ BC X')"><i class="fas fa-star"></i> Circle+ BC</button>
+        <div class="two-col-grid" style="grid-template-columns: repeat(2, 1fr); padding-top: 10px;">
+            <button class="group-btn class-btn circle-plus-btn" style="grid-column: span 2; background: linear-gradient(135deg, #128c7e, #075e54); color: white; border: none; font-size: 15px; padding: 14px 10px;" onclick="selectClass('Circle+')"><i class="fas fa-star" style="color: #fbbf24;"></i> Mentee Circle+</button>
 
-            <!-- Row 1–12 GC & BC -->
-            <button class="group-btn gc" onclick="selectGroup('GC X-1')">GC X-1</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-1')">BC X-1</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-2')">GC X-2</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-2')">BC X-2</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-3')">GC X-3</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-3')">BC X-3</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-4')">GC X-4</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-4')">BC X-4</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-5')">GC X-5</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-5')">BC X-5</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-6')">GC X-6</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-6')">BC X-6</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-7')">GC X-7</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-7')">BC X-7</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-8')">GC X-8</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-8')">BC X-8</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-9')">GC X-9</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-9')">BC X-9</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-10')">GC X-10</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-10')">BC X-10</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-11')">GC X-11</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-11')">BC X-11</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-12')">GC X-12</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-12')">BC X-12</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-1')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-1</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-2')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-2</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-3')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-3</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-4')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-4</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-5')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-5</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-6')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-6</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-7')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-7</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-8')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-8</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-9')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-9</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-10')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-10</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-11')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-11</button>
+            <button class="group-btn class-btn" onclick="selectClass('X-12')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-12</button>
         </div>
     </div>
 
@@ -449,15 +433,16 @@
         if (screen === 'picker') { window.location.href = 'presensi.html'; return; }
         showScreen('picker');
         document.getElementById('headerTitle').textContent = 'Buku Saku Mentee';
-        document.getElementById('headerSub').textContent = 'Pilih grup';
+        document.getElementById('headerSub').textContent = 'Pilih kelas';
     }
 
-    async function selectGroup(groupName) {
-        document.getElementById('headerTitle').textContent = groupName;
+    async function selectClass(className) {
+        const titleText = className === 'Circle+' ? 'Circle+' : `Kelas ${className}`;
+        document.getElementById('headerTitle').textContent = titleText;
         document.getElementById('headerSub').textContent = 'Memuat...';
         document.getElementById('screenLoading').innerHTML = `
             <div class="spinner-ring"></div>
-            <p>Memuat profil <strong>${groupName}</strong>...</p>
+            <p>Memuat profil <strong>${titleText}</strong>...</p>
         `;
         showScreen('loading');
 
@@ -468,16 +453,33 @@
             const data = await res.json();
 
             if (data.status === 'success') {
-                displayedProfiles = data.profiles.filter(p =>
-                    (p.kelas || '').trim().toLowerCase() === groupName.trim().toLowerCase()
-                );
+                const targetClean = className.trim().toUpperCase().replace('KELAS ', '');
+                const targetNumMatch = targetClean.match(/\d+/);
+                const targetNum = targetNumMatch ? targetNumMatch[0] : '';
+
+                displayedProfiles = data.profiles.filter(p => {
+                    const pKelas = (p.kelas || '').trim().toUpperCase();
+                    if (targetClean === 'CIRCLE+') {
+                        return pKelas.includes('CIRCLE+');
+                    }
+                    if (pKelas === targetClean || pKelas === `KELAS ${targetClean}`) {
+                        return true;
+                    }
+                    // Match pattern "10 - X", "X-X", "GC X-X", "BC X-X"
+                    if (targetNum) {
+                        const pParts = pKelas.split(/[\s-]+/);
+                        const pLastNum = pParts[pParts.length - 1];
+                        if (pLastNum === targetNum) return true;
+                    }
+                    return false;
+                });
 
                 if (displayedProfiles.length === 0) {
                     document.getElementById('headerSub').textContent = 'Belum ada data';
                     document.getElementById('screenLoading').innerHTML = `
                         <div class="empty-screen">
                             <i class="fas fa-user-slash"></i>
-                            <p>Belum ada mentee di <strong style="color:#075e54">${groupName}</strong> yang mengisi profil.</p>
+                            <p>Belum ada mentee di <strong style="color:#075e54">${titleText}</strong> yang mengisi profil.</p>
                             <button class="back-btn" onclick="goBack()"><i class="fas fa-arrow-left"></i> Kembali ke Menu</button>
                         </div>`;
                     document.getElementById('screenLoading').style.display = 'flex';

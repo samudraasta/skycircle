@@ -849,27 +849,46 @@
                 return;
             }
             
-            // Format data for Excel
-            const excelData = currentFilteredStudents.map((s, index) => ({
-                'No': index + 1,
-                'Nama Mentee': s.nama || '',
-                'Gender': s._genderLabel || '',
-                'Kelas': s.kelas || '',
-                'Kelompok': s.kelompok || '',
-                'P1': s.p1 || '',
-                'P2': s.p2 || '',
-                'P3': s.p3 || '',
-                'P4': s.p4 || '',
-                'P5': s.p5 || '',
-                'P6': s.p6 || '',
-                'P7': s.p7 || '',
-                'P8': s.p8 || '',
-                'P9': s.p9 || '',
-                'P10': s.p10 || '',
-                'P11': s.p11 || '',
-                'P12': s.p12 || '',
-                'Kehadiran (%)': s._pct ? s._pct.toFixed(1) + '%' : '0%'
-            }));
+            // Format data for Excel sesuai Template Laporan ke Sekolah
+            const excelData = currentFilteredStudents.map((s, index) => {
+                let nameLower = String(s.nama || '').toLowerCase();
+                let isStudentNonis = false;
+                
+                // Logic cek Nonis sederhana berdasarkan keyword nama
+                const nonis_keywords = ['christ', 'johan', 'ruth', 'floren', 'gabriel', 'samuel', 'gracia', 'maria', 'daniel', 'theresia', 'agatha', 'putu', 'harefa', 'simangunsong', 'sitorus', 'sitanggang', 'harianja', 'sirait', 'manurung', 'siahaan', 'sianipar', 'torus', 'ornando', 'hia', 'azalia', 'claudia', 'jesslyn', 'kariswan', 'melani', 'lionel', 'oryza', 'fricilia', 'keynia', 'laura', 'priscilia', 'bernala', 'defrino', 'joceline', 'quinsha', 'raynar', 'enzo', 'jeremia', 'nava', 'vincentius', 'chntya', 'henokh', 'weny', 'yoanne', 'avemarianne', 'olivia', 'lubis', 'steven', 'kevin', 'michael', 'david', 'joshua', 'frans', 'ignatius', 'dominic', 'petrus', 'paulus', 'yohanes', 'martha', 'alexander', 'matthew', 'timothy', 'nicholas', 'grace', 'joy', 'hope', 'faith'];
+                
+                // Cek data kategori dari database jika ada
+                if (s.kategori && String(s.kategori).toUpperCase() === 'NONIS') {
+                    isStudentNonis = true;
+                } else if (s.kategori && String(s.kategori).toUpperCase() === 'MUSLIM') {
+                    isStudentNonis = false;
+                } else {
+                    // Deteksi manual dari nama
+                    for (let k of nonis_keywords) {
+                        if (nameLower.includes(k)) {
+                            isStudentNonis = true;
+                            break;
+                        }
+                    }
+                }
+
+                let pctStr = s._pct ? s._pct.toFixed(0) + '%' : '0%';
+                let nilaiStr = ''; // Dikosongkan untuk diisi manual oleh admin/sekolah
+
+                if (isStudentNonis) {
+                    pctStr = 'Nonis';
+                    nilaiStr = 'Nonis';
+                }
+
+                return {
+                    'No': index + 1,
+                    'Nama Mentee': s.nama || '',
+                    'Kelas': s.kelas || '',
+                    'P/L': s._genderLabel || '',
+                    '% Kehadiran': pctStr,
+                    'Nilai': nilaiStr
+                };
+            });
 
             // Create worksheet & workbook
             const ws = XLSX.utils.json_to_sheet(excelData);

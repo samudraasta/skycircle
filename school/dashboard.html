@@ -849,6 +849,13 @@
                 return;
             }
             
+            // Password protection
+            const pass = prompt('Masukkan password untuk mengunduh data:');
+            if (pass !== 'luruskanniat') {
+                alert('Password salah! Anda tidak memiliki akses untuk mengunduh data ini.');
+                return;
+            }
+            
             // Format data for Excel sesuai Template Laporan ke Sekolah
             const excelData = currentFilteredStudents.map((s, index) => {
                 let nameLower = String(s.nama || '').toLowerCase();
@@ -873,7 +880,9 @@
                 }
 
                 let pctStr = s._pct ? s._pct.toFixed(0) + '%' : '0%';
-                let nilaiStr = ''; // Dikosongkan untuk diisi manual oleh admin/sekolah
+                
+                // Logic Nilai: A jika > 50%, B jika <= 50%
+                let nilaiStr = (s._pct && s._pct > 50) ? 'A' : 'B';
 
                 if (isStudentNonis) {
                     pctStr = 'Nonis';

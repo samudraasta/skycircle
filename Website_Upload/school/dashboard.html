@@ -960,11 +960,13 @@
                 // Ambil semua siswa di tingkat tersebut tanpa memedulikan filter gender di UI
                 const studentsInTingkat = allStudents.filter(s => isStudentInTingkat(s, t));
                 
-                // Sort berdasarkan kelas lalu nama
+                // Sort berdasarkan kelas lalu nama (Natural sort agar X 10 tidak di atas X 2)
                 studentsInTingkat.sort((a, b) => {
-                    let kA = String(a.kelas || '');
-                    let kB = String(b.kelas || '');
-                    if (kA !== kB) return kA.localeCompare(kB);
+                    let kA = String(a.kelas || '').replace(/-/g, ' ').trim();
+                    let kB = String(b.kelas || '').replace(/-/g, ' ').trim();
+                    if (kA !== kB) {
+                        return kA.localeCompare(kB, undefined, {numeric: true, sensitivity: 'base'});
+                    }
                     let nA = String(a.nama || '');
                     let nB = String(b.nama || '');
                     return nA.localeCompare(nB);
@@ -972,6 +974,7 @@
                 
                 // Format data
                 const excelData = studentsInTingkat.map((s, index) => {
+                    let kelasFormat = String(s.kelas || '').replace(/-/g, ' ').trim();
                     let nameLower = String(s.nama || '').toLowerCase();
                     let isStudentNonis = false;
                     
@@ -1023,7 +1026,7 @@
                     return {
                         'No': index + 1,
                         'Nama Mentee': s.nama || '',
-                        'Kelas': s.kelas || '',
+                        'Kelas': kelasFormat,
                         'P/L': genderLabel,
                         '% Kehadiran': pctStr,
                         'Nilai': nilaiStr

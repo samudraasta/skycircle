@@ -615,8 +615,8 @@
                         valB = String(b.kelas || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
                     } else if (currentSortField === 'gender') {
-                        valA = String(a.gender || '');
-                        valB = String(b.gender || '');
+                        valA = String(a._genderLabel || '');
+                        valB = String(b._genderLabel || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
                     } else if (currentSortField === 'kehadiran') {
                         valA = a._pct || 0;

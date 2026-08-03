@@ -357,26 +357,42 @@
         </div>
     </div>
 
-    <!-- LAYAR 1: PICKER DENGAN TOMBOL KELAS -->
+    <!-- LAYAR 1: PICKER 2 KOLOM (GIRLS & BOYS PER KELAS) -->
     <div id="screenPicker">
         <div class="col-headers">
-            <div class="col-header class-hdr" style="color: #075e54; background: rgba(7,94,84,0.1); width: 100%; text-align: center;"><i class="fas fa-chalkboard-teacher"></i> Pilih Kelas Mentee</div>
+            <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle (GC)</div>
+            <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle (BC)</div>
         </div>
-        <div class="two-col-grid" style="grid-template-columns: repeat(2, 1fr); padding-top: 10px;">
-            <button class="group-btn class-btn circle-plus-btn" style="grid-column: span 2; background: linear-gradient(135deg, #128c7e, #075e54); color: white; border: none; font-size: 15px; padding: 14px 10px;" onclick="selectClass('Circle+')"><i class="fas fa-star" style="color: #fbbf24;"></i> Mentee Circle+</button>
+        <div class="two-col-grid">
+            <!-- Row Atas: Circle+ GC (Pink) & Circle+ BC (Biru) -->
+            <button class="group-btn circle-plus-gc" onclick="selectGroup('Circle+ GC')"><i class="fas fa-star"></i> Circle+ GC</button>
+            <button class="group-btn circle-plus-bc" onclick="selectGroup('Circle+ BC')"><i class="fas fa-star"></i> Circle+ BC</button>
 
-            <button class="group-btn class-btn" onclick="selectClass('X-1')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-1</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-2')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-2</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-3')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-3</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-4')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-4</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-5')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-5</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-6')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-6</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-7')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-7</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-8')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-8</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-9')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-9</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-10')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-10</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-11')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-11</button>
-            <button class="group-btn class-btn" onclick="selectClass('X-12')"><i class="fas fa-graduation-cap" style="color:#075e54;"></i> Kelas X-12</button>
+            <!-- Row 1–12 GC & BC Per Kelas -->
+            <button class="group-btn gc" onclick="selectGroup('GC X-1')">GC X-1</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-1')">BC X-1</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-2')">GC X-2</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-2')">BC X-2</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-3')">GC X-3</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-3')">BC X-3</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-4')">GC X-4</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-4')">BC X-4</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-5')">GC X-5</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-5')">BC X-5</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-6')">GC X-6</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-6')">BC X-6</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-7')">GC X-7</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-7')">BC X-7</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-8')">GC X-8</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-8')">BC X-8</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-9')">GC X-9</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-9')">BC X-9</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-10')">GC X-10</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-10')">BC X-10</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-11')">GC X-11</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-11')">BC X-11</button>
+            <button class="group-btn gc" onclick="selectGroup('GC X-12')">GC X-12</button>
+            <button class="group-btn bc" onclick="selectGroup('BC X-12')">BC X-12</button>
         </div>
     </div>
 
@@ -433,16 +449,15 @@
         if (screen === 'picker') { window.location.href = 'presensi.html'; return; }
         showScreen('picker');
         document.getElementById('headerTitle').textContent = 'Buku Saku Mentee';
-        document.getElementById('headerSub').textContent = 'Pilih kelas';
+        document.getElementById('headerSub').textContent = 'Pilih grup';
     }
 
-    async function selectClass(className) {
-        const titleText = className === 'Circle+' ? 'Circle+' : `Kelas ${className}`;
-        document.getElementById('headerTitle').textContent = titleText;
+    async function selectGroup(groupName) {
+        document.getElementById('headerTitle').textContent = groupName;
         document.getElementById('headerSub').textContent = 'Memuat...';
         document.getElementById('screenLoading').innerHTML = `
             <div class="spinner-ring"></div>
-            <p>Memuat profil <strong>${titleText}</strong>...</p>
+            <p>Memuat profil <strong>${groupName}</strong>...</p>
         `;
         showScreen('loading');
 
@@ -453,23 +468,37 @@
             const data = await res.json();
 
             if (data.status === 'success') {
-                const targetClean = className.trim().toUpperCase().replace('KELAS ', '');
-                const targetNumMatch = targetClean.match(/\d+/);
-                const targetNum = targetNumMatch ? targetNumMatch[0] : '';
+                const isGC = groupName.toUpperCase().includes('GC');
+                const isBC = groupName.toUpperCase().includes('BC');
+                const isCirclePlus = groupName.toUpperCase().includes('CIRCLE+');
+
+                // Ekstrak angka kelas (misal "GC X-1" -> "1")
+                const numMatch = groupName.match(/\d+/);
+                const targetNum = numMatch ? numMatch[0] : '';
 
                 displayedProfiles = data.profiles.filter(p => {
                     const pKelas = (p.kelas || '').trim().toUpperCase();
-                    if (targetClean === 'CIRCLE+') {
-                        return pKelas.includes('CIRCLE+');
-                    }
-                    if (pKelas === targetClean || pKelas === `KELAS ${targetClean}`) {
+                    const pExtraGender = (p.extraFields || []).find(ef => ef.label.toLowerCase() === 'gender');
+                    const genderVal = pExtraGender ? String(pExtraGender.value || '').toUpperCase() : '';
+
+                    if (isCirclePlus) {
+                        if (!pKelas.includes('CIRCLE+')) return false;
+                        if (isGC && (genderVal.includes('GIRL') || genderVal === 'P' || pKelas.includes('GC'))) return true;
+                        if (isBC && (genderVal.includes('BOY') || genderVal === 'L' || pKelas.includes('BC'))) return true;
                         return true;
                     }
-                    // Match pattern "10 - X", "X-X", "GC X-X", "BC X-X"
+
+                    // Cocokkan persis (e.g. "GC X-1 34" atau "GC X-1")
+                    if (pKelas.includes(groupName.toUpperCase())) return true;
+
+                    // Match berdasarkan angka kelas & Gender (GC=Girls, BC=Boys)
                     if (targetNum) {
                         const pParts = pKelas.split(/[\s-]+/);
                         const pLastNum = pParts[pParts.length - 1];
-                        if (pLastNum === targetNum) return true;
+                        if (pLastNum === targetNum) {
+                            if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
+                            if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
+                        }
                     }
                     return false;
                 });

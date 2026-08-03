@@ -19,6 +19,13 @@ function doGet(e) {
   if (action === "fix_timestamps") {
     return handleFixTimestamps();
   }
+  if (action === "sync_profile_checklist") {
+    var msg = syncProfileChecklist();
+    return ContentService.createTextOutput(JSON.stringify({ 
+      "status": "success", 
+      "message": msg 
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
   return ContentService.createTextOutput(JSON.stringify({ 
     "status": "success", 
     "message": "Sky Circle Mentoring API is active!" 
@@ -1315,4 +1322,78 @@ function handleFixTimestamps() {
     "status": "success",
     "message": "Berhasil mengunci Zona Waktu Spreadsheet ke (GMT+07:00) Jakarta dan mengonversi " + totalFixed + " timestamp ke WIB!"
   })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ==========================================
+// FUNGSI SINKRONISASI CHECKLIST PROFILE KELAS (KOLOM K SEMESTER 1)
+// ==========================================
+function syncProfileChecklist() {
+  var ss = getSS();
+  var semesterSheet = ss.getSheetByName("Semester 1");
+  var profileSheet = ss.getSheetByName("Profile") || ss.getSheetByName("Form_Responses") || ss.getSheetByName("Profil Mentee");
+  
+  if (!semesterSheet || !profileSheet) {
+    return "Sheet Semester 1 atau Profile tidak ditemukan";
+  }
+  
+  var semData = semesterSheet.getDataRange().getValues();
+  if (semData.length < 2) return "Data Semester 1 kosong";
+  
+  var semHeaders = semData[0].map(function(h) { return String(h || "").trim().toLowerCase(); });
+  var namaSemCol = semHeaders.indexOf("nama peserta didik") !== -1 ? semHeaders.indexOf("nama peserta didik") : semHeaders.indexOf("nama");
+  var profileSemCol = semHeaders.indexOf("profile");
+  
+  if (namaSemCol === -1 || profileSemCol === -1) {
+    return "Kolom 'Nama peserta didik' atau 'Profile' tidak ditemukan di Semester 1";
+  }
+  
+  var profData = profileSheet.getDataRange().getValues();
+  if (profData.length < 2) return "Data Profile belum ada";
+  
+  var profHeaders = profData[0].map(function(h) { return String(h || "").trim().toLowerCase(); });
+  var namaProfCol = -1;
+  for (var c = 0; c < profHeaders.length; c++) {
+    if (profHeaders[c].indexOf("nama") !== -1) {
+      namaProfCol = c;
+      break;
+    }
+  }
+  if (namaProfCol === -1) namaProfCol = 1;
+  
+  var filledNames = {};
+  for (var r = 1; r < profData.length; r++) {
+    var rawName = String(profData[r][namaProfCol] || "").trim().toLowerCase();
+    if (rawName) {
+      var cleanName = rawName.replace(/[^a-z0-9]/g, "");
+      if (cleanName) filledNames[cleanName] = true;
+    }
+  }
+  
+  var checklistValues = [];
+  var profileRange = semesterSheet.getRange(2, profileSemCol + 1, semData.length - 1, 1);
+  
+  try {
+    profileRange.insertCheckboxes();
+  } catch(e) {}
+  
+  var updatedCount = 0;
+  for (var i = 1; i < semData.length; i++) {
+    var studentName = String(semData[i][namaSemCol] || "").trim().toLowerCase();
+    var cleanStudentName = studentName.replace(/[^a-z0-9]/g, "");
+    
+    var isFilled = false;
+    if (cleanStudentName) {
+      for (var fName in filledNames) {
+        if (fName === cleanStudentName || fName.indexOf(cleanStudentName) !== -1 || cleanStudentName.indexOf(fName) !== -1) {
+          isFilled = true;
+          updatedCount++;
+          break;
+        }
+      }
+    }
+    checklistValues.push([isFilled]);
+  }
+  
+  profileRange.setValues(checklistValues);
+  return "Berhasil mencentang " + updatedCount + " siswa yang sudah mengisi profile!";
 }

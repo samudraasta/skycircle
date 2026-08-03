@@ -227,8 +227,8 @@
                 <thead>
                     <tr>
                         <th onclick="toggleSort('nama')" style="cursor: pointer; user-select: none;">Nama Siswa <i id="sort-icon-nama" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
-                        <th onclick="toggleSort('gender')" style="cursor: pointer; user-select: none; text-align: center;">L/P <i id="sort-icon-gender" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('kelas')" style="cursor: pointer; user-select: none;">Kelas <i id="sort-icon-kelas" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('gender')" style="cursor: pointer; user-select: none; text-align: center;">L/P <i id="sort-icon-gender" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('kelompok')" style="cursor: pointer; user-select: none;">Kelompok <i id="sort-icon-kelompok" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th>P1</th>
                         <th>P2</th>
@@ -579,7 +579,7 @@
             // -----------------------------
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="13" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
                 return;
             }
 
@@ -615,8 +615,8 @@
                 tr.style = bgStyle;
                 tr.innerHTML = `
                     <td style="font-weight: 600; color: var(--text-main);">${s.nama}</td>
-                    <td style="text-align: center;">${genderBadge}</td>
                     <td>${String(s.kelas).replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</td>
+                    <td style="text-align: center;">${genderBadge}</td>
                     <td>${kelompokDisplay}</td>
                     ${pCells}
                     <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${percent}%</span></td>

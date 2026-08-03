@@ -504,12 +504,13 @@
             
             document.getElementById('stat-groups').innerText = uniqueGroups.size;
             
-            // Hitung jumlah pertemuan maksimal yang sudah berjalan
+            // Hitung jumlah pertemuan maksimal yang sudah berjalan (dari status valid)
             let maxMeeting = 0;
-            filtered.forEach(s => {
+            allStudents.forEach(s => {
                 let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
                 marks.forEach((m, idx) => {
-                    if (m && String(m).trim() !== "") {
+                    let val = String(m || '').trim().toLowerCase();
+                    if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
                         if (idx + 1 > maxMeeting) maxMeeting = idx + 1;
                     }
                 });
@@ -518,7 +519,7 @@
             let denominator = filtered.length * maxMeeting;
             let avg = denominator > 0 ? Math.round((totalKehadiranSemua / denominator) * 100) : 0;
             document.getElementById('stat-avg').innerText = avg + "%";
-            // Hitung Laporan Tertunda (Pending Reports) secara dinamis (berdasarkan status kehadiran valid)
+            // Hitung Laporan Tertunda: kelompok yang sama sekali belum mengisi presensi (0 siswa dipresensi)
             let pendingCount = 0;
             if (maxMeeting > 0) {
                 let groupStats = {};
@@ -540,7 +541,7 @@
                 Object.keys(groupStats).forEach(grp => {
                     let g = groupStats[grp];
                     for (let p = 0; p < maxMeeting; p++) {
-                        if (g.pFilled[p] < g.total) {
+                        if (g.pFilled[p] === 0) {
                             pendingCount++;
                         }
                     }

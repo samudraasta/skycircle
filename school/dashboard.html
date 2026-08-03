@@ -592,13 +592,14 @@
                     }
                 });
                 s._pct = validCount > 0 ? (hadirCount / validCount) * 100 : 0;
-                
                 // Set default gender from kelompok prefix if empty
                 let g = String(s.gender || '').toUpperCase().trim();
+                let isBoys = g === 'L' || g === 'LAKI-LAKI' || (s.kelompok && s.kelompok.toUpperCase().startsWith('BC'));
                 if (!g && s.kelompok) {
                     if (s.kelompok.toUpperCase().startsWith('BC')) s.gender = 'L';
                     else if (s.kelompok.toUpperCase().startsWith('GC')) s.gender = 'P';
                 }
+                s._genderLabel = isBoys ? 'L' : 'P';
             });
 
             // Sorting

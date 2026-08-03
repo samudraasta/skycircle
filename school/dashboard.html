@@ -518,22 +518,31 @@
             let denominator = filtered.length * maxMeeting;
             let avg = denominator > 0 ? Math.round((totalKehadiranSemua / denominator) * 100) : 0;
             document.getElementById('stat-avg').innerText = avg + "%";
-            // Hitung Laporan Tertunda (Pending Reports) secara dinamis
+            // Hitung Laporan Tertunda (Pending Reports) secara dinamis (berdasarkan status kehadiran valid)
             let pendingCount = 0;
             if (maxMeeting > 0) {
-                let groupMap = {};
+                let groupStats = {};
                 filtered.forEach(s => {
                     let grp = s.kelompok || (s.kelas + ' - ' + s.nama);
-                    if (!groupMap[grp]) groupMap[grp] = [false, false, false, false, false, false, false, false, false, false, false, false];
+                    if (!groupStats[grp]) {
+                        groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
+                    }
+                    groupStats[grp].total++;
                     let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
                     marks.forEach((m, idx) => {
-                        if (m && String(m).trim() !== "") groupMap[grp][idx] = true;
+                        let val = String(m || '').trim().toLowerCase();
+                        if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
+                            groupStats[grp].pFilled[idx]++;
+                        }
                     });
                 });
 
-                Object.keys(groupMap).forEach(grp => {
+                Object.keys(groupStats).forEach(grp => {
+                    let g = groupStats[grp];
                     for (let p = 0; p < maxMeeting; p++) {
-                        if (!groupMap[grp][p]) pendingCount++;
+                        if (g.pFilled[p] < g.total) {
+                            pendingCount++;
+                        }
                     }
                 });
             }

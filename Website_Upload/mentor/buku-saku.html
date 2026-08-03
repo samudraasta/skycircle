@@ -353,42 +353,35 @@
         <i class="fas fa-arrow-left header-back" onclick="goBack()"></i>
         <div class="header-info">
             <div class="header-title" id="headerTitle">Buku Saku Mentee</div>
-            <div class="header-sub" id="headerSub">Pilih kelas</div>
+            <div class="header-sub" id="headerSub">Pilih tingkat kelas</div>
         </div>
     </div>
 
-    <!-- LAYAR 1: PICKER 2 KOLOM (GIRLS & BOYS PER KELAS) -->
-    <div id="screenPicker">
+    <!-- LAYAR 1: PICKER TINGKAT KELAS (X, XI, XII) -->
+    <div id="screenGradePicker" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 16px; flex: 1;">
+        <div style="text-align: center; color: #075e54; font-weight: 700; font-size: 14px; margin-bottom: 4px;"><i class="fas fa-graduation-cap"></i> PILIH TINGKAT KELAS</div>
+        <button class="grade-card-btn" onclick="selectGrade('X')" style="background: linear-gradient(135deg, #128c7e, #075e54); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(7,94,84,0.25); cursor: pointer; transition: transform 0.12s;">
+            <span><i class="fas fa-chalkboard-teacher" style="margin-right: 12px;"></i> Kelas X</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="grade-card-btn" onclick="selectGrade('XI')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(37,99,235,0.25); cursor: pointer; transition: transform 0.12s;">
+            <span><i class="fas fa-user-graduate" style="margin-right: 12px;"></i> Kelas XI</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+        <button class="grade-card-btn" onclick="selectGrade('XII')" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(124,58,237,0.25); cursor: pointer; transition: transform 0.12s;">
+            <span><i class="fas fa-award" style="margin-right: 12px;"></i> Kelas XII</span>
+            <i class="fas fa-chevron-right"></i>
+        </button>
+    </div>
+
+    <!-- LAYAR 1.5: PICKER 2 KOLOM (GIRLS & BOYS PER SUB-KELAS) -->
+    <div id="screenPicker" style="display: none;">
         <div class="col-headers">
             <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle (GC)</div>
             <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle (BC)</div>
         </div>
-        <div class="two-col-grid">
-            <!-- Row 1–12 GC & BC Per Kelas -->
-            <button class="group-btn gc" onclick="selectGroup('GC X-1')">X 1</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-1')">X 1</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-2')">X 2</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-2')">X 2</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-3')">X 3</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-3')">X 3</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-4')">X 4</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-4')">X 4</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-5')">X 5</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-5')">X 5</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-6')">X 6</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-6')">X 6</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-7')">X 7</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-7')">X 7</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-8')">X 8</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-8')">X 8</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-9')">X 9</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-9')">X 9</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-10')">X 10</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-10')">X 10</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-11')">X 11</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-11')">X 11</button>
-            <button class="group-btn gc" onclick="selectGroup('GC X-12')">X 12</button>
-            <button class="group-btn bc" onclick="selectGroup('BC X-12')">X 12</button>
+        <div class="two-col-grid" id="classButtonsGrid">
+            <!-- Tombol sub-kelas X 1 s/d X 12 di-generate otomatis -->
         </div>
     </div>
 
@@ -416,7 +409,8 @@
 <script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
 
-    let screen = 'picker';
+    let screen = 'gradePicker';
+    let selectedGrade = 'X';
     let displayedProfiles = [];
     let currentIndex = 0;
 
@@ -433,20 +427,43 @@
 
     function showScreen(name) {
         screen = name;
-        document.getElementById('screenPicker').style.display  = name === 'picker'  ? 'flex' : 'none';
-        document.getElementById('screenLoading').style.display = name === 'loading' ? 'flex' : 'none';
-        document.getElementById('screenSlider').style.display  = name === 'slider'  ? 'flex' : 'none';
+        document.getElementById('screenGradePicker').style.display = name === 'gradePicker' ? 'flex' : 'none';
+        document.getElementById('screenPicker').style.display      = name === 'picker'      ? 'flex' : 'none';
+        document.getElementById('screenLoading').style.display     = name === 'loading'     ? 'flex' : 'none';
+        document.getElementById('screenSlider').style.display      = name === 'slider'      ? 'flex' : 'none';
         if (name === 'picker') document.getElementById('screenPicker').style.flexDirection = 'column';
         if (name === 'slider') document.getElementById('screenSlider').style.flexDirection = 'column';
         if (name === 'loading') document.getElementById('screenLoading').style.flexDirection = 'column';
     }
 
-    function goBack() {
-        if (screen === 'picker') { window.location.href = 'presensi.html'; return; }
+    function selectGrade(grade) {
+        selectedGrade = grade;
+        document.getElementById('headerTitle').textContent = `Buku Saku - Kelas ${grade}`;
+        document.getElementById('headerSub').textContent = 'Pilih sub-kelas';
+
+        const grid = document.getElementById('classButtonsGrid');
+        grid.innerHTML = '';
+        for (let i = 1; i <= 12; i++) {
+            grid.innerHTML += `
+                <button class="group-btn gc" onclick="selectGroup('GC ${grade}-${i}')">${grade} ${i}</button>
+                <button class="group-btn bc" onclick="selectGroup('BC ${grade}-${i}')">${grade} ${i}</button>
+            `;
+        }
         showScreen('picker');
-        document.getElementById('headerTitle').textContent = 'Buku Saku Mentee';
-        document.getElementById('headerSub').textContent = 'Pilih grup';
     }
+
+    function goBack() {
+        if (screen === 'gradePicker') { window.location.href = 'presensi.html'; return; }
+        if (screen === 'picker') { 
+            showScreen('gradePicker'); 
+            document.getElementById('headerTitle').textContent = 'Buku Saku Mentee'; 
+            document.getElementById('headerSub').textContent = 'Pilih tingkat kelas'; 
+            return; 
+        }
+        showScreen('picker');
+        document.getElementById('headerTitle').textContent = `Buku Saku - Kelas ${selectedGrade}`;
+        document.getElementById('headerSub').textContent = 'Pilih sub-kelas';
+    } }
 
     async function selectGroup(groupName) {
         document.getElementById('headerTitle').textContent = groupName;

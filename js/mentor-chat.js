@@ -55,8 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mentorEmail: mentorEmail
             };
 
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
+            const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify(payload)
             });
 
@@ -124,8 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 mentorEmail: mentorEmail
             };
 
-            const response = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
+            const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 // Mode CORS tidak dipakai no-cors agar kita bisa membaca response-nya
                 body: JSON.stringify(payload)
             });

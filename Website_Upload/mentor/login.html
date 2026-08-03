@@ -190,8 +190,7 @@
 
             try {
                 // Check if mentor exists
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: "check_mentor", email: userEmail })
                 });
                 
@@ -240,8 +239,7 @@
             };
 
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
                 

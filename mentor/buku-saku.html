@@ -462,8 +462,7 @@
         showScreen('loading');
 
         try {
-            const res = await fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
+            const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'get_profiles' })
             });
             const data = await res.json();
@@ -536,30 +535,45 @@
                 ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="info-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : '';
 
             let rowsHtml = '';
+            
+            if (p.tanggalLahir) rowsHtml += `<div class="info-row"><label>Tanggal Lahir</label><p>${p.tanggalLahir}</p></div>`;
+            if (p.alamat) rowsHtml += `<div class="info-row"><label>Alamat Rumah</label><p>${p.alamat}</p></div>`;
+            if (p.hobi) rowsHtml += `<div class="info-row"><label>Hobi yang Disukai</label><p>${p.hobi}</p></div>`;
+            if (p.aktivitas) rowsHtml += `<div class="info-row"><label>Aktivitas Harian</label><p>${p.aktivitas}</p></div>`;
+            if (p.tidakDisukai) rowsHtml += `<div class="info-row"><label>Hal yang Paling Tidak Disukai</label><p>${p.tidakDisukai}</p></div>`;
+            if (p.karakter) rowsHtml += `<div class="info-row"><label>Karakter yang Paling Terlihat Dariku</label><p>${p.karakter}</p></div>`;
+            if (p.liburan) rowsHtml += `<div class="info-row"><label>Kegiatan favorit yang dilakukan saat liburan</label><p>${p.liburan}</p></div>`;
+            if (p.mempelajari) rowsHtml += `<div class="info-row"><label>Tertarik mempelajari hal apa saja</label><p>${p.mempelajari}</p></div>`;
+
             if (p.extraFields && p.extraFields.length > 0) {
                 p.extraFields.forEach(ef => {
-                    const lLower = ef.label.toLowerCase();
-                    if ((lLower.includes('nama') && !lLower.includes('orang') && !lLower.includes('ortu')) ||
+                    const lLower = ef.label.toLowerCase().trim();
+                    if (lLower === 'nama' || lLower === 'nama lengkap' || lLower === 'nama (standar)' ||
                         lLower.includes('kelas') || lLower.includes('kelompok') || lLower.includes('grup') ||
-                        lLower.includes('instagram') || lLower === 'ig') {
+                        lLower.includes('instagram') || lLower === 'ig' ||
+                        lLower.includes('cap waktu') || lLower.includes('timestamp') ||
+                        lLower.includes('foto') || lLower.includes('upload') ||
+                        lLower.includes('sapaan') || lLower.includes('panggilan') ||
+                        lLower.includes('hp') || lLower.includes('wa') || lLower.includes('telepon') ||
+                        lLower.includes('ortu') || lLower.includes('ayah') || lLower.includes('ibu')) {
+                        return;
+                    }
+                    if ((lLower.includes('lahir') && p.tanggalLahir) || 
+                        (lLower.includes('alamat') && p.alamat) ||
+                        (lLower.includes('hobi') && p.hobi) ||
+                        (lLower.includes('aktivitas') && p.aktivitas) ||
+                        (lLower.includes('tidak disukai') && p.tidakDisukai) ||
+                        (lLower.includes('karakter') && p.karakter) ||
+                        (lLower.includes('liburan') && p.liburan) ||
+                        (lLower.includes('mempelajari') && p.mempelajari)) {
                         return;
                     }
                     rowsHtml += `<div class="info-row"><label>${ef.label}</label><p>${ef.value || '-'}</p></div>`;
                 });
             }
-            
-            if (!rowsHtml) {
-                rowsHtml = `
-                    <div class="info-row"><label>Alamat</label><p>${p.alamat||'-'}</p></div>
-                    ${p.tanggalLahir ? `<div class="info-row"><label>Tanggal Lahir</label><p>${p.tanggalLahir}</p></div>` : ''}
-                    <div class="info-row"><label>Orang Tua &amp; No. HP</label><p>${p.ortu||'-'}</p></div>
-                    <div class="info-row"><label>Hobi &amp; Aktivitas</label><p>${(p.hobi?p.hobi+', ':'')}${p.aktivitas||'-'}</p></div>
-                    <div class="info-row"><label>Karakter</label><p>${p.karakter||'-'}</p></div>
-                    <div class="info-row"><label>Tidak Disukai</label><p>${p.tidakDisukai||'-'}</p></div>
-                    <div class="info-row"><label>Liburan Favorit</label><p>${p.liburan||'-'}</p></div>
-                    <div class="info-row"><label>Ingin Mempelajari</label><p>${p.mempelajari||'-'}</p></div>
-                `;
-            }
+
+            const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
+            const fullNameSub = p.panggilan ? `<div style="font-size: 13px; color: rgba(255,255,255,0.92); font-weight: 500; margin-top: 2px; margin-bottom: 4px; text-shadow: 0 1px 3px rgba(0,0,0,0.5);">${p.nama}</div>` : '';
 
             const card = document.createElement('div');
             card.className = 'profile-card';
@@ -570,7 +584,8 @@
                         <i class="fas fa-share-alt"></i>
                     </button>
                     <div class="card-name-badge">
-                        <h2>${p.nama || 'Tanpa Nama'}</h2>
+                        <h2>${mainName}</h2>
+                        ${fullNameSub}
                         <span class="badge"><i class="fas fa-users"></i> ${p.kelas || '-'}</span>
                     </div>
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
@@ -607,8 +622,7 @@
         const fallback = document.getElementById('fallback-' + fileId);
         if (loader) loader.style.display = 'flex';
 
-        fetch(APPS_SCRIPT_URL, {
-            method: 'POST',
+        fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
             body: JSON.stringify({ action: 'get_image', fileId: fileId })
         })
         .then(res => res.json())

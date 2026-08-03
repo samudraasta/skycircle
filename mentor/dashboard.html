@@ -173,11 +173,11 @@
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <span style="font-size: 13px; color: var(--text-main); font-weight: 500;">Laporan Tertunda</span>
                     <div style="width: 28px; height: 28px; border: 1px solid var(--border-color); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                        <i class="fas fa-check-circle" style="font-size: 10px; color: var(--success);"></i>
+                        <i id="stat-pending-icon" class="fas fa-check-circle" style="font-size: 10px; color: var(--success);"></i>
                     </div>
                 </div>
-                <div style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
-                <div style="font-size: 11px; color: var(--success); font-weight: 500;">
+                <div id="stat-pending" style="font-size: 28px; font-weight: 700; color: var(--text-main); margin-bottom: 8px; line-height: 1;">0</div>
+                <div id="stat-pending-sub" style="font-size: 11px; color: var(--success); font-weight: 500;">
                     Semua update
                 </div>
             </div>
@@ -231,6 +231,7 @@
                     <tr>
                         <th style="width: 4%;">No</th>
                         <th onclick="toggleSort('mentor')" style="cursor: pointer; user-select: none;">Nama Mentor <i id="sort-icon-mentor" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('gender')" style="cursor: pointer; user-select: none; text-align: center;">L/P <i id="sort-icon-gender" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('kelompok')" style="cursor: pointer; user-select: none;">Kelompok <i id="sort-icon-kelompok" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th>P1</th>
                         <th>P2</th>
@@ -271,8 +272,7 @@
 
         async function fetchMentorData() {
             try {
-                const response = await fetch(APPS_SCRIPT_URL, {
-                    method: "POST",
+                const response = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: "get_admin_data" })
                 });
                 const data = await response.json();
@@ -501,6 +501,46 @@
             document.getElementById('stat-groups').innerText = uniqueGroups.size;
             document.getElementById('stat-active').innerText = filtered.length;
             
+            // Hitung Laporan Tertunda (Pending Reports) secara dinamis
+            let maxMeeting = 0;
+            filtered.forEach(m => {
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                pList.forEach((filled, idx) => {
+                    if (filled && (idx + 1 > maxMeeting)) maxMeeting = idx + 1;
+                });
+            });
+
+            let pendingCount = 0;
+            if (maxMeeting > 0) {
+                filtered.forEach(m => {
+                    let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                    for (let p = 0; p < maxMeeting; p++) {
+                        if (!pList[p]) pendingCount++;
+                    }
+                });
+            }
+
+            const pendingEl = document.getElementById('stat-pending');
+            const pendingSubEl = document.getElementById('stat-pending-sub');
+            const pendingIconEl = document.getElementById('stat-pending-icon');
+
+            if (pendingEl) pendingEl.innerText = pendingCount;
+            if (pendingSubEl) {
+                if (pendingCount === 0) {
+                    pendingSubEl.innerHTML = '<span style="color: var(--success);">Semua update</span>';
+                    if (pendingIconEl) {
+                        pendingIconEl.className = 'fas fa-check-circle';
+                        pendingIconEl.style.color = 'var(--success)';
+                    }
+                } else {
+                    pendingSubEl.innerHTML = `<span style="color: var(--danger); font-weight:600;">${pendingCount} laporan tertunda</span>`;
+                    if (pendingIconEl) {
+                        pendingIconEl.className = 'fas fa-exclamation-circle';
+                        pendingIconEl.style.color = 'var(--danger)';
+                    }
+                }
+            }
+            
             // Ubah data jumlah hadir menjadi persentase
             let chartDataPersentase = chartDataFilled.map(count => {
                 return filtered.length > 0 ? Math.round((count / filtered.length) * 100) : 0;
@@ -545,10 +585,16 @@
                 let pillClass = percent >= 75 ? 'status-pill status-done' : 'status-pill';
                 let pillStyle = percent >= 75 ? '' : (percent > 0 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;');
 
+                let isBoys = (m.kelompok && m.kelompok.toUpperCase().startsWith('BC'));
+                let genderBadge = isBoys 
+                    ? `<span style="display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: #e8f0fe; color: #1a73e8;">L</span>`
+                    : `<span style="display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: #fce8e6; color: #c5221f;">P</span>`;
+
                 let tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td style="color: var(--text-muted);">${counter++}</td>
                     <td style="font-weight: 600; color: var(--text-main);">${m.mentor}</td>
+                    <td style="text-align: center;">${genderBadge}</td>
                     <td>${m.kelompok}</td>
                     ${pCells}
                     <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${m._filledCount}/12</span></td>

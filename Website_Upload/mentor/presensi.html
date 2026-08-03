@@ -604,15 +604,74 @@
         <div class="dot-indicator" id="dotIndicator"></div>
     </div>
 
+    <!-- Modal Popup Identitas Mentor -->
+    <div id="mentor-identity-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 99999; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 20px; width: 90%; max-width: 380px; padding: 24px; box-shadow: 0 15px 35px rgba(0,0,0,0.3); text-align: center; font-family: 'Inter', sans-serif;">
+            <div style="width: 56px; height: 56px; background: #e6f4ea; color: #075e54; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 14px auto;">
+                <i class="fas fa-user-check"></i>
+            </div>
+            <h3 style="margin: 0 0 6px 0; color: #111b21; font-size: 18px; font-weight: 700;">Identitas Mentor</h3>
+            <p style="margin: 0 0 18px 0; color: #667781; font-size: 13px; line-height: 1.4;">Mohon lengkapi Nama & Email Kakak terlebih dahulu sebelum mengisi laporan presensi ya:</p>
+            
+            <div style="text-align: left; margin-bottom: 12px;">
+                <label style="font-size: 12px; font-weight: 600; color: #111b21; display: block; margin-bottom: 4px;">Nama Lengkap Mentor:</label>
+                <input type="text" id="modal-mentor-name" placeholder="Contoh: Kak Teguh" style="width: 100%; padding: 11px 14px; border: 1.5px solid #e9edef; border-radius: 10px; font-size: 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#075e54'" onblur="this.style.borderColor='#e9edef'">
+            </div>
+            
+            <div style="text-align: left; margin-bottom: 20px;">
+                <label style="font-size: 12px; font-weight: 600; color: #111b21; display: block; margin-bottom: 4px;">Email Mentor:</label>
+                <input type="email" id="modal-mentor-email" placeholder="Contoh: mentor@gmail.com" style="width: 100%; padding: 11px 14px; border: 1.5px solid #e9edef; border-radius: 10px; font-size: 14px; box-sizing: border-box; outline: none; transition: border-color 0.2s;" onfocus="this.style.borderColor='#075e54'" onblur="this.style.borderColor='#e9edef'">
+            </div>
+
+            <button onclick="saveMentorIdentityModal()" style="width: 100%; padding: 13px; background: #075e54; color: white; border: none; border-radius: 10px; font-weight: 700; font-size: 14px; cursor: pointer; box-shadow: 0 4px 12px rgba(7,94,84,0.3);">
+                Mulai Isi Presensi <i class="fas fa-arrow-right" style="margin-left: 6px;"></i>
+            </button>
+        </div>
+    </div>
+
     <script>
         const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
         
         let allStudents = [];
         let selectedStudents = [];
 
-        // Hilangkan prompt login yang mengganggu
-        let mentorName = localStorage.getItem('mentor_name') || 'Kakak Mentor';
-        let mentorEmail = localStorage.getItem('mentor_email') || 'anonim@skycircle.id';
+        let mentorName = localStorage.getItem('mentor_name') || '';
+        let mentorEmail = localStorage.getItem('mentor_email') || '';
+
+        function checkMentorIdentityModal() {
+            if (!mentorName || !mentorEmail || mentorName === 'Kakak Mentor' || mentorEmail === 'anonim@skycircle.id') {
+                document.getElementById('mentor-identity-modal').style.display = 'flex';
+            } else {
+                updateGreeting(mentorName);
+            }
+        }
+
+        function saveMentorIdentityModal() {
+            const nameInput = document.getElementById('modal-mentor-name').value.trim();
+            const emailInput = document.getElementById('modal-mentor-email').value.trim();
+            
+            if (!nameInput) {
+                alert('Mohon isi Nama Lengkap Kakak terlebih dahulu!');
+                return;
+            }
+            if (!emailInput || !emailInput.includes('@')) {
+                alert('Mohon isi Email valid Kakak terlebih dahulu!');
+                return;
+            }
+            
+            localStorage.setItem('mentor_name', nameInput);
+            localStorage.setItem('mentor_email', emailInput);
+            mentorName = nameInput;
+            mentorEmail = emailInput;
+            
+            document.getElementById('mentor-identity-modal').style.display = 'none';
+            updateGreeting(nameInput);
+        }
+
+        function updateGreeting(name) {
+            const greetingEl = document.getElementById('msg-bot-greeting');
+            if (greetingEl) greetingEl.innerText = `Assalamu'alaikum Kak ${name}! Tolong isi laporan presensinya di bawah ini ya Kak:`;
+        }
         
         // Setup clock times for aesthetics
         const now = new Date();
@@ -630,8 +689,7 @@
         // Load Students & Reveal Chat Sequentially
         async function loadStudents() {
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: "get_students" })
                 });
                 const result = await res.json();
@@ -644,6 +702,7 @@
                     if (greetingEl) greetingEl.innerText = `Assalamu'alaikum Kak ${mentorName}! Tolong isi laporan presensinya di bawah ini ya Kak:`;
                     
                     revealChat();
+                    checkMentorIdentityModal();
                 }
             } catch (e) {
                 alert("Gagal memuat daftar siswa. Error: " + e.message);
@@ -788,14 +847,13 @@
                 action: "submit_presensi",
                 pertemuan: pertNum,
                 tanggal: tanggal,
-                mentorName: localStorage.getItem('mentor_name') || 'Unknown Mentor',
-                mentorEmail: localStorage.getItem('mentor_email') || 'Tanpa Email',
+                mentorName: localStorage.getItem('mentor_name') || 'Kakak Mentor',
+                mentorEmail: localStorage.getItem('mentor_email') || 'anonim@skycircle.id',
                 hadirList: selectedStudents
             };
 
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify(payload)
                 });
                 const result = await res.json();
@@ -929,8 +987,7 @@
 
         async function loadProfiles() {
             try {
-                const res = await fetch(APPS_SCRIPT_URL, {
-                    method: 'POST',
+                const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                     body: JSON.stringify({ action: 'get_profiles' })
                 });
                 const data = await res.json();

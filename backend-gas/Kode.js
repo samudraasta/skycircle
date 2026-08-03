@@ -1,3 +1,30 @@
+function getSS() {
+  return SpreadsheetApp.getActiveSpreadsheet();
+}
+
+function doGet(e) {
+  var action = (e && e.parameter && e.parameter.action) ? e.parameter.action : "";
+  if (action === "get_students") {
+    return handleGetStudents(e.parameter);
+  }
+  if (action === "get_profiles") {
+    return handleGetProfiles(e.parameter || {});
+  }
+  if (action === "get_school_data") {
+    return handleGetSchoolData(e.parameter || {});
+  }
+  if (action === "get_admin_data") {
+    return handleGetAdminData(e.parameter || {});
+  }
+  if (action === "fix_timestamps") {
+    return handleFixTimestamps();
+  }
+  return ContentService.createTextOutput(JSON.stringify({ 
+    "status": "success", 
+    "message": "Sky Circle Mentoring API is active!" 
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
 function doPost(e) {
   try {
     var payload = JSON.parse(e.postData.contents);
@@ -74,7 +101,7 @@ function doPost(e) {
 
 function handleSync(payload) {
   var sheetName = payload.sheetName || "Semester 1";
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName(sheetName);
   
   if (!sheet) sheet = ss.insertSheet(sheetName);
@@ -98,7 +125,7 @@ function handleSync(payload) {
 
 // Fungsi internal untuk menyimpan log chat ke Sheet
 function saveChatToSheet(email, role, message) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheetName = "History Chat";
   var sheet = ss.getSheetByName(sheetName);
   
@@ -108,14 +135,14 @@ function saveChatToSheet(email, role, message) {
     sheet.getRange("A1:D1").setFontWeight("bold").setBackground("#e6f2eb");
   }
   
-  sheet.appendRow([new Date(), email, role, message]);
+  sheet.appendRow([Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss"), email, role, message]);
 }
 
 function handleGetHistory(payload) {
   var email = payload.mentorEmail;
   if (!email) throw new Error("Email tidak ditemukan");
 
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("History Chat");
   
   var history = [];
@@ -141,7 +168,7 @@ function handleChat(payload) {
   var userMessage = payload.message;
   var email = payload.mentorEmail;
   var mentorName = payload.mentorName || "";
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("History Chat");
   
   // Ambil history chat sebelumnya (tanpa API eksternal)
@@ -498,7 +525,7 @@ function deleteRekapPresensi(pertemuan, studentNamesArray, ss) {
 }
 
 function updateRekapPresensi(extracted) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Semester 1");
   if (!sheet) return;
   
@@ -597,7 +624,7 @@ function getLevenshteinDistance(a, b) {
 
 function handleCheckMentor(payload) {
   var email = payload.email;
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Data Mentor");
   if (!sheet) {
      return ContentService.createTextOutput(JSON.stringify({"status": "not_found"})).setMimeType(ContentService.MimeType.JSON);
@@ -615,7 +642,7 @@ function handleCheckMentor(payload) {
 }
 
 function handleRegisterMentor(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Data Mentor");
   if (!sheet) {
      sheet = ss.insertSheet("Data Mentor");
@@ -629,13 +656,13 @@ function handleRegisterMentor(payload) {
     payload.angkatan || "", 
     payload.tgl_lahir || "", 
     payload.alamat || "", 
-    new Date()
+    Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss")
   ]);
   return ContentService.createTextOutput(JSON.stringify({"status": "success"})).setMimeType(ContentService.MimeType.JSON);
 }
 
 function handleGetStudents(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var roster = getMentorRosterData(ss);
   var allStudents = [];
   
@@ -654,7 +681,7 @@ function handleGetStudents(payload) {
 }
 
 function handleSubmitPresensi(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Semester 1");
   if (!sheet) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -734,8 +761,8 @@ function handleSubmitPresensi(payload) {
       logSheet.getRange("A1:G1").setFontWeight("bold").setBackground("#d9ead3");
   }
 
-  // Tambahkan baris log baru
-  var timeStamp = new Date();
+  // Tambahkan baris log baru (Format waktu pasti WIB Asia/Jakarta)
+  var timeStamp = Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss");
   var mentorName = payload.mentorName || "Unknown";
   var mentorEmail = payload.mentorEmail || "Tanpa Email";
   var daftarHadirStr = hadirNames.join(", ");
@@ -749,7 +776,7 @@ function handleSubmitPresensi(payload) {
 }
 
 function handleGetSchoolData(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Semester 1");
   if (!sheet) return ContentService.createTextOutput(JSON.stringify({"status": "error"})).setMimeType(ContentService.MimeType.JSON);
   
@@ -794,7 +821,7 @@ function handleGetSchoolData(payload) {
 }
 
 function handleGetAdminData(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var mentorSheet = ss.getSheetByName("Data Mentor");
   var mentorPhones = {};
   if (mentorSheet) {
@@ -882,7 +909,7 @@ function handleGetAdminData(payload) {
 // FUNGSI UNTUK MERAPIKAN FORMAT SPREADSHEET (AUTO-FIX)
 // ==========================================
 function formatSpreadsheetManually() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Semester 1");
   
   if (!sheet) {
@@ -942,7 +969,7 @@ function formatSpreadsheetManually() {
 // FUNGSI UNTUK GENERATE KELOMPOK KELAS X
 // ==========================================
 function generateGroupsForKelasX() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Semester 1");
   
   if (!sheet) {
@@ -1024,7 +1051,7 @@ function generateGroupsForKelasX() {
 // ==========================================
 
 function handleSubmitProfile(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Profil Mentee");
   
   if (!sheet) {
@@ -1086,7 +1113,7 @@ function handleSubmitProfile(payload) {
   var data = sheet.getDataRange().getValues();
   var updated = false;
   var rowData = [
-    new Date(), nama, kelas, alamat, ortu, hobi, aktivitas, 
+    Utilities.formatDate(new Date(), "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss"), nama, kelas, alamat, ortu, hobi, aktivitas, 
     tidakDisukai, karakter, liburan, mempelajari, instagram, fotoUrl
   ];
 
@@ -1110,7 +1137,7 @@ function handleSubmitProfile(payload) {
 }
 
 function handleGetProfiles(payload) {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var ss = getSS();
   var sheet = ss.getSheetByName("Profile"); // Disesuaikan dengan nama sheet Google Form
   if (!sheet) {
     return ContentService.createTextOutput(JSON.stringify({
@@ -1130,8 +1157,19 @@ function handleGetProfiles(payload) {
   var headers = data[0].map(function(h) { return String(h || "").trim(); });
   var tz = ss.getSpreadsheetTimeZone() || "Asia/Jakarta";
 
+  // Deteksi kolom mana saja yang disembunyikan (Hide Column) oleh user di Google Sheets
+  var hiddenCols = {};
+  for (var colIdx = 0; colIdx < headers.length; colIdx++) {
+    try {
+      if (sheet.isColumnHiddenByUser(colIdx + 1)) {
+        hiddenCols[colIdx] = true;
+      }
+    } catch (errHide) {}
+  }
+
   function getVal(row, keywords) {
     for (var i = 0; i < headers.length; i++) {
+      if (hiddenCols[i]) continue; // Abaikan kolom yang di-hide di Google Sheets
       var h = headers[i].toLowerCase();
       for (var k = 0; k < keywords.length; k++) {
         if (h.indexOf(keywords[k].toLowerCase()) !== -1) {
@@ -1166,10 +1204,12 @@ function handleGetProfiles(payload) {
   for (var r = 1; r < data.length; r++) {
     var row = data[r];
     
-    var nama = getVal(row, ["Nama"]);
+    var nama = getVal(row, ["Nama Lengkap", "Nama"]);
+    var panggilan = getVal(row, ["Nama Panggilan", "Panggilan", "Sapaan", "Nama Sapaan", "Nick"]);
     var kelas = getVal(row, ["Kelas", "Kelompok", "Grup"]);
     var alamat = getVal(row, ["Alamat"]);
-    var ortu = getVal(row, ["Orang Tua", "Ortu", "No. HP", "HP", "Telepon"]);
+    var noHp = getVal(row, ["No HP", "No. HP", "HP", "WhatsApp", "WA", "No Telepon", "Telepon", "No. WA"]);
+    var ortu = getVal(row, ["Orang Tua", "Ortu", "Nama Ortu", "Ayah", "Ibu"]);
     var hobi = getVal(row, ["Hobi"]);
     var aktivitas = getVal(row, ["Aktivitas", "Kegiatan"]);
     var tidakDisukai = getVal(row, ["Tidak Disukai", "Benci"]);
@@ -1177,7 +1217,7 @@ function handleGetProfiles(payload) {
     var liburan = getVal(row, ["Liburan"]);
     var mempelajari = getVal(row, ["Mempelajari", "Ingin Mempelajari"]);
     var instagram = getVal(row, ["Instagram", "IG"]);
-    var tanggalLahir = getVal(row, ["Tanggal Lahir", "TGL Lahir", "Lahir"]);
+    var tanggalLahir = getVal(row, ["Tanggal Lahir", "TGL Lahir", "TTL", "Lahir", "Tgl/Bln/Thn", "Tanggal/Bulan/Tahun"]);
     var fotoUrl = getFotoUrl(row);
 
     var extraFields = [];
@@ -1186,7 +1226,8 @@ function handleGetProfiles(payload) {
       var val = row[c];
       var valStr = String(val || "").trim();
       
-      if (!hName || hName.toLowerCase() === "timestamp" || valStr.indexOf("drive.google.com") !== -1) continue;
+      var hLower = hName.toLowerCase();
+      if (hiddenCols[c] || !hName || hLower === "timestamp" || hLower === "cap waktu" || valStr.indexOf("drive.google.com") !== -1) continue;
       
       if (val instanceof Date) {
         valStr = Utilities.formatDate(val, tz, "dd MMMM yyyy");
@@ -1199,8 +1240,10 @@ function handleGetProfiles(payload) {
 
     profiles.push({
       nama: nama || (row[1] ? String(row[1]) : ""),
+      panggilan: panggilan,
       kelas: kelas || (row[2] ? String(row[2]) : ""),
       alamat: alamat || (row[3] ? String(row[3]) : ""),
+      noHp: noHp,
       ortu: ortu || (row[4] ? String(row[4]) : ""),
       hobi: hobi || (row[5] ? String(row[5]) : ""),
       aktivitas: aktivitas || (row[6] ? String(row[6]) : ""),
@@ -1240,4 +1283,36 @@ function handleGetImage(payload) {
   } catch (e) {
     return ContentService.createTextOutput(JSON.stringify({"status": "error", "message": e.message})).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function handleFixTimestamps() {
+  var ss = getSS();
+  // 1. Kunci Zona Waktu Spreadsheet ke (GMT+07:00) Asia/Jakarta
+  ss.setSpreadsheetTimeZone("Asia/Jakarta");
+  
+  var totalFixed = 0;
+  var sheetsToFix = ["Log Presensi", "Profile", "Form_Responses", "Mentor", "Buku Saku"];
+  
+  sheetsToFix.forEach(function(sheetName) {
+    var sheet = ss.getSheetByName(sheetName);
+    if (!sheet) return;
+    
+    var data = sheet.getDataRange().getValues();
+    for (var i = 1; i < data.length; i++) {
+      var rawVal = data[i][0]; // Kolom A (Timestamp / Cap Waktu / Waktu Input)
+      if (rawVal) {
+        var d = new Date(rawVal);
+        if (!isNaN(d.getTime())) {
+          var formattedStr = Utilities.formatDate(d, "Asia/Jakarta", "yyyy-MM-dd HH:mm:ss");
+          sheet.getRange(i + 1, 1).setValue(formattedStr);
+          totalFixed++;
+        }
+      }
+    }
+  });
+
+  return ContentService.createTextOutput(JSON.stringify({
+    "status": "success",
+    "message": "Berhasil mengunci Zona Waktu Spreadsheet ke (GMT+07:00) Jakarta dan mengonversi " + totalFixed + " timestamp ke WIB!"
+  })).setMimeType(ContentService.MimeType.JSON);
 }

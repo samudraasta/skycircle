@@ -320,7 +320,7 @@
 
             let groupStats = {};
             studentList.forEach(s => {
-                let grp = s.kelompok || (s.kelas + ' - ' + s.nama);
+                let grp = s.kelompok ? String(s.kelompok).trim().toUpperCase() : (String(s.kelas || '') + ' - ' + String(s.nama || '')).trim().toUpperCase();
                 if (!groupStats[grp]) {
                     groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                 }
@@ -425,9 +425,9 @@
         function switchSubClassTab(sc) {
             currentSubClass = sc;
             
-            document.querySelectorAll('.subclass-tab-chip').forEach(btn => btn.classList.remove('active'));
-            const activeSubBtn = document.getElementById('subclass-tab-' + String(sc).replace(/\s+/g, '-'));
-            if (activeSubBtn) activeSubBtn.classList.add('active');
+            document.querySelectorAll('.subclass-tab-chip').forEach(btn => {
+                btn.classList.toggle('active', btn.innerText.trim() === sc);
+            });
             
             renderSchoolTable();
         }
@@ -442,29 +442,24 @@
             }
             
             container.style.display = 'flex';
-            let subClasses = ['Semua'];
             
-            if (currentTingkat === 'X') {
-                // Tampilkan X-1 s/d X-12
-                subClasses = ['Semua', 'X-1', 'X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8', 'X-9', 'X-10', 'X-11', 'X-12'];
-            } else {
-                // Ambil kelas dinamis untuk XI atau XII dari data
-                let uniqueClasses = new Set();
-                allStudents.forEach(s => {
-                    let k = String(s.kelas || '').toUpperCase().trim();
-                    let matches = false;
-                    if (currentTingkat === 'XII') matches = k.startsWith('XII');
-                    else if (currentTingkat === 'XI') matches = k.startsWith('XI') && !k.startsWith('XII');
-                    if (matches && s.kelas) uniqueClasses.add(s.kelas);
-                });
-                
-                Array.from(uniqueClasses).sort((a, b) => {
-                    let numA = parseInt(String(a).replace(/\D/g, '')) || 0;
-                    let numB = parseInt(String(b).replace(/\D/g, '')) || 0;
-                    return numA - numB;
-                }).forEach(cls => subClasses.push(cls));
-            }
+            let subClassesSet = new Set();
+            allStudents.forEach(s => {
+                let k = String(s.kelas || '').toUpperCase().trim();
+                if (k && isStudentInTingkat(s, currentTingkat)) {
+                    subClassesSet.add(k);
+                }
+            });
             
+            let subClasses = Array.from(subClassesSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+            
+            const allBtn = document.createElement('button');
+            allBtn.id = 'subclass-tab-Semua';
+            allBtn.className = 'subclass-tab-chip' + (currentSubClass === 'Semua' ? ' active' : '');
+            allBtn.innerText = 'Semua';
+            allBtn.onclick = () => switchSubClassTab('Semua');
+            container.appendChild(allBtn);
+
             subClasses.forEach(sc => {
                 const btn = document.createElement('button');
                 const chipId = 'subclass-tab-' + String(sc).replace(/\s+/g, '-');
@@ -508,16 +503,15 @@
         }
 
         function updateSortIcons() {
-            ['nama', 'gender', 'kelas', 'kelompok', 'kehadiran'].forEach(f => {
+            ['nama', 'kelas', 'gender', 'kelompok', 'kehadiran'].forEach(f => {
                 const icon = document.getElementById('sort-icon-' + f);
-                if (icon) {
-                    if (currentSortField === f) {
-                        icon.className = currentSortDir === 'desc' ? 'fas fa-sort-down' : 'fas fa-sort-up';
-                        icon.style.color = '#0066ff';
-                    } else {
-                        icon.className = 'fas fa-sort';
-                        icon.style.color = '#ccc';
-                    }
+                if (!icon) return;
+                if (currentSortField === f) {
+                    icon.className = currentSortDir === 'desc' ? 'fas fa-sort-down' : 'fas fa-sort-up';
+                    icon.style.color = '#38bdf8';
+                } else {
+                    icon.className = 'fas fa-sort';
+                    icon.style.color = '#ccc';
                 }
             });
         }
@@ -529,15 +523,14 @@
             const tbody = document.getElementById('student-table-body');
             tbody.innerHTML = '';
             
-            const searchQuery = document.getElementById('search-input') ? document.getElementById('search-input').value.toLowerCase() : '';
+            const searchEl = document.getElementById('search-input');
+            const searchQuery = searchEl ? searchEl.value.toLowerCase().trim() : "";
             const cbLaki = document.getElementById('cb-gender-l');
             const cbPerempuan = document.getElementById('cb-gender-p');
             const isLakiChecked = cbLaki ? cbLaki.checked : true;
             const isPerempuanChecked = cbPerempuan ? cbPerempuan.checked : true;
             
             const filtered = allStudents.filter(s => {
-                let k = String(s.kelas || '').toUpperCase().trim();
-
                 // 1. Filter Tier 1 (Tingkat Kelas)
                 if (!isStudentInTingkat(s, currentTingkat)) return false;
 
@@ -563,31 +556,31 @@
             
             // Hitung persentase kehadiran per siswa & label gender
             filtered.forEach(s => {
-                let hadirCount = 0;
                 let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let hadirCount = 0;
+                let validCount = 0;
                 marks.forEach(m => {
-                    if (String(m).toLowerCase() === 'hadir') hadirCount++;
+                    let val = String(m || '').trim().toLowerCase();
+                    if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
+                        validCount++;
+                        if (val === 'hadir') hadirCount++;
+                    }
                 });
-                s._percent = Math.round((hadirCount / 12) * 100);
-
+                s._pct = validCount > 0 ? (hadirCount / validCount) * 100 : 0;
+                
+                // Set default gender from kelompok prefix if empty
                 let g = String(s.gender || '').toUpperCase().trim();
-                let isBoys = g === 'L' || g === 'LAKI-LAKI' || (s.kelompok && s.kelompok.toUpperCase().startsWith('BC'));
-                s._genderLabel = isBoys ? 'L' : 'P';
+                if (!g && s.kelompok) {
+                    if (s.kelompok.toUpperCase().startsWith('BC')) s.gender = 'L';
+                    else if (s.kelompok.toUpperCase().startsWith('GC')) s.gender = 'P';
+                }
             });
 
-            // Urutkan tabel sesuai currentSortField dan currentSortDir
+            // Sorting
             if (currentSortField) {
                 filtered.sort((a, b) => {
                     let valA, valB;
-                    if (currentSortField === 'kehadiran') {
-                        valA = a._percent;
-                        valB = b._percent;
-                        return currentSortDir === 'desc' ? valB - valA : valA - valB;
-                    } else if (currentSortField === 'gender') {
-                        valA = a._genderLabel;
-                        valB = b._genderLabel;
-                        return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
-                    } else if (currentSortField === 'nama') {
+                    if (currentSortField === 'nama') {
                         valA = String(a.nama || '');
                         valB = String(b.nama || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
@@ -595,6 +588,14 @@
                         valA = String(a.kelas || '');
                         valB = String(b.kelas || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
+                    } else if (currentSortField === 'gender') {
+                        valA = String(a.gender || '');
+                        valB = String(b.gender || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA) : valA.localeCompare(valB);
+                    } else if (currentSortField === 'kehadiran') {
+                        valA = a._pct || 0;
+                        valB = b._pct || 0;
+                        return currentSortDir === 'desc' ? valB - valA : valA - valB;
                     } else if (currentSortField === 'kelompok') {
                         valA = String(a.kelompok || '');
                         valB = String(b.kelompok || '');
@@ -618,18 +619,19 @@
             
             let uniqueGroups = new Set();
             let totalKehadiranSemua = 0;
-            let countKehadiran = 0;
             let chartDataHadir = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             
             filtered.forEach(s => {
-                if(s.kelompok) uniqueGroups.add(s.kelompok);
+                if(s.kelompok) {
+                    let gNorm = String(s.kelompok).trim().toUpperCase();
+                    if(gNorm) uniqueGroups.add(gNorm);
+                }
                 let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
                 marks.forEach((m, idx) => {
                     if (String(m).toLowerCase() === 'hadir') {
                         chartDataHadir[idx]++;
                         totalKehadiranSemua++;
                     }
-                    if (m !== "") countKehadiran++;
                 });
             });
             
@@ -650,12 +652,13 @@
             let denominator = filtered.length * maxMeeting;
             let avg = denominator > 0 ? Math.round((totalKehadiranSemua / denominator) * 100) : 0;
             document.getElementById('stat-avg').innerText = avg + "%";
+            
             // Hitung Laporan Tertunda: kelompok yang sama sekali belum mengisi presensi (0 siswa dipresensi)
             let pendingCount = 0;
             if (maxMeeting > 0) {
                 let groupStats = {};
                 filtered.forEach(s => {
-                    let grp = s.kelompok || (s.kelas + ' - ' + s.nama);
+                    let grp = s.kelompok ? String(s.kelompok).trim().toUpperCase() : (String(s.kelas || '') + ' - ' + String(s.nama || '')).trim().toUpperCase();
                     if (!groupStats[grp]) {
                         groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                     }

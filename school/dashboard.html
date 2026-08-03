@@ -387,21 +387,13 @@
         }
 
         function updateAllAlertBadges() {
-            // 1. Update tombol Tingkat (Semua, X, XI, XII)
+            // 1. Hapus badge merah di tombol Tingkat (Semua, X, XI, XII) jika masih ada
             ['Semua', 'X', 'XI', 'XII'].forEach(t => {
                 const btn = document.getElementById('tingkat-tab-' + t);
                 if (!btn) return;
                 btn.dataset.tingkat = t;
-                let matching = allStudents.filter(s => isStudentInTingkat(s, t));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
-                if (checkHasPendingReports(filterByGender(matching))) {
-                    const badge = document.createElement('span');
-                    badge.className = 'badge-alert';
-                    badge.title = 'Ada laporan tertunda';
-                    badge.innerText = '!';
-                    btn.appendChild(badge);
-                }
             });
 
             // 2. Update tombol Subkelas chip (X-1, X-7, dll.)

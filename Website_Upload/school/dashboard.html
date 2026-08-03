@@ -355,19 +355,34 @@
             });
         }
 
+        function isStudentInTingkat(s, t) {
+            let k = String(s.kelas || '').toUpperCase().trim();
+            if (t === 'Semua') return true;
+            if (t === 'XII') return k.startsWith('XII') || k.startsWith('12');
+            if (t === 'XI') return (k.startsWith('XI') && !k.startsWith('XII')) || k.startsWith('11');
+            if (t === 'X') {
+                if (k.startsWith('XII') || k.startsWith('XI') || k.startsWith('12') || k.startsWith('11')) return false;
+                return k.startsWith('X') || k.startsWith('10');
+            }
+            return false;
+        }
+
+        function matchStudentSubClass(s, sc) {
+            let k = String(s.kelas || '').toUpperCase().trim();
+            if (sc === 'Semua') {
+                return isStudentInTingkat(s, currentTingkat);
+            }
+            let kNorm = k.replace(/[\s-]/g, '');
+            let targetNorm = String(sc).toUpperCase().replace(/[\s-]/g, '');
+            return kNorm === targetNorm;
+        }
+
         function updateAllAlertBadges() {
             // 1. Update tombol Tingkat (Semua, X, XI, XII)
             ['Semua', 'X', 'XI', 'XII'].forEach(t => {
                 const btn = document.getElementById('tingkat-tab-' + t);
                 if (!btn) return;
-                let matching = allStudents.filter(s => {
-                    let k = String(s.kelas || '').toUpperCase().trim();
-                    if (t === 'Semua') return true;
-                    if (t === 'XII') return k.startsWith('XII');
-                    if (t === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
-                    if (t === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
-                    return false;
-                });
+                let matching = allStudents.filter(s => isStudentInTingkat(s, t));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
                 if (checkHasPendingReports(filterByGender(matching))) {
@@ -382,17 +397,7 @@
             // 2. Update tombol Subkelas chip (X-1, X-7, dll.)
             document.querySelectorAll('.subclass-tab-chip').forEach(btn => {
                 let sc = btn.innerText.trim();
-                let matching = allStudents.filter(s => {
-                    let k = String(s.kelas || '').toUpperCase().trim();
-                    if (sc === 'Semua') {
-                        if (currentTingkat === 'Semua') return true;
-                        if (currentTingkat === 'XII') return k.startsWith('XII');
-                        if (currentTingkat === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
-                        if (currentTingkat === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
-                        return false;
-                    }
-                    return k === String(sc).toUpperCase().trim() || k.replace(/-/g, ' ') === String(sc).toUpperCase().replace(/-/g, ' ');
-                });
+                let matching = allStudents.filter(s => matchStudentSubClass(s, sc));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
                 if (checkHasPendingReports(filterByGender(matching))) {
@@ -469,17 +474,7 @@
                 btn.onclick = () => switchSubClassTab(sc);
 
                 // Cek apakah subkelas ini memiliki laporan tertunda
-                let matching = allStudents.filter(s => {
-                    let k = String(s.kelas || '').toUpperCase().trim();
-                    if (sc === 'Semua') {
-                        if (currentTingkat === 'Semua') return true;
-                        if (currentTingkat === 'XII') return k.startsWith('XII');
-                        if (currentTingkat === 'XI') return k.startsWith('XI') && !k.startsWith('XII');
-                        if (currentTingkat === 'X') return k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
-                        return false;
-                    }
-                    return k === String(sc).toUpperCase().trim() || k.replace(/-/g, ' ') === String(sc).toUpperCase().replace(/-/g, ' ');
-                });
+                let matching = allStudents.filter(s => matchStudentSubClass(s, sc));
                 if (checkHasPendingReports(filterByGender(matching))) {
                     const badge = document.createElement('span');
                     badge.className = 'badge-alert';
@@ -544,21 +539,11 @@
                 let k = String(s.kelas || '').toUpperCase().trim();
 
                 // 1. Filter Tier 1 (Tingkat Kelas)
-                if (currentTingkat !== 'Semua') {
-                    let matchesTingkat = false;
-                    if (currentTingkat === 'XII') matchesTingkat = k.startsWith('XII');
-                    else if (currentTingkat === 'XI') matchesTingkat = k.startsWith('XI') && !k.startsWith('XII');
-                    else if (currentTingkat === 'X') matchesTingkat = k.startsWith('X') && !k.startsWith('XI') && !k.startsWith('XII');
-
-                    if (!matchesTingkat) return false;
-                }
+                if (!isStudentInTingkat(s, currentTingkat)) return false;
 
                 // 2. Filter Tier 2 (Sub-Kelas)
                 if (currentSubClass !== 'Semua') {
-                    let targetK = String(currentSubClass).toUpperCase().trim();
-                    let kNorm = k.replace(/[\s-]/g, '');
-                    let targetNorm = targetK.replace(/[\s-]/g, '');
-                    if (kNorm !== targetNorm) return false;
+                    if (!matchStudentSubClass(s, currentSubClass)) return false;
                 }
                 
                 // 3. Filter Gender Checkbox

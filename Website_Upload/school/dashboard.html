@@ -452,15 +452,27 @@
             
             container.style.display = 'flex';
             
-            let subClassesSet = new Set();
-            allStudents.forEach(s => {
-                let k = String(s.kelas || '').toUpperCase().trim();
-                if (k && isStudentInTingkat(s, currentTingkat)) {
-                    subClassesSet.add(k);
-                }
-            });
+            let subClasses = [];
             
-            let subClasses = Array.from(subClassesSet).sort((a,b) => a.localeCompare(b, undefined, {numeric: true}));
+            if (currentTingkat === 'X') {
+                subClasses = ['X-1', 'X-2', 'X-3', 'X-4', 'X-5', 'X-6', 'X-7', 'X-8', 'X-9', 'X-10', 'X-11', 'X-12'];
+            } else {
+                let subClassesSet = new Set();
+                allStudents.forEach(s => {
+                    let k = String(s.kelas || '').toUpperCase().trim();
+                    if (k && isStudentInTingkat(s, currentTingkat)) {
+                        subClassesSet.add(k);
+                    }
+                });
+                
+                subClasses = Array.from(subClassesSet).sort((a, b) => {
+                    // Coba urutkan berdasarkan angka yang ada di dalam nama kelas (misal XI B1 -> 1, XII D2 -> 2)
+                    let numA = parseInt(String(a).replace(/\D/g, '')) || 0;
+                    let numB = parseInt(String(b).replace(/\D/g, '')) || 0;
+                    if (numA !== numB) return numA - numB;
+                    return a.localeCompare(b, undefined, {numeric: true});
+                });
+            }
             
             const allBtn = document.createElement('button');
             allBtn.id = 'subclass-tab-Semua';

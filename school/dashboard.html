@@ -75,38 +75,121 @@
         }
         .subclass-tab-chip:hover {
             background: #eff6ff;
-            border-color: #3b82f6;
             color: #1d4ed8;
+            border-color: #bfdbfe;
         }
         .subclass-tab-chip.active {
-            background: #1e40af;
-            border-color: #1e40af;
+            background: #1d4ed8;
             color: #ffffff;
-            box-shadow: 0 2px 8px rgba(30, 64, 175, 0.25);
+            border-color: #1d4ed8;
+            box-shadow: 0 2px 8px rgba(29, 78, 216, 0.25);
         }
         .badge-alert {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            width: 17px;
-            height: 17px;
-            background: #ef4444;
-            color: #ffffff;
-            font-size: 10px;
-            font-weight: 800;
-            border-radius: 50%;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            border: 2px solid #ffffff;
-            box-shadow: 0 2px 4px rgba(239, 68, 68, 0.45);
-            line-height: 1;
-            pointer-events: none;
-            z-index: 10;
+            background-color: #ef4444;
+            color: white;
+            border-radius: 50%;
+            width: 14px;
+            height: 14px;
+            font-size: 10px;
+            font-weight: bold;
+            margin-left: 6px;
+        }
+        
+        /* Custom Modal Styles */
+        .custom-modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .custom-modal-overlay.show {
+            display: flex;
+            opacity: 1;
+        }
+        .custom-modal-card {
+            background: #fff;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 400px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+            text-align: center;
+            transform: translateY(20px) scale(0.95);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+        .custom-modal-overlay.show .custom-modal-card {
+            transform: translateY(0) scale(1);
+        }
+        .custom-modal-icon {
+            width: 60px; height: 60px;
+            background: #eff6ff;
+            color: #0066ff;
+            border-radius: 50%;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 28px;
+            margin: 0 auto 16px;
+        }
+        .custom-modal-title {
+            font-size: 20px; font-weight: 700; color: var(--text-main); margin-bottom: 8px;
+        }
+        .custom-modal-desc {
+            font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.5;
+        }
+        .custom-modal-input {
+            width: 100%; padding: 14px 16px; border-radius: 12px;
+            border: 1px solid var(--border-color); font-family: inherit; font-size: 15px;
+            margin-bottom: 24px; outline: none; transition: 0.2s;
+            box-sizing: border-box; text-align: center; letter-spacing: 2px;
+        }
+        .custom-modal-input:focus {
+            border-color: #0066ff; box-shadow: 0 0 0 4px rgba(0, 102, 255, 0.1);
+        }
+        .custom-modal-actions {
+            display: flex; gap: 12px;
+        }
+        .custom-modal-btn {
+            flex: 1; padding: 14px; border-radius: 12px; font-weight: 600; cursor: pointer;
+            font-family: inherit; font-size: 15px; transition: 0.2s; border: none;
+        }
+        .custom-modal-btn.cancel {
+            background: #f1f5f9; color: #64748b;
+        }
+        .custom-modal-btn.cancel:hover {
+            background: #e2e8f0; color: #475569;
+        }
+        .custom-modal-btn.confirm {
+            background: #0066ff; color: #fff;
+        }
+        .custom-modal-btn.confirm:hover {
+            background: #0052cc;
         }
     </style>
 </head>
 <body class="require-landscape">
+
+    <!-- Custom Password Modal -->
+    <div class="custom-modal-overlay" id="export-modal">
+        <div class="custom-modal-card">
+            <div class="custom-modal-icon"><i class="fas fa-lock"></i></div>
+            <h3 class="custom-modal-title">Akses Dibutuhkan</h3>
+            <p class="custom-modal-desc">Silakan masukkan kata sandi Anda untuk mengunduh rekap presensi.</p>
+            <input type="password" class="custom-modal-input" id="export-password-input" placeholder="••••••••" onkeypress="if(event.key === 'Enter') submitExportPassword()">
+            <div class="custom-modal-actions">
+                <button class="custom-modal-btn cancel" onclick="closeExportModal()">Batal</button>
+                <button class="custom-modal-btn confirm" onclick="submitExportPassword()">Unduh</button>
+            </div>
+        </div>
+    </div>
+
     <div class="app-container">
     <main class="main-content full-width">
         <!-- Header & Top Filter Controls (2-Tier Navigation) -->
@@ -155,7 +238,7 @@
                     <a href="../mentor/buku-saku.html" title="Materi & Buku Saku" style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" onmouseover="this.style.color='var(--primary)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-color)'">
                         <i class="fas fa-book-open"></i>
                     </a>
-                    <a href="#" onclick="exportToExcel(); return false;" title="Export ke Excel" style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" onmouseover="this.style.color='var(--primary)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-color)'">
+                    <a href="#" onclick="openExportModal(); return false;" title="Export ke Excel" style="width: 36px; height: 36px; border-radius: 50%; background: #ffffff; border: 1px solid var(--border-color); display: flex; align-items: center; justify-content: center; color: var(--text-muted); text-decoration: none; transition: 0.2s; box-shadow: 0 1px 2px rgba(0,0,0,0.04);" onmouseover="this.style.color='var(--primary)'; this.style.borderColor='var(--primary)'" onmouseout="this.style.color='var(--text-muted)'; this.style.borderColor='var(--border-color)'">
                         <i class="fas fa-file-excel"></i>
                     </a>
                 </div>
@@ -843,19 +926,33 @@
             }
         }
 
-        function exportToExcel() {
+        function openExportModal() {
             if (!allStudents || allStudents.length === 0) {
                 alert('Tidak ada data untuk di-export!');
                 return;
             }
-            
-            // Password protection
-            const pass = prompt('Masukkan password untuk mengunduh data:');
+            const modal = document.getElementById('export-modal');
+            const input = document.getElementById('export-password-input');
+            input.value = '';
+            modal.classList.add('show');
+            setTimeout(() => input.focus(), 100);
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.remove('show');
+        }
+
+        function submitExportPassword() {
+            const pass = document.getElementById('export-password-input').value;
             if (pass !== 'luruskanniat') {
                 alert('Password salah! Anda tidak memiliki akses untuk mengunduh data ini.');
                 return;
             }
+            closeExportModal();
+            exportToExcel();
+        }
 
+        function exportToExcel() {
             const wb = XLSX.utils.book_new();
             const tingkatList = ['X', 'XI', 'XII'];
             

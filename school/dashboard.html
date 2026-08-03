@@ -416,7 +416,8 @@
                 let matching = allStudents.filter(s => matchStudentSubClass(s, sc));
                 let existing = btn.querySelector('.badge-alert');
                 if (existing) existing.remove();
-                if (checkHasPendingReports(filterByGender(matching))) {
+                // Hapus badge merah pada chip 'Semua' di tingkat tersebut
+                if (sc !== 'Semua' && checkHasPendingReports(filterByGender(matching))) {
                     const badge = document.createElement('span');
                     badge.className = 'badge-alert';
                     badge.title = 'Ada laporan tertunda di kelas ini';

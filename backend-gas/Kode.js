@@ -1215,7 +1215,7 @@ function handleGetProfiles(payload) {
     var nama = getVal(row, ["Nama Lengkap", "Nama Siswa", "Nama Mentee", "Nama"]);
     var panggilan = getVal(row, ["Nama Panggilan", "Panggilan", "Sapaan", "Nama Sapaan", "Nick", "Akrab"]);
     var kelas = getVal(row, ["Kelas", "Kelompok", "Grup", "Sub Kelas", "Rombel", "Tingkat"]);
-    var alamat = getVal(row, ["Alamat Lengkap", "Alamat Rumah", "Alamat Domisili", "Alamat", "Domisili", "Tempat Tinggal", "Rumah", "Tinggal", "Lokasi", "Dimana"]);
+    var alamat = getVal(row, ["Alamat Lengkap", "Alamat Rumah", "Alamat Domisili", "Alamat", "Domisili", "Tempat Tinggal", "Alamatnya"]);
     var noHp = getVal(row, ["No HP", "No. HP", "HP", "WhatsApp", "WA", "No Telepon", "Telepon", "No. WA", "Handphone", "Nomor", "Nomor HP", "Nomor WA", "Kontak"]);
     var ortu = getVal(row, ["Orang Tua", "Ortu", "Nama Ortu", "Ayah", "Ibu", "Wali", "Orangtua", "Nama Orang Tua", "Nama Ayah", "Nama Ibu", "Orang Tua / Wali"]);
     var hobi = getVal(row, ["Hobi", "Kegiatan yang disukai", "Kesukaan", "Hobby", "Minat", "Yang disukai"]);

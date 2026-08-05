@@ -171,12 +171,13 @@
 
             const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
             const fullNameSub = p.nama && p.nama !== mainName ? `<p class="full-name">${p.nama}</p>` : '';
+            const tglLahirSub = p.tanggalLahir ? `<p class="tgl-lahir" style="font-size: 13px; color: #64748b; margin-top: -8px; margin-bottom: 12px; font-weight: 500;"><i class="fas fa-birthday-cake" style="color: #0ea5e9; width: 16px; text-align: center; margin-right: 6px;"></i>${p.tanggalLahir}</p>` : '';
             
             // Meta Info (Alamat saja)
             let metaHtml = '';
             // Pastikan p.alamat bukan sekadar pengulangan dari p.nama (menghindari bug backend GAS lama)
             if (p.alamat && p.alamat.trim().toLowerCase() !== (p.nama || '').trim().toLowerCase()) {
-                metaHtml = `<div class="header-meta">
+                metaHtml = `<div class="header-meta" style="margin-top: 0;">
                     <div class="header-meta-item"><i class="fas fa-map-marker-alt"></i> <span>${p.alamat}</span></div>
                 </div>`;
             }
@@ -236,36 +237,37 @@
             card.innerHTML = `
                 <div class="card-photo-wrap">
                     ${imgHtml}
-                    <button class="share-icon-btn" title="Bagikan Profil" onclick="shareProfile('${(p.nama||'').replace(/'/g, "\\'")}', '${(p.kelas||'').replace(/'/g, "\\'")}')">
-                        <i class="fas fa-share-alt"></i>
+                    <button class="share-icon-btn" title="Unduh ID Card" onclick="shareProfile(${i})">
+                        <i class="fas fa-id-badge"></i>
                     </button>
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
                 </div>
                 <div class="card-header-info">
-                    <h2>${mainName} ${p.kelas ? `<span style="font-weight: 400; font-size: inherit; color: #64748b; margin-left: 4px;">(${p.kelas})</span>` : ''}</h2>
+                    <h2>${mainName} ${p.kelas ? `<span style="font-weight: 400; font-size: 14px; color: #64748b; vertical-align: middle; margin-left: 4px;">(${p.kelas})</span>` : ''}</h2>
                     ${fullNameSub}
+                    ${tglLahirSub}
                     ${metaHtml}
                 </div>
                 <div class="card-info">
                     <div class="info-group">
-                        <div class="info-group-title">TENTANG SAYA</div>
+                        <div class="info-group-title">Tentang Saya</div>
                         <div class="info-section">${karakter} &bull; ${aktivitas}</div>
                     </div>
                     
                     <div class="info-group">
-                        <div class="info-group-title">LIKE</div>
+                        <div class="info-group-title">Like</div>
                         <div class="info-section">${hobi} &bull; ${belajar} &bull; ${liburan}</div>
                     </div>
 
                     <div class="info-group">
-                        <div class="info-group-title">DISLIKE</div>
+                        <div class="info-group-title">Dislike</div>
                         <div class="info-section">${tidakDisukai}</div>
                     </div>
                     
-                    ${extraHtml ? `<div class="info-group"><div class="info-group-title">INFO LAINNYA</div><div class="info-section">${extraHtml}</div></div>` : ''}
+                    ${extraHtml ? `<div class="info-group"><div class="info-group-title">Info Lainnya</div><div class="info-section">${extraHtml}</div></div>` : ''}
 
                     <div class="info-group">
-                        <div class="info-group-title">SOSIAL MEDIA & KONTAK</div>
+                        <div class="info-group-title">Sosial Media & Kontak</div>
                         <div class="info-section" style="padding: 8px 12px;">
                             <div class="social-links">
                                 ${p.instagram ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="social-item social-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : ''}

@@ -377,7 +377,84 @@
         .back-btn i { font-size: 12px; }
         .back-btn:hover { background: #128c7e; transform: translateY(-1px); }
         .back-btn:active { transform: scale(0.96); }
+    
+        /* ID Card Template Styling */
+        #idCardContainer {
+            position: absolute; top: -9999px; left: -9999px;
+            width: 400px; height: 600px;
+            background: #fff; z-index: -100;
+        }
+        #idCard {
+            width: 400px; height: 600px;
+            background-color: #fff;
+            font-family: 'Inter', sans-serif;
+            position: relative;
+            box-sizing: border-box;
+            color: #1e293b;
+        }
+        .idc-header {
+            height: 110px;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+        }
+        .idc-header-text h1 { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: 2px; }
+        .idc-header-text p { margin: 4px 0 0; font-size: 16px; opacity: 0.9; font-weight: 500;}
+        
+        .idc-body {
+            position: relative;
+            height: 490px;
+            padding: 30px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .idc-vertical-text {
+            position: absolute;
+            left: -110px; top: 250px;
+            transform: rotate(-90deg);
+            font-size: 18px; font-weight: 800; color: #cbd5e1;
+            letter-spacing: 6px; text-transform: uppercase;
+            width: 300px; text-align: center;
+        }
+        .idc-photo-container {
+            width: 200px; height: 260px;
+            border: 6px solid;
+            border-radius: 12px;
+            overflow: hidden;
+            background: #f1f5f9;
+            display: flex; justify-content: center; align-items: center;
+            margin-bottom: 35px;
+            margin-top: 10px;
+            position: relative; z-index: 10;
+        }
+        .idc-photo-container img {
+            width: 100%; height: 100%; object-fit: cover;
+        }
+        .idc-info-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 18px;
+            position: relative; z-index: 10;
+        }
+        .idc-info-table td {
+            vertical-align: bottom;
+            border-bottom: 1px dashed #94a3b8;
+            padding-bottom: 4px;
+        }
+        .idc-label {
+            font-size: 14px; font-weight: 700; color: #64748b;
+            text-transform: uppercase; letter-spacing: 1px;
+            width: 45%;
+        }
+        .idc-value {
+            font-size: 22px; font-weight: 800;
+            text-align: right;
+            text-transform: uppercase;
+        }
+
     </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 </head>
 <body>
 <div class="phone-wrap">
@@ -680,8 +757,8 @@
             card.innerHTML = `
                 <div class="card-photo-wrap">
                     ${imgHtml}
-                    <button class="share-icon-btn" title="Bagikan Profil" onclick="shareProfile('${(p.nama||'').replace(/'/g, "\\'")}', '${(p.kelas||'').replace(/'/g, "\\'")}')">
-                        <i class="fas fa-share-alt"></i>
+                    <button class="share-icon-btn" title="Unduh ID Card" onclick="shareProfile(${i})">
+                        <i class="fas fa-id-badge"></i>
                     </button>
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
                 </div>
@@ -848,5 +925,6 @@
 
     checkQueryParamsOnLoad();
 </script>
+    <div id="idCardContainer"></div>
 </body>
 </html>

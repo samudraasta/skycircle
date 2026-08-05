@@ -860,28 +860,40 @@
         const teamName = p.kelas || 'Sky Circle';
         const dob = p.tanggalLahir || '-';
         
-        // Load image as Base64 to avoid CORS issues in canvas
-        let imgUrl = p.fotoId && p.fotoId !== '-' ? `https://lh3.googleusercontent.com/d/${p.fotoId}=s400` : 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName);
-        
         const toast = document.getElementById('toast');
         toast.textContent = 'Mempersiapkan ID Card...';
         toast.classList.add('show');
         
-        // We will fetch the image and convert it to Base64 first to avoid html2canvas cors tainting
-        fetch(imgUrl)
-            .then(response => response.blob())
-            .then(blob => {
-                const reader = new FileReader();
-                reader.onloadend = function() {
-                    const base64data = reader.result;
-                    renderAndDownloadCard(base64data);
+        if (p.fotoId && p.fotoId !== '-') {
+            // Ambil Base64 dari Google Apps Script untuk menghindari masalah CORS
+            fetch(APPS_SCRIPT_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
+                body: JSON.stringify({ action: 'get_image', fileId: p.fotoId })
+            })
+            .then(res => res.text())
+            .then(base64 => {
+                if (base64 && base64.startsWith('data:image')) {
+                    renderAndDownloadCard(base64);
+                } else {
+                    renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName));
                 }
-                reader.readAsDataURL(blob);
             })
             .catch(err => {
-                console.warn('Image fetch failed, using direct url', err);
-                renderAndDownloadCard(imgUrl);
+                console.error("Gagal load base64 foto:", err);
+                renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName));
             });
+        } else {
+            // Langsung pakai ui-avatars (Bisa CORS via fetch -> blob)
+            fetch('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random')
+                .then(res => res.blob())
+                .then(blob => {
+                    const reader = new FileReader();
+                    reader.onloadend = () => renderAndDownloadCard(reader.result);
+                    reader.readAsDataURL(blob);
+                })
+                .catch(() => renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)));
+        }
 
         function renderAndDownloadCard(safeImgSrc) {
             const container = document.getElementById('idCardContainer');
@@ -923,7 +935,7 @@
                     margin: 0,
                     filename: `IDCard_${mainName}.pdf`,
                     image: { type: 'jpeg', quality: 0.98 },
-                    html2canvas: { scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' },
+                    html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
                     jsPDF: { unit: 'px', format: [400, 600], orientation: 'portrait' }
                 };
                 

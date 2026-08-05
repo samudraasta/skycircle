@@ -670,6 +670,26 @@
         track.innerHTML = ''; dotBar.innerHTML = '';
 
         displayedProfiles.forEach((p, i) => {
+            // Extract tanggalLahir from extraFields if not explicitly set
+            if (p.extraFields && !p.tanggalLahir) {
+                const tlField = p.extraFields.find(ef => ef.label.toLowerCase().includes('lahir'));
+                if (tlField) {
+                    let dStr = tlField.value;
+                    const dObj = new Date(dStr);
+                    // If it parses to a valid date and looks like a raw date string, format it. 
+                    // (Sometimes GS sends "Mon Aug 01 2011...")
+                    if (!isNaN(dObj.getTime()) && dStr.length > 15 && dStr.includes('GMT')) {
+                        const mapBln = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                        dStr = `${dObj.getDate()} ${mapBln[dObj.getMonth()]} ${dObj.getFullYear()}`;
+                    } else if (!isNaN(dObj.getTime()) && dStr.includes('-')) {
+                        // ISO format like 2011-08-01
+                        const mapBln = ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+                        dStr = `${dObj.getDate()} ${mapBln[dObj.getMonth()]} ${dObj.getFullYear()}`;
+                    }
+                    p.tanggalLahir = dStr;
+                }
+            }
+
             let finalFileId = '';
             if (p.fotoUrl) {
                 const matchFileD = p.fotoUrl.match(/\/file\/d\/([a-zA-Z0-9_-]+)/);

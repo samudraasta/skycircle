@@ -607,13 +607,14 @@
                 ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="info-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : '';
 
             const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
-            const fullNameSub = p.nama && p.nama !== mainName ? `<p class="full-name">${p.nama}</p>` : (p.nama ? `<p class="full-name">${p.nama}</p>` : '');
-
-            // Meta Info (Kelas & Alamat)
-            let metaHtml = `<div class="header-meta">
-                <div class="header-meta-item"><i class="fas fa-users"></i> <span>${p.kelas || '-'}</span></div>
-                ${p.alamat ? `<div class="header-meta-item"><i class="fas fa-map-marker-alt"></i> <span>${p.alamat}</span></div>` : ''}
-            </div>`;
+            
+            // Meta Info (Alamat saja)
+            let metaHtml = '';
+            if (p.alamat) {
+                metaHtml = `<div class="header-meta">
+                    <div class="header-meta-item"><i class="fas fa-map-marker-alt"></i> <span>${p.alamat}</span></div>
+                </div>`;
+            }
 
             // Tentang Saya
             const karakter = p.karakter || '-';
@@ -676,8 +677,7 @@
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
                 </div>
                 <div class="card-header-info">
-                    <h2>${mainName}</h2>
-                    ${fullNameSub}
+                    <h2>${mainName} ${p.kelas ? `<span style="font-weight: 500; font-size: 16px; color: #64748b;">(${p.kelas})</span>` : ''}</h2>
                     ${metaHtml}
                 </div>
                 <div class="card-info">

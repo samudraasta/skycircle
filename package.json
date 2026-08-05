@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "@google/clasp": "^3.3.0",
+    "acorn": "^8.18.0",
     "serve": "^14.2.1"
   }
 }

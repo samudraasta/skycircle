@@ -672,6 +672,8 @@
                 else if (matchId && matchId[1]) finalFileId = matchId[1];
             }
             
+            p.fotoId = finalFileId;
+            
             const directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
             
             const imgHtml = finalFileId
@@ -1010,8 +1012,8 @@
         
         if (p.fotoId && p.fotoId !== '-') {
             finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover`;
-        } else if (p.fotoURL && p.fotoURL !== '-') {
-            finalImgSrc = p.fotoURL;
+        } else if (p.fotoUrl && p.fotoUrl !== '-') {
+            finalImgSrc = p.fotoUrl;
         }
 
         renderHTML(finalImgSrc, base64BgBoy);

@@ -614,12 +614,13 @@
 
             const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
             const fullNameSub = p.nama && p.nama !== mainName ? `<p class="full-name">${p.nama}</p>` : '';
+            const tglLahirSub = p.tanggalLahir ? `<p class="tgl-lahir" style="font-size: 13px; color: #64748b; margin-top: -8px; margin-bottom: 12px; font-weight: 500;"><i class="fas fa-birthday-cake" style="color: #0ea5e9; width: 16px; text-align: center; margin-right: 6px;"></i>${p.tanggalLahir}</p>` : '';
             
             // Meta Info (Alamat saja)
             let metaHtml = '';
             // Pastikan p.alamat bukan sekadar pengulangan dari p.nama (menghindari bug backend GAS lama)
             if (p.alamat && p.alamat.trim().toLowerCase() !== (p.nama || '').trim().toLowerCase()) {
-                metaHtml = `<div class="header-meta">
+                metaHtml = `<div class="header-meta" style="margin-top: 0;">
                     <div class="header-meta-item"><i class="fas fa-map-marker-alt"></i> <span>${p.alamat}</span></div>
                 </div>`;
             }
@@ -687,6 +688,7 @@
                 <div class="card-header-info">
                     <h2>${mainName} ${p.kelas ? `<span style="font-weight: 400; font-size: 14px; color: #64748b; vertical-align: middle; margin-left: 4px;">(${p.kelas})</span>` : ''}</h2>
                     ${fullNameSub}
+                    ${tglLahirSub}
                     ${metaHtml}
                 </div>
                 <div class="card-info">

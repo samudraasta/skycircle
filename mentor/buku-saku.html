@@ -411,10 +411,10 @@
         }
         .idc-vertical-text {
             position: absolute;
-            left: -160px; top: 250px;
+            left: -180px; top: 250px;
             transform: rotate(-90deg);
-            font-size: 16px; font-weight: 800; color: #cbd5e1;
-            letter-spacing: 4px; text-transform: uppercase;
+            font-size: 14px; font-weight: 800; color: #cbd5e1;
+            letter-spacing: 5px; text-transform: uppercase;
             width: 400px; text-align: center;
         }
         .idc-photo-container {
@@ -876,12 +876,29 @@
         const p = displayedProfiles[index];
         if (!p) return;
         
-        const isBoy = p.kelas && p.kelas.toUpperCase().includes('BC');
-        const themeColor = isBoy ? '#1e40af' : '#be185d';
+        let themeColor = '#1e40af'; // Default Boy (Blue)
+        if (p.extraFields) {
+            const genderField = p.extraFields.find(ef => ef.label.toLowerCase().includes('kelamin') || ef.label.toLowerCase().includes('gender'));
+            if (genderField) {
+                const g = genderField.value.toLowerCase();
+                if (g === 'p' || g.includes('perempuan') || g.includes('cewe') || g.includes('girl') || g.includes('wanita')) {
+                    themeColor = '#be185d'; // Girl (Pink)
+                }
+            }
+        }
+        if (p.kelas && (p.kelas.toUpperCase().includes('GC') || p.kelas.toLowerCase().includes('girl'))) {
+            themeColor = '#be185d';
+        }
         
         const mainName = p.panggilan ? p.panggilan : (p.nama || 'Mentee');
         const teamName = p.kelas || 'Sky Circle';
-        const dob = p.tanggalLahir || '-';
+        let dob = p.tanggalLahir || '-';
+        if (dob !== '-') {
+            const dObj = new Date(dob);
+            if (!isNaN(dObj.getTime())) {
+                dob = `${String(dObj.getDate()).padStart(2, '0')} / ${String(dObj.getMonth()+1).padStart(2, '0')} / ${dObj.getFullYear()}`;
+            }
+        }
         
         const toast = document.getElementById('toast');
         toast.textContent = 'Mempersiapkan ID Card...';
@@ -894,10 +911,10 @@
                 headers: { 'Content-Type': 'text/plain;charset=utf-8' },
                 body: JSON.stringify({ action: 'get_image', fileId: p.fotoId })
             })
-            .then(res => res.text())
-            .then(base64 => {
-                if (base64 && base64.startsWith('data:image')) {
-                    renderAndDownloadCard(base64);
+            .then(res => res.json())
+            .then(res => {
+                if (res.status === 'success' && res.dataUri) {
+                    renderAndDownloadCard(res.dataUri);
                 } else {
                     renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName));
                 }

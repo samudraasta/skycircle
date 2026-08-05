@@ -995,7 +995,18 @@
                     document.body.removeChild(iframe);
                 }
             }, 60000); // Hapus iframe setelah 1 menit agar tidak menumpuk
-        } // End of shareProfile
+        } // End of renderHTML
+
+        let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';
+        
+        if (p.fotoId && p.fotoId !== '-') {
+            finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover`;
+        } else if (p.fotoURL && p.fotoURL !== '-') {
+            finalImgSrc = p.fotoURL;
+        }
+
+        renderHTML(finalImgSrc, base64BgBoy);
+    } // End of shareProfile
 
     function showToast(msg) {
         const toast = document.getElementById('toast');

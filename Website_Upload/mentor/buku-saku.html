@@ -884,25 +884,36 @@
             finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover`;
         }
 
-        // Preload image before generating PDF
-        const img = new Image();
-        img.crossOrigin = 'Anonymous';
-        
-        img.onload = () => {
-            renderHTML(img.src);
-        };
-        
-        img.onerror = () => {
-            renderHTML('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512');
-        };
-        
-        img.src = finalImgSrc;
+        // Gunakan absolute URL untuk menghindari masalah CORS di html2canvas
+        const bgImageUrl = (themeColor === '#be185d') ? 'https://skycircle.id/mentor/images/idcard_bg_girl.png' : 'https://skycircle.id/mentor/images/idcard_bg_boy.png';
 
-        function renderHTML(safeImgSrc) {
-            const bgImage = (themeColor === '#be185d') ? 'images/idcard_bg_girl.png' : 'images/idcard_bg_boy.png';
+        // Preload kedua gambar sebelum membuat PDF
+        let loadedCount = 0;
+        let safeProfileSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';
+        
+        const checkDone = () => {
+            loadedCount++;
+            if (loadedCount === 2) {
+                renderHTML(safeProfileSrc, bgImageUrl);
+            }
+        };
+
+        const imgProfile = new Image();
+        imgProfile.crossOrigin = 'Anonymous';
+        imgProfile.onload = () => { safeProfileSrc = imgProfile.src; checkDone(); };
+        imgProfile.onerror = () => { checkDone(); };
+        imgProfile.src = finalImgSrc;
+
+        const imgBg = new Image();
+        imgBg.crossOrigin = 'Anonymous';
+        imgBg.onload = () => { checkDone(); };
+        imgBg.onerror = () => { checkDone(); };
+        imgBg.src = bgImageUrl;
+
+        function renderHTML(safeImgSrc, safeBgSrc) {
             const container = document.getElementById('idCardContainer');
             container.innerHTML = `
-            <div id="idCard" style="background-image: url('${bgImage}'); color: ${themeColor};">
+            <div id="idCard" style="background-image: url('${safeBgSrc}'); background-size: cover; color: ${themeColor}; overflow: hidden;">
                 <div class="canva-photo">
                     <img src="${safeImgSrc}" crossorigin="anonymous" />
                 </div>
@@ -917,9 +928,9 @@
                 const opt = {
                     margin: 0,
                     filename: `IDCard_${mainName}.pdf`,
-                    image: { type: 'jpeg', quality: 0.98 },
+                    image: { type: 'jpeg', quality: 1.0 },
                     html2canvas: { scale: 3, useCORS: true, backgroundColor: '#ffffff' },
-                    jsPDF: { unit: 'px', format: [400, 620], orientation: 'portrait' }
+                    jsPDF: { unit: 'px', format: [400, 680], orientation: 'portrait' }
                 };
                 
                 html2pdf().set(opt).from(element).save().then(() => {
@@ -930,7 +941,7 @@
                     toast.textContent = 'Gagal membuat ID Card';
                     setTimeout(() => toast.classList.remove('show'), 2000);
                 });
-            }, 100);
+            }, 500);
         }
     }
 

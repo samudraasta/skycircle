@@ -607,10 +607,12 @@
                 ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="info-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : '';
 
             const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
+            const fullNameSub = p.nama && p.nama !== mainName ? `<p class="full-name">${p.nama}</p>` : '';
             
             // Meta Info (Alamat saja)
             let metaHtml = '';
-            if (p.alamat) {
+            // Pastikan p.alamat bukan sekadar pengulangan dari p.nama (menghindari bug backend GAS lama)
+            if (p.alamat && p.alamat.trim().toLowerCase() !== (p.nama || '').trim().toLowerCase()) {
                 metaHtml = `<div class="header-meta">
                     <div class="header-meta-item"><i class="fas fa-map-marker-alt"></i> <span>${p.alamat}</span></div>
                 </div>`;
@@ -678,6 +680,7 @@
                 </div>
                 <div class="card-header-info">
                     <h2>${mainName} ${p.kelas ? `<span style="font-weight: 400; font-size: 14px; color: #64748b; vertical-align: middle; margin-left: 4px;">(${p.kelas})</span>` : ''}</h2>
+                    ${fullNameSub}
                     ${metaHtml}
                 </div>
                 <div class="card-info">

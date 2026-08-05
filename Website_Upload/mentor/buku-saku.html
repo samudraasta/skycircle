@@ -849,55 +849,93 @@
     // --- STRATEGI SHARE PROFIL & DEEP LINKING ---
     let autoTargetNama = null;
 
-    function shareProfile(nama, kelas) {
-        const url = new URL(window.location.href);
-        url.searchParams.set('grup', kelas);
-        url.searchParams.set('nama', nama);
-        const shareUrl = url.toString();
-
-        const shareData = {
-            title: `Profil Mentee: ${nama}`,
-            text: `Lihat profil mentee ${nama} (${kelas}) di Buku Saku Sky Circle:`,
-            url: shareUrl
-        };
-
-        if (navigator.share) {
-            navigator.share(shareData).catch(err => {
-                if (err.name !== 'AbortError') {
-                    copyToClipboard(shareUrl, nama);
+    function shareProfile(index) {
+        const p = displayedProfiles[index];
+        if (!p) return;
+        
+        const isBoy = p.kelas && p.kelas.toUpperCase().includes('BC');
+        const themeColor = isBoy ? '#1e40af' : '#be185d';
+        
+        const mainName = p.panggilan ? p.panggilan : (p.nama || 'Mentee');
+        const teamName = p.kelas || 'Sky Circle';
+        const dob = p.tanggalLahir || '-';
+        
+        // Load image as Base64 to avoid CORS issues in canvas
+        let imgUrl = p.fotoId && p.fotoId !== '-' ? `https://lh3.googleusercontent.com/d/${p.fotoId}=s400` : 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName);
+        
+        const toast = document.getElementById('toast');
+        toast.textContent = 'Mempersiapkan ID Card...';
+        toast.classList.add('show');
+        
+        // We will fetch the image and convert it to Base64 first to avoid html2canvas cors tainting
+        fetch(imgUrl)
+            .then(response => response.blob())
+            .then(blob => {
+                const reader = new FileReader();
+                reader.onloadend = function() {
+                    const base64data = reader.result;
+                    renderAndDownloadCard(base64data);
                 }
+                reader.readAsDataURL(blob);
+            })
+            .catch(err => {
+                console.warn('Image fetch failed, using direct url', err);
+                renderAndDownloadCard(imgUrl);
             });
-        } else {
-            copyToClipboard(shareUrl, nama);
-        }
-    }
 
-    function copyToClipboard(text, nama) {
-        if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(text).then(() => {
-                showToast(`Link profil ${nama} berhasil disalin!`);
-            }).catch(() => {
-                fallbackCopy(text, nama);
-            });
-        } else {
-            fallbackCopy(text, nama);
+        function renderAndDownloadCard(safeImgSrc) {
+            const container = document.getElementById('idCardContainer');
+            container.innerHTML = `
+            <div id="idCard">
+                <div class="idc-header" style="background-color: ${themeColor}">
+                    <div class="idc-header-text">
+                        <h1>SKY CIRCLE</h1>
+                        <p>Mentee Identity Card</p>
+                    </div>
+                </div>
+                <div class="idc-body">
+                    <div class="idc-vertical-text">MENTEE IDENTITY CARD</div>
+                    <div class="idc-photo-container" style="border-color: ${themeColor}">
+                        <img src="${safeImgSrc}" crossorigin="anonymous" />
+                    </div>
+                    <table class="idc-info-table">
+                        <tr>
+                            <td class="idc-label">NAME</td>
+                            <td class="idc-value" style="color: ${themeColor}">${mainName}</td>
+                        </tr>
+                        <tr>
+                            <td class="idc-label">DATE OF BIRTH</td>
+                            <td class="idc-value" style="color: ${themeColor}; font-size: 18px;">${dob}</td>
+                        </tr>
+                        <tr>
+                            <td class="idc-label">CLASS</td>
+                            <td class="idc-value" style="color: ${themeColor}">${teamName}</td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            `;
+            
+            setTimeout(() => {
+                const element = document.getElementById('idCard');
+                const opt = {
+                    margin: 0,
+                    filename: `IDCard_${mainName}.pdf`,
+                    image: { type: 'jpeg', quality: 0.98 },
+                    html2canvas: { scale: 3, useCORS: true, allowTaint: true, backgroundColor: '#ffffff' },
+                    jsPDF: { unit: 'px', format: [400, 600], orientation: 'portrait' }
+                };
+                
+                html2pdf().set(opt).from(element).save().then(() => {
+                    toast.textContent = 'ID Card berhasil diunduh!';
+                    setTimeout(() => toast.classList.remove('show'), 2000);
+                }).catch(err => {
+                    console.error('PDF generation error:', err);
+                    toast.textContent = 'Gagal membuat ID Card';
+                    setTimeout(() => toast.classList.remove('show'), 2000);
+                });
+            }, 500);
         }
-    }
-
-    function fallbackCopy(text, nama) {
-        const textArea = document.createElement("textarea");
-        textArea.value = text;
-        textArea.style.position = "fixed";
-        document.body.appendChild(textArea);
-        textArea.focus();
-        textArea.select();
-        try {
-            document.execCommand('copy');
-            showToast(`Link profil ${nama} berhasil disalin!`);
-        } catch (err) {
-            showToast(`Gagal menyalin link.`);
-        }
-        document.body.removeChild(textArea);
     }
 
     function showToast(msg) {

@@ -385,48 +385,59 @@
             background: #fff; z-index: -100;
         }
         #idCard {
-            width: 400px; height: 600px;
+            width: 400px; height: 620px;
             background-color: #fff;
             font-family: 'Inter', sans-serif;
             position: relative;
             box-sizing: border-box;
             color: #1e293b;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
         .idc-header {
-            height: 110px;
+            height: 120px;
             color: white;
             display: flex;
             align-items: center;
-            justify-content: center;
-            text-align: center;
+            justify-content: flex-start;
+            padding-left: 20px;
         }
-        .idc-header-text h1 { margin: 0; font-size: 32px; font-weight: 800; letter-spacing: 2px; }
-        .idc-header-text p { margin: 4px 0 0; font-size: 16px; opacity: 0.9; font-weight: 500;}
+        .idc-header-text { text-align: left; }
+        .idc-header-text h1 { margin: 0; font-size: 28px; font-family: 'Georgia', serif; font-weight: normal; letter-spacing: 3px; }
+        .idc-header-text p { margin: 2px 0 0; font-size: 15px; opacity: 0.9; font-weight: 400; font-family: 'Georgia', serif; letter-spacing: 1px;}
         
         .idc-body {
             position: relative;
-            height: 490px;
+            height: 500px;
             padding: 30px;
             display: flex; flex-direction: column; align-items: center;
         }
         .idc-vertical-text {
             position: absolute;
-            left: -180px; top: 250px;
+            left: -170px; top: 250px;
             transform: rotate(-90deg);
-            font-size: 14px; font-weight: 800; color: #cbd5e1;
+            font-family: 'Georgia', serif;
+            font-size: 15px; font-weight: bold; color: #94a3b8;
             letter-spacing: 5px; text-transform: uppercase;
             width: 400px; text-align: center;
         }
         .idc-photo-container {
             width: 200px; height: 260px;
-            border: 6px solid;
-            border-radius: 12px;
-            overflow: hidden;
-            background: #f1f5f9;
-            display: flex; justify-content: center; align-items: center;
-            margin-bottom: 35px;
-            margin-top: 10px;
+            border: 2px solid;
+            padding: 4px; /* Creates the double border effect */
+            border-radius: 6px;
+            background: #fff;
+            margin-bottom: 40px;
             position: relative; z-index: 10;
+        }
+        .idc-photo-container .idc-photo-inner {
+            width: 100%; height: 100%;
+            border: 1px solid #e2e8f0;
+            overflow: hidden;
+            border-radius: 2px;
+            display: flex; justify-content: center; align-items: center;
+            background: #f1f5f9;
         }
         .idc-photo-container img {
             width: 100%; height: 100%; object-fit: cover;
@@ -434,21 +445,22 @@
         .idc-info-table {
             width: 100%;
             border-collapse: separate;
-            border-spacing: 0 18px;
+            border-spacing: 0 15px;
             position: relative; z-index: 10;
         }
         .idc-info-table td {
             vertical-align: bottom;
-            border-bottom: 1px dashed #94a3b8;
+            border-bottom: 2px dotted #94a3b8;
             padding-bottom: 4px;
         }
         .idc-label {
-            font-size: 14px; font-weight: 700; color: #64748b;
-            text-transform: uppercase; letter-spacing: 1px;
-            width: 45%;
+            font-family: 'Georgia', serif;
+            font-size: 12px; font-weight: bold; color: #64748b;
+            text-transform: uppercase; letter-spacing: 1.5px;
+            width: 40%;
         }
         .idc-value {
-            font-size: 22px; font-weight: 800;
+            font-size: 20px; font-weight: 800;
             text-align: right;
             text-transform: uppercase;
         }
@@ -904,73 +916,53 @@
         toast.textContent = 'Mempersiapkan ID Card...';
         toast.classList.add('show');
         
+        let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';
+        
         if (p.fotoId && p.fotoId !== '-') {
-            // Ambil Base64 dari Google Apps Script untuk menghindari masalah CORS
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                body: JSON.stringify({ action: 'get_image', fileId: p.fotoId })
-            })
-            .then(res => res.json())
-            .then(res => {
-                if (res.status === 'success' && res.dataUri) {
-                    renderAndDownloadCard(res.dataUri);
-                } else {
-                    renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName));
-                }
-            })
-            .catch(err => {
-                console.error("Gagal load base64 foto:", err);
-                renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName));
-            });
-        } else {
-            // Langsung pakai ui-avatars (Bisa CORS via fetch -> blob)
-            fetch('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random')
-                .then(res => res.blob())
-                .then(blob => {
-                    const reader = new FileReader();
-                    reader.onloadend = () => renderAndDownloadCard(reader.result);
-                    reader.readAsDataURL(blob);
-                })
-                .catch(() => renderAndDownloadCard('https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)));
+            // Gunakan wsrv.nl sebagai proxy CORS yang reliable
+            finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover`;
         }
 
-        function renderAndDownloadCard(safeImgSrc) {
-            const container = document.getElementById('idCardContainer');
-            container.innerHTML = `
-            <div id="idCard">
-                <div class="idc-header" style="background-color: ${themeColor}; padding-left: 20px; justify-content: flex-start;">
-                    <img src="https://skycircle.id/images/skycircle_logo.jpg" crossorigin="anonymous" style="width: 60px; height: 60px; border-radius: 50%; border: 2px solid white; object-fit: cover; margin-right: 16px; margin-left: 10px;" />
-                    <div class="idc-header-text" style="text-align: left;">
-                        <h1>SKY CIRCLE</h1>
-                        <p>Identity Card</p>
-                    </div>
+        const container = document.getElementById('idCardContainer');
+        container.innerHTML = `
+        <div id="idCard">
+            <div class="idc-header" style="background-color: ${themeColor};">
+                <div style="width: 55px; height: 55px; border-radius: 50%; border: 1.5px solid white; display:flex; justify-content:center; align-items:center; overflow:hidden; margin-right: 15px; margin-left: 5px; flex-shrink: 0;">
+                    <img src="https://skycircle.id/images/skycircle_logo.jpg" crossorigin="anonymous" style="width: 100%; height: 100%; object-fit: cover;" />
                 </div>
-                <div class="idc-body">
-                    <div class="idc-vertical-text">SKY CIRCLE IDENTITY CARD</div>
-                    <div class="idc-photo-container" style="border-color: ${themeColor}">
-                        <img src="${safeImgSrc}" crossorigin="anonymous" />
-                    </div>
-                    <table class="idc-info-table">
-                        <tr>
-                            <td class="idc-label">NAME</td>
-                            <td class="idc-value" style="color: ${themeColor}">${mainName}</td>
-                        </tr>
-                        <tr>
-                            <td class="idc-label">DATE OF BIRTH</td>
-                            <td class="idc-value" style="color: ${themeColor}; font-size: 18px;">${dob}</td>
-                        </tr>
-                        <tr>
-                            <td class="idc-label">CLASS</td>
-                            <td class="idc-value" style="color: ${themeColor}">${teamName}</td>
-                        </tr>
-                    </table>
+                <div class="idc-header-text">
+                    <h1>SKY CIRCLE</h1>
+                    <p>Mentee Identity Card</p>
                 </div>
             </div>
-            `;
-            
-            setTimeout(() => {
-                const element = document.getElementById('idCard');
+            <div class="idc-body">
+                <div class="idc-vertical-text">SKY CIRCLE IDENTITY CARD</div>
+                <div class="idc-photo-container" style="border-color: ${themeColor}">
+                    <div class="idc-photo-inner">
+                        <img src="${finalImgSrc}" crossorigin="anonymous" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name='+encodeURIComponent('${mainName.replace("'", "")}')+'&background=random';" />
+                    </div>
+                </div>
+                <table class="idc-info-table">
+                    <tr>
+                        <td class="idc-label">NAME</td>
+                        <td class="idc-value" style="color: ${themeColor}">${mainName}</td>
+                    </tr>
+                    <tr>
+                        <td class="idc-label">DATE OF BIRTH</td>
+                        <td class="idc-value" style="color: ${themeColor}; font-size: 18px;">${dob}</td>
+                    </tr>
+                    <tr>
+                        <td class="idc-label">CLASS</td>
+                        <td class="idc-value" style="color: ${themeColor}">${teamName}</td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        `;
+        
+        // Timeout lebih lama untuk memastikan gambar proxy (wsrv) ke-load
+        setTimeout(() => {
+            const element = document.getElementById('idCard');
                 const opt = {
                     margin: 0,
                     filename: `IDCard_${mainName}.pdf`,
@@ -987,8 +979,7 @@
                     toast.textContent = 'Gagal membuat ID Card';
                     setTimeout(() => toast.classList.remove('show'), 2000);
                 });
-            }, 500);
-        }
+            }, 1000);
     }
 
     function showToast(msg) {

@@ -274,11 +274,7 @@
         .social-tiktok:hover { background: #e2e8f0; }
         .social-wa { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
         .social-wa:hover { background: #dcfce7; }
-        .info-row label {
-            font-size: 10px; text-transform: uppercase;
-            letter-spacing: 0.8px; color: #075e54; font-weight: 700;
-        }
-        .info-row p { font-size: 13px; color: #374151; line-height: 1.4; }
+        .info-row { display: flex; flex-direction: column; gap: 2px; }
         .info-ig {
             display: inline-flex; align-items: center; gap: 6px;
             color: #e1306c; font-size: 13px; text-decoration: none;
@@ -610,30 +606,6 @@
             const igHtml = p.instagram
                 ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="info-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : '';
 
-            let rowsHtml = '';
-            
-            if (p.tanggalLahir) rowsHtml += `<div class="info-row"><label>Tanggal Lahir</label><p>${p.tanggalLahir}</p></div>`;
-            if (p.alamat) rowsHtml += `<div class="info-row"><label>Alamat Rumah</label><p>${p.alamat}</p></div>`;
-            if (p.hobi) rowsHtml += `<div class="info-row"><label>Hobi yang Disukai</label><p>${p.hobi}</p></div>`;
-            if (p.aktivitas) rowsHtml += `<div class="info-row"><label>Aktivitas Harian</label><p>${p.aktivitas}</p></div>`;
-            if (p.tidakDisukai) rowsHtml += `<div class="info-row"><label>Hal yang Paling Tidak Disukai</label><p>${p.tidakDisukai}</p></div>`;
-            if (p.karakter) rowsHtml += `<div class="info-row"><label>Karakter yang Paling Terlihat Dariku</label><p>${p.karakter}</p></div>`;
-            if (p.liburan) rowsHtml += `<div class="info-row"><label>Kegiatan favorit yang dilakukan saat liburan</label><p>${p.liburan}</p></div>`;
-            if (p.mempelajari) rowsHtml += `<div class="info-row"><label>Tertarik mempelajari hal apa saja</label><p>${p.mempelajari}</p></div>`;
-
-            if (p.extraFields && p.extraFields.length > 0) {
-                p.extraFields.forEach(ef => {
-                    const lLower = ef.label.toLowerCase().trim();
-                    if (lLower === 'nama' || lLower === 'nama lengkap' || lLower === 'nama (standar)' ||
-                        lLower.includes('kelas') || lLower.includes('kelompok') || lLower.includes('grup') ||
-                        lLower.includes('instagram') || lLower === 'ig' ||
-                        lLower.includes('cap waktu') || lLower.includes('timestamp') ||
-                        lLower.includes('foto') || lLower.includes('upload') ||
-                        lLower.includes('sapaan') || lLower.includes('panggilan') ||
-                        lLower.includes('hp') || lLower.includes('wa') || lLower.includes('telepon') ||
-                        lLower.includes('ortu') || lLower.includes('ayah') || lLower.includes('ibu')) {
-                        return;
-                    }
             const mainName = p.panggilan ? p.panggilan : (p.nama || 'Tanpa Nama');
             const fullNameSub = p.nama && p.nama !== mainName ? `<p class="full-name">${p.nama}</p>` : (p.nama ? `<p class="full-name">${p.nama}</p>` : '');
 
@@ -731,7 +703,7 @@
                         <div class="social-links">
                             ${p.instagram ? `<a href="https://instagram.com/${p.instagram.replace('@','')}" target="_blank" class="social-item social-ig"><i class="fab fa-instagram"></i> ${p.instagram}</a>` : ''}
                             ${tiktokUser ? `<a href="${tiktokUrl}" target="_blank" class="social-item social-tiktok"><i class="fab fa-tiktok"></i> ${tiktokUser}</a>` : ''}
-                            ${p.noHp ? `<a href="https://wa.me/${String(p.noHp).replace(/^0/, '62').replace(/\\D/g, '')}" target="_blank" class="social-item social-wa"><i class="fab fa-whatsapp"></i> Chat WhatsApp</a>` : ''}
+                            ${p.noHp ? `<a href="https://wa.me/${String(p.noHp).replace(/^0/, '62').replace(/[^0-9]/g, '')}" target="_blank" class="social-item social-wa"><i class="fab fa-whatsapp"></i> Chat WhatsApp</a>` : ''}
                         </div>
                     </div>
                 </div>`;

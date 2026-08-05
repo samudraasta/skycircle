@@ -121,13 +121,19 @@
             
             <label style="display:block; margin-top:20px; font-weight:bold; font-size: 14px;">Foto Profil (PHOTO)</label>
             <div>
-                Top: <input type="range" id="photoTop" min="0" max="86" step="0.5" value="22"> <span id="photoTopVal">22mm</span>
+                Top: <input type="range" id="photoTop" min="0" max="86" step="0.5" value="28"> <span id="photoTopVal">28mm</span>
             </div>
             <div style="margin-top: 5px;">
-                Right: <input type="range" id="photoRight" min="0" max="54" step="0.5" value="18"> <span id="photoRightVal">18mm</span>
+                Right: <input type="range" id="photoRight" min="0" max="54" step="0.5" value="6.5"> <span id="photoRightVal">6.5mm</span>
             </div>
             <div style="margin-top: 5px;">
-                Size: <input type="range" id="photoSize" min="10" max="40" step="0.5" value="17"> <span id="photoSizeVal">17mm</span>
+                Width: <input type="range" id="photoWidth" min="10" max="40" step="0.5" value="29"> <span id="photoWidthVal">29mm</span>
+            </div>
+            <div style="margin-top: 5px;">
+                Height: <input type="range" id="photoHeight" min="10" max="50" step="0.5" value="29"> <span id="photoHeightVal">29mm</span>
+            </div>
+            <div style="margin-top: 5px;">
+                Radius: <input type="range" id="photoRadius" min="0" max="20" step="0.5" value="3"> <span id="photoRadiusVal">3mm</span>
             </div>
 
             <hr style="margin: 20px 0; border: 1px solid #e2e8f0;">
@@ -161,9 +167,11 @@
             const cT = document.getElementById('classTop').value;
             const cR = document.getElementById('classRight').value;
             
-            const pT = document.getElementById('photoTop') ? document.getElementById('photoTop').value : '25.5';
-            const pR = document.getElementById('photoRight') ? document.getElementById('photoRight').value : '13.8';
-            const pS = document.getElementById('photoSize') ? document.getElementById('photoSize').value : '25.4';
+            const pT = document.getElementById('photoTop') ? document.getElementById('photoTop').value : '28';
+            const pR = document.getElementById('photoRight') ? document.getElementById('photoRight').value : '6.5';
+            const pW = document.getElementById('photoWidth') ? document.getElementById('photoWidth').value : '29';
+            const pH = document.getElementById('photoHeight') ? document.getElementById('photoHeight').value : '29';
+            const pRad = document.getElementById('photoRadius') ? document.getElementById('photoRadius').value : '3';
 
             document.getElementById('nameTopVal').innerText = nT + 'mm';
             document.getElementById('nameRightVal').innerText = nR + 'mm';
@@ -175,7 +183,9 @@
             if(document.getElementById('photoTopVal')) {
                 document.getElementById('photoTopVal').innerText = pT + 'mm';
                 document.getElementById('photoRightVal').innerText = pR + 'mm';
-                document.getElementById('photoSizeVal').innerText = pS + 'mm';
+                document.getElementById('photoWidthVal').innerText = pW + 'mm';
+                document.getElementById('photoHeightVal').innerText = pH + 'mm';
+                document.getElementById('photoRadiusVal').innerText = pRad + 'mm';
             }
 
             document.getElementById('previewName').style.top = nT + 'mm';
@@ -190,14 +200,15 @@
                 photoEl.style.top = pT + 'mm';
                 photoEl.style.right = pR + 'mm';
                 photoEl.style.left = 'auto'; // override left
-                photoEl.style.width = pS + 'mm';
-                photoEl.style.height = pS + 'mm';
+                photoEl.style.width = pW + 'mm';
+                photoEl.style.height = pH + 'mm';
+                photoEl.style.borderRadius = pRad + 'mm';
             }
 
             let cssCode = `.name { top: ${nT}mm; right: ${nR}mm; font-size: 11px; font-weight: 800; }\n`;
             cssCode += `.dob { top: ${dT}mm; right: ${dR}mm; font-size: 11px; font-weight: 800; }\n`;
             cssCode += `.kelas { top: ${cT}mm; right: ${cR}mm; font-size: 11px; font-weight: 800; }\n`;
-            cssCode += `.photo { position: absolute; overflow: hidden; border-radius: 1mm; border: 2px solid white; top: ${pT}mm; right: ${pR}mm; width: ${pS}mm; height: ${pS}mm; }`;
+            cssCode += `.photo { position: absolute; overflow: hidden; border-radius: ${pRad}mm; border: 2px solid white; top: ${pT}mm; right: ${pR}mm; width: ${pW}mm; height: ${pH}mm; }`;
             document.getElementById('cssCode').innerText = cssCode;
         }
 

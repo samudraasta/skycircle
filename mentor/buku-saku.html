@@ -910,23 +910,27 @@
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
 
-            const iframe = document.createElement('iframe');
-            iframe.style.position = 'fixed';
-            iframe.style.right = '0';
-            iframe.style.bottom = '0';
-            iframe.style.width = '0';
-            iframe.style.height = '0';
-            iframe.style.border = 'none';
-            document.body.appendChild(iframe);
-
-            const doc = iframe.contentWindow.document;
-            doc.open();
-            let htmlContent = `
-                <html>
-                <head>
-                    <title>IDCard_${mainName}</title>
-                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
-                    <style>
+            let printContainer = document.getElementById('print-container');
+            if (!printContainer) {
+                printContainer = document.createElement('div');
+                printContainer.id = 'print-container';
+                document.body.appendChild(printContainer);
+                
+                const style = document.createElement('style');
+                style.innerHTML = `
+                    @media screen {
+                        #print-container { display: none !important; }
+                    }
+                    @media print {
+                        body > *:not(#print-container) { display: none !important; }
+                        #print-container {
+                            display: block !important;
+                            position: absolute;
+                            left: 0;
+                            top: 0;
+                            margin: 0;
+                            padding: 0;
+                        }
                         @page {
                             size: 54mm 86mm;
                             margin: 0;
@@ -934,77 +938,70 @@
                         body {
                             margin: 0;
                             padding: 0;
+                            background: white;
                             -webkit-print-color-adjust: exact !important;
                             print-color-adjust: exact !important;
                         }
-                        .id-card {
-                            position: relative;
-                            width: 54mm;
-                            height: 86mm;
-                            background-color: #fff;
-                            background-image: url('${safeBgSrc}');
-                            background-size: 100% 100%;
-                            background-position: center top;
-                            background-repeat: no-repeat;
-                            color: ${themeColor};
-                            font-family: 'Inter', sans-serif;
-                            overflow: hidden;
-                        }
-                        .photo {
-                            position: absolute;
-                            top: 28mm;
-                            right: 6.5mm;
-                            width: 29mm;
-                            height: 29mm;
-                            border-radius: 3mm;
-                            overflow: hidden;
-                            background-color: #eee;
-                        }
-                        .photo img {
-                            width: 100%;
-                            height: 100%;
-                            object-fit: cover;
-                        }
-                        .text {
-                            position: absolute;
-                            right: 7.5mm;
-                            width: 40mm;
-                            text-align: right;
-                            text-transform: uppercase;
-                            z-index: 10;
-                        }
-                        .name { top: 68.5mm; right: 7mm; font-size: 11px; font-weight: 800; }
-                        .dob { top: 74mm; right: 7mm; font-size: 11px; font-weight: 800; }
-                        .kelas { top: 79mm; right: 7mm; font-size: 11px; font-weight: 800; }
-                    </style>
-                </head>
-                <body>
-                    <div class="id-card">
-                        <div class="photo">
-                            <img src="${safeImgSrc}" />
-                        </div>
-                        <div class="text name">${mainName}</div>
-                        <div class="text dob">${dob}</div>
-                        <div class="text kelas">${teamName}</div>
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+
+            printContainer.innerHTML = `
+                <style>
+                    #print-container .id-card {
+                        position: relative;
+                        width: 54mm;
+                        height: 86mm;
+                        background-color: #fff;
+                        background-image: url('${safeBgSrc}');
+                        background-size: 100% 100%;
+                        background-position: center top;
+                        background-repeat: no-repeat;
+                        color: ${themeColor};
+                        font-family: 'Inter', sans-serif;
+                        overflow: hidden;
+                    }
+                    #print-container .photo {
+                        position: absolute;
+                        top: 28mm;
+                        right: 6.5mm;
+                        width: 29mm;
+                        height: 29mm;
+                        border-radius: 3mm;
+                        overflow: hidden;
+                        background-color: #eee;
+                    }
+                    #print-container .photo img {
+                        width: 100%;
+                        height: 100%;
+                        object-fit: cover;
+                    }
+                    #print-container .text {
+                        position: absolute;
+                        right: 7.5mm;
+                        width: 40mm;
+                        text-align: right;
+                        text-transform: uppercase;
+                        z-index: 10;
+                    }
+                    #print-container .name { top: 68.5mm; right: 7mm; font-size: 11px; font-weight: 800; }
+                    #print-container .dob { top: 74mm; right: 7mm; font-size: 11px; font-weight: 800; }
+                    #print-container .kelas { top: 79mm; right: 7mm; font-size: 11px; font-weight: 800; }
+                </style>
+                <div class="id-card">
+                    <div class="photo">
+                        <img src="${safeImgSrc}" />
                     </div>
-                    \x3Cscript>
-                        window.onload = function() {
-                            setTimeout(() => {
-                                window.print();
-                            }, 500);
-                        };
-                    \x3C/script>
-                </body>
-                </html>
+                    <div class="text name">${mainName}</div>
+                    <div class="text dob">${dob}</div>
+                    <div class="text kelas">${teamName}</div>
+                </div>
             `;
-            doc.write(htmlContent);
-            doc.close();
-            
+
             setTimeout(() => {
-                if(document.body.contains(iframe)) {
-                    document.body.removeChild(iframe);
-                }
-            }, 60000); // Hapus iframe setelah 1 menit agar tidak menumpuk
+                window.print();
+            }, 500);
         } // End of renderHTML
 
         let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';

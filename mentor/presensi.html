@@ -560,9 +560,19 @@
                     <input type="text" id="input-siswa" class="wa-form-control" placeholder="Ketik nama siswa..." autocomplete="off">
                     <div id="autocomplete-list" class="autocomplete-dropdown"></div>
                 </div>
-                <div id="selected-students" class="selected-students" style="margin-top: 10px;">
+                <div id="selected-students" class="selected-students" style="margin-top: 10px; margin-bottom: 16px;">
                     <!-- Chips will be added here -->
                 </div>
+
+                <label style="font-size: 13px; color: #555; font-weight: 600; margin-bottom: 4px; display: block;">Mentee Izin/Sakit:</label>
+                <div class="autocomplete-wrapper">
+                    <input type="text" id="input-siswa-izin" class="wa-form-control" placeholder="Ketik nama siswa izin/sakit..." autocomplete="off">
+                    <div id="autocomplete-list-izin" class="autocomplete-dropdown"></div>
+                </div>
+                <div id="selected-students-izin" class="selected-students" style="margin-top: 10px;">
+                    <!-- Chips will be added here -->
+                </div>
+                
                 <div class="wa-bubble-time" style="position: absolute; bottom: 8px; right: 10px;"><span id="time-2">10:01</span> <i class="fas fa-check-double" style="color: #4fc3f7"></i></div>
             </div>
 
@@ -636,6 +646,7 @@
         
         let allStudents = [];
         let selectedStudents = [];
+        let selectedIzinStudents = [];
 
         let mentorName = localStorage.getItem('mentor_name') || '';
         let mentorEmail = localStorage.getItem('mentor_email') || '';
@@ -729,77 +740,82 @@
         // Autocomplete Logic
         const inputSiswa = document.getElementById('input-siswa');
         const listSiswa = document.getElementById('autocomplete-list');
+        const inputSiswaIzin = document.getElementById('input-siswa-izin');
+        const listSiswaIzin = document.getElementById('autocomplete-list-izin');
 
-        inputSiswa.addEventListener('input', function() {
-            const val = this.value.toLowerCase().trim();
-            listSiswa.innerHTML = '';
-            
-            if (!val) {
-                listSiswa.style.display = 'none';
-                return;
-            }
+        function setupAutocomplete(inputEl, listEl, selectedArr, renderFn) {
+            inputEl.addEventListener('input', function() {
+                const val = this.value.toLowerCase().trim();
+                listEl.innerHTML = '';
+                
+                if (!val) {
+                    listEl.style.display = 'none';
+                    return;
+                }
 
-            let matches = allStudents.filter(s => 
-                s.nama.toLowerCase().includes(val) && 
-                !selectedStudents.includes(s.nama)
-            );
-            
-            // Urutkan: yang berawalan persis dengan kata kunci ditaruh di atas
-            matches.sort((a, b) => {
-                const nameA = a.nama.toLowerCase();
-                const nameB = b.nama.toLowerCase();
-                const aStarts = nameA.startsWith(val);
-                const bStarts = nameB.startsWith(val);
-                if (aStarts && !bStarts) return -1;
-                if (!aStarts && bStarts) return 1;
-                return nameA.localeCompare(nameB);
-            });
-            
-            matches = matches.slice(0, 10);
-
-            if (matches.length > 0) {
-                matches.forEach(student => {
-                    const div = document.createElement('div');
-                    div.className = 'autocomplete-item';
-                    
-                    const regex = new RegExp(`(${val})`, "gi");
-                    const highlightedName = student.nama.replace(regex, "<strong>$1</strong>");
-
-                    div.innerHTML = `
-                        <span class="student-name">${highlightedName}</span>
-                        <span class="student-group">${student.kelompok || '-'}</span>
-                    `;
-                    
-                    div.addEventListener('click', () => {
-                        addStudent(student.nama);
-                        inputSiswa.value = '';
-                        listSiswa.style.display = 'none';
-                        inputSiswa.focus();
-                    });
-                    
-                    listSiswa.appendChild(div);
+                let matches = allStudents.filter(s => 
+                    s.nama.toLowerCase().includes(val) && 
+                    !selectedStudents.includes(s.nama) &&
+                    !selectedIzinStudents.includes(s.nama)
+                );
+                
+                // Urutkan: yang berawalan persis dengan kata kunci ditaruh di atas
+                matches.sort((a, b) => {
+                    const nameA = a.nama.toLowerCase();
+                    const nameB = b.nama.toLowerCase();
+                    const aStarts = nameA.startsWith(val);
+                    const bStarts = nameB.startsWith(val);
+                    if (aStarts && !bStarts) return -1;
+                    if (!aStarts && bStarts) return 1;
+                    return nameA.localeCompare(nameB);
                 });
-                listSiswa.style.display = 'block';
-            } else {
-                listSiswa.innerHTML = '<div class="autocomplete-item"><span class="student-name" style="color:#999">Tidak ditemukan</span></div>';
-                listSiswa.style.display = 'block';
-            }
-        });
+                
+                matches = matches.slice(0, 10);
+
+                if (matches.length > 0) {
+                    matches.forEach(student => {
+                        const div = document.createElement('div');
+                        div.className = 'autocomplete-item';
+                        
+                        const regex = new RegExp(`(${val})`, "gi");
+                        const highlightedName = student.nama.replace(regex, "<strong>$1</strong>");
+
+                        div.innerHTML = `
+                            <span class="student-name">${highlightedName}</span>
+                            <span class="student-group">${student.kelompok || '-'}</span>
+                        `;
+                        
+                        div.addEventListener('click', () => {
+                            selectedArr.push(student.nama);
+                            renderFn();
+                            inputEl.value = '';
+                            listEl.style.display = 'none';
+                            inputEl.focus();
+                        });
+                        
+                        listEl.appendChild(div);
+                    });
+                    listEl.style.display = 'block';
+                } else {
+                    listEl.innerHTML = '<div class="autocomplete-item"><span class="student-name" style="color:#999">Tidak ditemukan</span></div>';
+                    listEl.style.display = 'block';
+                }
+            });
+        }
+
+        setupAutocomplete(inputSiswa, listSiswa, selectedStudents, renderChips);
+        setupAutocomplete(inputSiswaIzin, listSiswaIzin, selectedIzinStudents, renderIzinChips);
 
         document.addEventListener('click', function (e) {
             if (e.target !== inputSiswa && e.target !== listSiswa) {
                 listSiswa.style.display = 'none';
             }
+            if (e.target !== inputSiswaIzin && e.target !== listSiswaIzin) {
+                listSiswaIzin.style.display = 'none';
+            }
         });
 
         // Chip Logic
-        function addStudent(name) {
-            if (!selectedStudents.includes(name)) {
-                selectedStudents.push(name);
-                renderChips();
-            }
-        }
-
         function removeStudent(name) {
             selectedStudents = selectedStudents.filter(s => s !== name);
             renderChips();
@@ -815,6 +831,28 @@
                 chip.innerHTML = `
                     <span>${name}</span>
                     <i class="fas fa-times-circle" onclick="removeStudent('${name}')"></i>
+                `;
+                container.appendChild(chip);
+            });
+        }
+
+        function removeIzinStudent(name) {
+            selectedIzinStudents = selectedIzinStudents.filter(s => s !== name);
+            renderIzinChips();
+        }
+
+        function renderIzinChips() {
+            const container = document.getElementById('selected-students-izin');
+            container.innerHTML = '';
+            
+            selectedIzinStudents.forEach(name => {
+                const chip = document.createElement('div');
+                chip.className = 'student-chip';
+                chip.style.background = '#fef0f0';
+                chip.style.color = '#e53935';
+                chip.innerHTML = `
+                    <span>${name}</span>
+                    <i class="fas fa-times-circle" onclick="removeIzinStudent('${name}')" style="color: #e53935;"></i>
                 `;
                 container.appendChild(chip);
             });
@@ -851,7 +889,8 @@
                 tanggal: tanggal,
                 mentorName: localStorage.getItem('mentor_name') || 'Kakak Mentor',
                 mentorEmail: localStorage.getItem('mentor_email') || 'anonim@skycircle.id',
-                hadirList: selectedStudents
+                hadirList: selectedStudents,
+                izinList: selectedIzinStudents
             };
 
             try {

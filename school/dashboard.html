@@ -359,7 +359,7 @@
                         <th onclick="toggleSort('nama')" style="cursor: pointer; user-select: none;">Nama Siswa <i id="sort-icon-nama" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('kelas')" style="cursor: pointer; user-select: none;">Kelas <i id="sort-icon-kelas" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('gender')" style="cursor: pointer; user-select: none; text-align: center;">L/P <i id="sort-icon-gender" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
-                        <th onclick="toggleSort('kelompok')" style="cursor: pointer; user-select: none;">Kelompok <i id="sort-icon-kelompok" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('mentor')" style="cursor: pointer; user-select: none;">Mentor <i id="sort-icon-mentor" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th>P1</th>
                         <th>P2</th>
                         <th>P3</th>
@@ -629,7 +629,7 @@
         }
 
         function updateSortIcons() {
-            ['nama', 'kelas', 'gender', 'kelompok', 'kehadiran'].forEach(f => {
+            ['nama', 'kelas', 'gender', 'mentor', 'kehadiran'].forEach(f => {
                 const icon = document.getElementById('sort-icon-' + f);
                 if (!icon) return;
                 if (currentSortField === f) {
@@ -737,9 +737,9 @@
                         valA = a._pct || 0;
                         valB = b._pct || 0;
                         return currentSortDir === 'desc' ? valB - valA : valA - valB;
-                    } else if (currentSortField === 'kelompok') {
-                        valA = String(a.kelompok || '');
-                        valB = String(b.kelompok || '');
+                    } else if (currentSortField === 'mentor') {
+                        valA = String(a.mentor || '');
+                        valB = String(b.mentor || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
                     }
                     return 0;
@@ -884,7 +884,7 @@
                 let pillStyle = percent >= 75 ? '' : (percent > 0 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;');
                 
                 let bgStyle = "transition: background 0.2s;";
-                let kelompokDisplay = s.kelompok ? s.kelompok : `<span style="color: var(--text-muted); font-size: 12px;">Belum ada mentor</span>`;
+                let mentorDisplay = s.mentor ? s.mentor : `<span style="color: var(--text-muted); font-size: 12px;">Belum ada mentor</span>`;
 
                 let genderBadge = s._genderLabel === 'L'
                     ? `<span style="display: inline-block; padding: 2px 8px; border-radius: 6px; font-size: 11px; font-weight: 700; background: #e8f0fe; color: #1a73e8;">L</span>`
@@ -896,7 +896,7 @@
                     <td style="font-weight: 600; color: var(--text-main);">${s.nama}</td>
                     <td>${String(s.kelas).replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</td>
                     <td style="text-align: center;">${genderBadge}</td>
-                    <td>${kelompokDisplay}</td>
+                    <td>${mentorDisplay}</td>
                     ${pCells}
                     <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${percent}%</span></td>
                 `;

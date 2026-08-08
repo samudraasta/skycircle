@@ -379,6 +379,8 @@
                     <tr><td colspan="12" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
                 </tbody>
             </table>
+            
+            <div id="pagination-container" style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 24px;"></div>
         </div>
 
         <footer style="margin-top: 60px; padding: 24px; border-top: 1px solid var(--border-color); text-align: center; color: var(--text-muted); font-size: 12px;">
@@ -642,8 +644,19 @@
 
         let schoolChart;
         let currentFilteredStudents = [];
+        let currentPage = 1;
         
         function renderSchoolTable() {
+            currentPage = 1;
+            renderSchoolTableCore();
+        }
+
+        function changePage(delta) {
+            currentPage += delta;
+            renderSchoolTableCore();
+        }
+
+        function renderSchoolTableCore() {
             updateAllAlertBadges();
             const tbody = document.getElementById('student-table-body');
             tbody.innerHTML = '';
@@ -843,7 +856,14 @@
             }
 
             const limit = parseInt(document.getElementById('row-limit').value) || 50;
-            filtered.slice(0, limit).forEach(s => {
+            const totalPages = Math.ceil(filtered.length / limit);
+            if (currentPage > totalPages && totalPages > 0) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+            
+            const startIndex = (currentPage - 1) * limit;
+            const endIndex = startIndex + limit;
+
+            filtered.slice(startIndex, endIndex).forEach(s => {
                 let hadirCount = 0;
                 let totalPertemuan = 12;
                 let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
@@ -882,6 +902,16 @@
                 `;
                 tbody.appendChild(tr);
             });
+
+            const paginationEl = document.getElementById('pagination-container');
+            if (paginationEl) {
+                const totalPages = Math.ceil(filtered.length / limit) || 1;
+                paginationEl.innerHTML = `
+                    <button onclick="changePage(-1)" ${currentPage === 1 ? 'disabled' : ''} style="padding: 6px 16px; border: 1px solid var(--border-color); border-radius: 8px; background: ${currentPage === 1 ? '#f8f9fa' : '#fff'}; cursor: ${currentPage === 1 ? 'not-allowed' : 'pointer'}; opacity: ${currentPage === 1 ? '0.5' : '1'}; transition: all 0.2s; font-weight: 600; color: var(--text-main);"><i class="fas fa-chevron-left" style="margin-right: 6px;"></i> Sebelumnya</button>
+                    <span style="font-size: 13px; color: var(--text-muted); font-weight: 500;">Halaman <strong style="color: var(--text-main);">${currentPage}</strong> dari <strong>${totalPages}</strong></span>
+                    <button onclick="changePage(1)" ${currentPage >= totalPages ? 'disabled' : ''} style="padding: 6px 16px; border: 1px solid var(--border-color); border-radius: 8px; background: ${currentPage >= totalPages ? '#f8f9fa' : '#fff'}; cursor: ${currentPage >= totalPages ? 'not-allowed' : 'pointer'}; opacity: ${currentPage >= totalPages ? '0.5' : '1'}; transition: all 0.2s; font-weight: 600; color: var(--text-main);">Selanjutnya <i class="fas fa-chevron-right" style="margin-left: 6px;"></i></button>
+                `;
+            }
         }
         
         function updateChart(dataHadir) {

@@ -460,9 +460,28 @@
             <i class="fas fa-chevron-right"></i>
         </button>
 
+        <!-- PENCARIAN GLOBAL MENTEE -->
+        <div style="margin-top: 16px; position: relative;">
+            <div style="text-align: center; color: #075e54; font-weight: 700; font-size: 14px; margin-bottom: 10px;"><i class="fas fa-search"></i> PENCARIAN MENTEE</div>
+            <div style="position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+                <input type="text" id="globalMenteeSearch" placeholder="Cari nama mentee..." style="width: 100%; padding: 14px 16px 14px 40px; border-radius: 12px; border: 1px solid #ccc; font-size: 15px; outline: none; box-sizing: border-box;" onfocus="fetchAllProfiles()">
+            </div>
+            <div id="globalMenteeSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 250px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; padding: 8px;"></div>
+        </div>
+
     </div>
     <!-- LAYAR 1.5: PICKER 2 KOLOM (GIRLS & BOYS PER SUB-KELAS) -->
-    <div id="screenPicker" style="display: none;">
+    <div id="screenPicker" style="display: none; flex-direction: column;">
+        <!-- PENCARIAN MENTEE KELAS SPESIFIK -->
+        <div style="margin: 16px; position: relative;">
+            <div style="position: relative;">
+                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888;"></i>
+                <input type="text" id="classMenteeSearch" placeholder="Cari mentee di kelas ini..." style="width: 100%; padding: 12px 16px 12px 40px; border-radius: 12px; border: 1px solid #ccc; font-size: 14px; outline: none; box-sizing: border-box;" onfocus="fetchAllProfiles()">
+            </div>
+            <div id="classMenteeSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 250px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; padding: 8px;"></div>
+        </div>
+
         <div class="col-headers">
             <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle (GC)</div>
             <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle (BC)</div>
@@ -500,6 +519,87 @@
     let selectedGrade = 'X';
     let displayedProfiles = [];
     let currentIndex = 0;
+    
+    // --- MENTEE SEARCH LOGIC ---
+    let allProfilesCache = null;
+    let isFetchingProfiles = false;
+    
+    async function fetchAllProfiles() {
+        if (allProfilesCache) return allProfilesCache;
+        if (isFetchingProfiles) return new Promise(r => setTimeout(() => r(fetchAllProfiles()), 500));
+        isFetchingProfiles = true;
+        try {
+            // Tampilkan loading spinner kecil di input jika mau, tapi biarkan saja dulu
+            const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_profiles' }) });
+            const data = await res.json();
+            if (data.status === 'success') allProfilesCache = data.profiles;
+        } catch(e) { console.error(e); }
+        isFetchingProfiles = false;
+        return allProfilesCache;
+    }
+
+    function setupMenteeSearch(inputId, resultsId, isGlobal) {
+        const input = document.getElementById(inputId);
+        const resDiv = document.getElementById(resultsId);
+        
+        input.addEventListener('input', async (e) => {
+            const val = e.target.value.toLowerCase().trim();
+            if (!val) { resDiv.style.display = 'none'; return; }
+            
+            const profiles = await fetchAllProfiles();
+            if (!profiles) return;
+            
+            const filtered = profiles.filter(p => {
+                const matchName = p.nama.toLowerCase().includes(val);
+                if (isGlobal) return matchName;
+                const matchGrade = (p.kelas || '').toUpperCase().includes(' ' + selectedGrade + ' ') || (p.kelas || '').toUpperCase().includes(' ' + selectedGrade + '-') || (p.kelas || '').toUpperCase().endsWith(' ' + selectedGrade);
+                return matchName && matchGrade;
+            });
+            
+            if (filtered.length === 0) {
+                resDiv.innerHTML = '<div style="padding: 12px; color: #888; text-align: center; font-size: 13px;">Tidak ada hasil</div>';
+                resDiv.style.display = 'block';
+                return;
+            }
+            
+            resDiv.innerHTML = filtered.slice(0, 15).map(p => {
+                const encoded = encodeURIComponent(JSON.stringify(p)).replace(/'/g, "%27");
+                return \`
+                <div style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" onclick="openProfileFromSearch('\${encoded}')">
+                    <div>
+                        <div style="font-weight: 600; font-size: 14px; color: #333;">\${p.nama}</div>
+                        <div style="font-size: 12px; color: #666; margin-top: 4px;">\${p.kelas || '-'}</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="color: #ccc; font-size: 12px;"></i>
+                </div>
+            \`}).join('');
+            resDiv.style.display = 'block';
+        });
+
+        // Hide when clicked outside
+        document.addEventListener('click', (e) => {
+            if (!input.contains(e.target) && !resDiv.contains(e.target)) {
+                resDiv.style.display = 'none';
+            }
+        });
+    }
+
+    window.openProfileFromSearch = function(pStr) {
+        const p = JSON.parse(decodeURIComponent(pStr));
+        document.getElementById('globalMenteeSearch').value = '';
+        document.getElementById('classMenteeSearch').value = '';
+        document.getElementById('globalMenteeSearchResults').style.display = 'none';
+        document.getElementById('classMenteeSearchResults').style.display = 'none';
+        
+        displayedProfiles = [p];
+        currentIndex = 0;
+        showScreen('slider');
+        renderSlider();
+    }
+
+    setupMenteeSearch('globalMenteeSearch', 'globalMenteeSearchResults', true);
+    setupMenteeSearch('classMenteeSearch', 'classMenteeSearchResults', false);
+    // ----------------------------
 
     let touchStartX = 0;
     document.getElementById('sliderArea').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });

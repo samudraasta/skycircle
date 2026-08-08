@@ -358,6 +358,7 @@
                     <tr>
                         <th onclick="toggleSort('nama')" style="cursor: pointer; user-select: none;">Nama Siswa <i id="sort-icon-nama" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('kelas')" style="cursor: pointer; user-select: none;">Kelas <i id="sort-icon-kelas" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
+                        <th onclick="toggleSort('angkatan')" style="cursor: pointer; user-select: none;">Angkatan <i id="sort-icon-angkatan" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('gender')" style="cursor: pointer; user-select: none; text-align: center;">L/P <i id="sort-icon-gender" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th onclick="toggleSort('mentor')" style="cursor: pointer; user-select: none;">Mentor <i id="sort-icon-mentor" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th>P1</th>
@@ -376,7 +377,7 @@
                     </tr>
                 </thead>
                 <tbody id="student-table-body">
-                    <tr><td colspan="12" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
+                    <tr><td colspan="18" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
                 </tbody>
             </table>
             
@@ -402,14 +403,14 @@
                     body: JSON.stringify({ action: "get_school_data" })
                 });
                 const data = await response.json();
-                if(data.status === "success") {
+                if (data.status === 'success') {
                     allStudents = data.students;
                     switchTingkatTab('Semua');
                 } else {
-                    document.getElementById('student-table-body').innerHTML = `<tr><td colspan="16" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
+                    document.getElementById('student-table-body').innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
                 }
-            } catch (e) {
-                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="16" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
+            } catch (err) {
+                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
             }
         }
 
@@ -629,7 +630,7 @@
         }
 
         function updateSortIcons() {
-            ['nama', 'kelas', 'gender', 'mentor', 'kehadiran'].forEach(f => {
+            ['nama', 'kelas', 'angkatan', 'gender', 'mentor', 'kehadiran'].forEach(f => {
                 const icon = document.getElementById('sort-icon-' + f);
                 if (!icon) return;
                 if (currentSortField === f) {
@@ -728,6 +729,10 @@
                     } else if (currentSortField === 'kelas') {
                         valA = String(a.kelas || '');
                         valB = String(b.kelas || '');
+                        return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
+                    } else if (currentSortField === 'angkatan') {
+                        valA = String(a.angkatan || '');
+                        valB = String(b.angkatan || '');
                         return currentSortDir === 'desc' ? valB.localeCompare(valA, undefined, {numeric: true}) : valA.localeCompare(valB, undefined, {numeric: true});
                     } else if (currentSortField === 'gender') {
                         valA = String(a._genderLabel || '');
@@ -851,7 +856,7 @@
             // -----------------------------
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
                 return;
             }
 
@@ -895,6 +900,7 @@
                 tr.innerHTML = `
                     <td style="font-weight: 600; color: var(--text-main);">${s.nama}</td>
                     <td>${String(s.kelas).replace(/-/g, ' ').replace(/\s+/g, ' ').trim()}</td>
+                    <td>${s.angkatan || '-'}</td>
                     <td style="text-align: center;">${genderBadge}</td>
                     <td>${mentorDisplay}</td>
                     ${pCells}

@@ -1122,9 +1122,27 @@
                 </div>
             `;
 
-            setTimeout(() => {
+            const printImg = printContainer.querySelector('.photo img');
+            let printFired = false;
+            
+            const triggerPrint = () => {
+                if (printFired) return;
+                printFired = true;
                 window.print();
-            }, 500);
+            };
+
+            if (printImg) {
+                if (printImg.complete) {
+                    triggerPrint();
+                } else {
+                    printImg.onload = triggerPrint;
+                    printImg.onerror = triggerPrint;
+                    // Fallback timeout just in case it hangs
+                    setTimeout(triggerPrint, 3000);
+                }
+            } else {
+                setTimeout(triggerPrint, 500);
+            }
         } // End of renderHTML
 
         let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';

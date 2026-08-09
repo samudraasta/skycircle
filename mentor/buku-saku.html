@@ -737,6 +737,7 @@
                 }
 
                 document.getElementById('headerSub').textContent = `${displayedProfiles.length} mentee`;
+                currentIndex = 0;
                 renderSlider();
                 showScreen('slider');
 
@@ -936,7 +937,12 @@
                 dotBar.appendChild(dot);
             }
         });
-        goToSlide(0);
+        
+        // Ensure currentIndex is within bounds (in case displayedProfiles shrunk)
+        if (currentIndex >= displayedProfiles.length) {
+            currentIndex = Math.max(0, displayedProfiles.length - 1);
+        }
+        goToSlide(currentIndex);
     }
 
     function goToSlide(i) {

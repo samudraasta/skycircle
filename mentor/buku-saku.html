@@ -798,6 +798,16 @@
             
             p.fotoId = finalFileId;
             
+            // Restore rotation from localStorage if available
+            if (p.fotoId && p.rotation === undefined) {
+                try {
+                    let savedRotations = JSON.parse(localStorage.getItem('skycircle_rotations') || '{}');
+                    if (savedRotations[p.fotoId] !== undefined) {
+                        p.rotation = savedRotations[p.fotoId];
+                    }
+                } catch(e) {}
+            }
+            
             let directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
             if (finalFileId && p.rotation) {
                 directUrl = `https://wsrv.nl/?url=${directUrl}&ro=${p.rotation}&w=400`;
@@ -989,6 +999,16 @@
         const p = displayedProfiles[index];
         if (!p) return;
         p.rotation = ((p.rotation || 0) + 90) % 360;
+        
+        // Save to localStorage
+        if (p.fotoId) {
+            try {
+                let savedRotations = JSON.parse(localStorage.getItem('skycircle_rotations') || '{}');
+                savedRotations[p.fotoId] = p.rotation;
+                localStorage.setItem('skycircle_rotations', JSON.stringify(savedRotations));
+            } catch(e) {}
+        }
+        
         renderSlider();
     };
 

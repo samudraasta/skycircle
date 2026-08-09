@@ -1029,7 +1029,7 @@
 
         function renderHTML(safeImgSrc, safeBgSrc) {
             const toast = document.getElementById('toast');
-            toast.textContent = 'Menyiapkan dialog cetak PDF...';
+            toast.textContent = 'Menyiapkan gambar ID Card...';
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
 
@@ -1041,30 +1041,12 @@
                 
                 const style = document.createElement('style');
                 style.innerHTML = `
-                    @media screen {
-                        #print-container { display: none !important; }
-                    }
-                    @media print {
-                        body > *:not(#print-container) { display: none !important; }
-                        #print-container {
-                            display: block !important;
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            margin: 0;
-                            padding: 0;
-                        }
-                        @page {
-                            size: 50mm 85mm;
-                            margin: 0;
-                        }
-                        body {
-                            margin: 0;
-                            padding: 0;
-                            background: white;
-                            -webkit-print-color-adjust: exact !important;
-                            print-color-adjust: exact !important;
-                        }
+                    #print-container { 
+                        position: fixed !important;
+                        left: -9999px !important;
+                        top: -9999px !important;
+                        display: block !important;
+                        z-index: -9999;
                     }
                 `;
                 document.head.appendChild(style);
@@ -1123,25 +1105,51 @@
             `;
 
             const printImg = printContainer.querySelector('.photo img');
-            let printFired = false;
+            let captureFired = false;
             
-            const triggerPrint = () => {
-                if (printFired) return;
-                printFired = true;
-                window.print();
+            const triggerCapture = () => {
+                if (captureFired) return;
+                captureFired = true;
+                
+                if (!window.html2canvas) {
+                    const script = document.createElement('script');
+                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
+                    script.onload = () => captureIDCard(printContainer.querySelector('.id-card'));
+                    document.head.appendChild(script);
+                } else {
+                    captureIDCard(printContainer.querySelector('.id-card'));
+                }
+            };
+
+            const captureIDCard = (el) => {
+                html2canvas(el, {
+                    useCORS: true,
+                    scale: 3, // High resolution
+                    backgroundColor: null
+                }).then(canvas => {
+                    const dataUrl = canvas.toDataURL('image/png');
+                    const a = document.createElement('a');
+                    a.href = dataUrl;
+                    a.download = `ID-Card-${mainName}.png`;
+                    a.click();
+                    showToast('ID Card berhasil didownload!');
+                }).catch(err => {
+                    showToast('Gagal memproses gambar');
+                    console.error(err);
+                });
             };
 
             if (printImg) {
                 if (printImg.complete) {
-                    triggerPrint();
+                    triggerCapture();
                 } else {
-                    printImg.onload = triggerPrint;
-                    printImg.onerror = triggerPrint;
+                    printImg.onload = triggerCapture;
+                    printImg.onerror = triggerCapture;
                     // Fallback timeout just in case it hangs
-                    setTimeout(triggerPrint, 3000);
+                    setTimeout(triggerCapture, 3000);
                 }
             } else {
-                setTimeout(triggerPrint, 500);
+                setTimeout(triggerCapture, 500);
             }
         } // End of renderHTML
 

@@ -451,12 +451,12 @@
             <span><i class="fas fa-chalkboard-teacher" style="margin-right: 12px;"></i> Kelas X</span>
             <i class="fas fa-chevron-right"></i>
         </button>
-        <button class="grade-card-btn" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(37,99,235,0.25); cursor: not-allowed; transition: transform 0.12s; opacity: 0.2;" disabled>
-            <span><i class="fas fa-user-graduate" style="margin-right: 12px;"></i> Kelas XI <span style="font-size: 12px; font-weight: 600; opacity: 0.8;">(Coming Soon)</span></span>
+        <button class="grade-card-btn" onclick="selectGrade('XI')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(37,99,235,0.25); cursor: pointer; transition: transform 0.12s;">
+            <span><i class="fas fa-user-graduate" style="margin-right: 12px;"></i> Kelas XI</span>
             <i class="fas fa-chevron-right"></i>
         </button>
-        <button class="grade-card-btn" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(124,58,237,0.25); cursor: not-allowed; transition: transform 0.12s; opacity: 0.2;" disabled>
-            <span><i class="fas fa-award" style="margin-right: 12px;"></i> Kelas XII <span style="font-size: 12px; font-weight: 600; opacity: 0.8;">(Coming Soon)</span></span>
+        <button class="grade-card-btn" onclick="selectGrade('XII')" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(124,58,237,0.25); cursor: pointer; transition: transform 0.12s;">
+            <span><i class="fas fa-award" style="margin-right: 12px;"></i> Kelas XII</span>
             <i class="fas fa-chevron-right"></i>
         </button>
 
@@ -630,10 +630,20 @@
 
         const grid = document.getElementById('classButtonsGrid');
         grid.innerHTML = '';
-        for (let i = 1; i <= 12; i++) {
+        
+        let subClasses = [];
+        if (grade === 'X') {
+            for (let i = 1; i <= 12; i++) subClasses.push(i.toString());
+        } else if (grade === 'XI') {
+            subClasses = ["A", "B1", "B2", "B3", "C1", "C2", "C3", "C4", "D1", "D2", "E1", "E2"].sort();
+        } else if (grade === 'XII') {
+            subClasses = ["A1", "A2", "B1", "B2", "C", "D1", "D2", "D3", "E1", "E2", "F1", "F2"].sort();
+        }
+
+        for (let sub of subClasses) {
             grid.innerHTML += `
-                <button class="group-btn gc" onclick="selectGroup('GC ${grade}-${i}')">${grade} ${i}</button>
-                <button class="group-btn bc" onclick="selectGroup('BC ${grade}-${i}')">${grade} ${i}</button>
+                <button class="group-btn gc" onclick="selectGroup('GC ${grade}-${sub}')">${grade} ${sub}</button>
+                <button class="group-btn bc" onclick="selectGroup('BC ${grade}-${sub}')">${grade} ${sub}</button>
             `;
         }
         showScreen('picker');
@@ -689,13 +699,17 @@
                     }
 
                     // Cocokkan persis (e.g. "GC X-1 34" atau "GC X-1")
-                    if (pKelas.includes(groupName.toUpperCase())) return true;
+                    // Toleransi terhadap perbedaan strip dan spasi
+                    const normPKelas = pKelas.replace(/-/g, ' ');
+                    const normGroup = groupName.toUpperCase().replace(/-/g, ' ');
+                    if (normPKelas.includes(normGroup)) return true;
 
-                    // Match berdasarkan angka kelas & Gender (GC=Girls, BC=Boys)
-                    if (targetNum) {
-                        const pParts = pKelas.split(/[\s-]+/);
-                        const pLastNum = pParts[pParts.length - 1];
-                        if (pLastNum === targetNum) {
+                    // Match berdasarkan suffix sub-kelas & Gender (GC=Girls, BC=Boys)
+                    const targetSub = normGroup.split(' ')[1]; // misal "XI B1" -> "B1" atau "X 1" -> "1"
+                    if (targetSub) {
+                        const pParts = normPKelas.split(/\s+/);
+                        const pLastPart = pParts[pParts.length - 1];
+                        if (pLastPart === targetSub || pParts.includes(targetSub)) {
                             if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
                             if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
                         }

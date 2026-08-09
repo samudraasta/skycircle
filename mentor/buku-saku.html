@@ -705,7 +705,8 @@
                     if (normPKelas.includes(normGroup)) return true;
 
                     // Match berdasarkan suffix sub-kelas & Gender (GC=Girls, BC=Boys)
-                    const targetSub = normGroup.split(' ')[1]; // misal "XI B1" -> "B1" atau "X 1" -> "1"
+                    const targetParts = normGroup.split(' ');
+                    const targetSub = targetParts.length > 2 ? targetParts[2] : targetParts[1];
                     if (targetSub) {
                         const pParts = normPKelas.split(/\s+/);
                         const pLastPart = pParts[pParts.length - 1];

@@ -1056,8 +1056,8 @@
                 <style>
                     #print-container .id-card {
                         position: relative;
-                        width: 50mm;
-                        height: 85mm;
+                        width: 500px;
+                        height: 850px;
                         background-color: #fff;
                         background-image: url('${safeBgSrc}');
                         background-size: 100% 100%;
@@ -1070,41 +1070,41 @@
                     #print-container .photo {
                         position: absolute;
                         overflow: hidden;
-                        border-radius: 3mm;
-                        top: 21mm;
-                        right: 6.5mm;
-                        width: 26.5mm;
-                        height: 40.5mm;
+                        border-radius: 30px;
+                        top: 210px;
+                        right: 65px;
+                        width: 265px;
+                        height: 405px;
                         background-color: #eee;
-                    }
-                    #print-container .photo img {
-                        width: 100%;
-                        height: 100%;
-                        object-fit: cover;
+                        background-image: url('${safeImgSrc}');
+                        background-size: cover;
+                        background-position: center center;
+                        background-repeat: no-repeat;
                     }
                     #print-container .text {
                         position: absolute;
-                        right: 7.5mm;
-                        width: 40mm;
+                        right: 75px;
+                        width: 400px;
                         text-align: right;
                         text-transform: uppercase;
                         z-index: 10;
                     }
-                    #print-container .name { top: 66mm; right: 7mm; font-size: 11px; font-weight: 800; }
-                    #print-container .dob { top: 71mm; right: 7mm; font-size: 11px; font-weight: 800; }
-                    #print-container .kelas { top: 76mm; right: 7mm; font-size: 11px; font-weight: 800; }
+                    #print-container .name { top: 660px; right: 70px; font-size: 28px; font-weight: 800; }
+                    #print-container .dob { top: 710px; right: 70px; font-size: 28px; font-weight: 800; }
+                    #print-container .kelas { top: 760px; right: 70px; font-size: 28px; font-weight: 800; }
                 </style>
                 <div class="id-card">
-                    <div class="photo">
-                        <img src="${safeImgSrc}" />
-                    </div>
+                    <div class="photo"></div>
                     <div class="text name">${mainName}</div>
                     <div class="text dob">${dob}</div>
                     <div class="text kelas">${teamName}</div>
                 </div>
             `;
 
-            const printImg = printContainer.querySelector('.photo img');
+            // Since we're using background-image, we should wait for it to load manually
+            // We can do this by creating a hidden Image object
+            const preloader = new Image();
+            preloader.crossOrigin = "anonymous";
             let captureFired = false;
             
             const triggerCapture = () => {
@@ -1124,7 +1124,7 @@
             const captureIDCard = (el) => {
                 html2canvas(el, {
                     useCORS: true,
-                    scale: 3, // High resolution
+                    scale: 2, // 500x850 at scale 2 is 1000x1700, very high res!
                     backgroundColor: null
                 }).then(canvas => {
                     const dataUrl = canvas.toDataURL('image/png');
@@ -1139,18 +1139,12 @@
                 });
             };
 
-            if (printImg) {
-                if (printImg.complete) {
-                    triggerCapture();
-                } else {
-                    printImg.onload = triggerCapture;
-                    printImg.onerror = triggerCapture;
-                    // Fallback timeout just in case it hangs
-                    setTimeout(triggerCapture, 3000);
-                }
-            } else {
-                setTimeout(triggerCapture, 500);
-            }
+            preloader.onload = triggerCapture;
+            preloader.onerror = triggerCapture;
+            preloader.src = safeImgSrc;
+            
+            // Fallback timeout just in case it hangs
+            setTimeout(triggerCapture, 3000);
         } // End of renderHTML
 
         let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';

@@ -704,15 +704,21 @@
                     const normGroup = groupName.toUpperCase().replace(/-/g, ' ');
                     if (normPKelas.includes(normGroup)) return true;
 
-                    // Match berdasarkan suffix sub-kelas & Gender (GC=Girls, BC=Boys)
+                    // Match berdasarkan Tingkat dan Suffix Sub-kelas
                     const targetParts = normGroup.split(' ');
-                    const targetSub = targetParts.length > 2 ? targetParts[2] : targetParts[1];
-                    if (targetSub) {
+                    const targetGrade = targetParts[1]; // misal "XI", "X"
+                    const targetSub = targetParts.length > 2 ? targetParts[2] : '';
+                    
+                    if (targetGrade && targetSub) {
                         const pParts = normPKelas.split(/\s+/);
-                        const pLastPart = pParts[pParts.length - 1];
-                        if (pLastPart === targetSub || pParts.includes(targetSub)) {
-                            if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
-                            if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
+                        // Pastikan grade-nya persis cocok (menghindari "XII" cocok dengan "XI")
+                        if (pParts.includes(targetGrade)) {
+                            // Cek suffix sub-kelas
+                            const pLastPart = pParts[pParts.length - 1];
+                            if (pLastPart === targetSub || pParts.includes(targetSub)) {
+                                if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
+                                if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
+                            }
                         }
                     }
                     return false;

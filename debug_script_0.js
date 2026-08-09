@@ -1,605 +1,10 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="referrer" content="no-referrer">
-    <title>Buku Saku Mentee - Sky Circle</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body, html {
-            height: 100%;
-            margin: 0; padding: 0;
-            font-family: 'Inter', sans-serif;
-            background: #075e54;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .phone-wrap {
-            width: 430px;
-            max-width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            max-height: 900px;
-            background: #efeae2;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 0 40px rgba(0,0,0,0.3);
-            color: #111;
-            position: relative;
-        }
 
-        /* HEADER */
-        .header {
-            background-color: #075e54;
-            color: #ffffff;
-            padding: 12px 16px;
-            padding-top: max(12px, env(safe-area-inset-top));
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-shrink: 0;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-            z-index: 100;
-        }
-        .header-back { font-size: 18px; cursor: pointer; color: #ffffff; }
-        .header-info { flex: 1; }
-        .header-title { font-size: 16px; font-weight: 700; color: #ffffff; }
-        .header-sub { font-size: 12px; color: rgba(255, 255, 255, 0.85); margin-top: 2px; }
-
-        @media (max-width: 600px) {
-            body, html {
-                align-items: flex-start;
-                background: #075e54;
-            }
-            .phone-wrap {
-                height: 100dvh;
-                height: 100vh;
-                max-height: 100%;
-                border-radius: 0;
-                box-shadow: none;
-            }
-        }
-
-        /* ---- LAYAR PICKER: 2 KOLOM ---- */
-        #screenPicker {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            background: #efeae2;
-        }
-
-        /* Row header kolom */
-        .col-headers {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            padding: 12px 14px 6px;
-            flex-shrink: 0;
-        }
-        .col-header {
-            text-align: center;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.8px;
-            padding: 7px;
-            border-radius: 8px;
-        }
-        .col-header.gc { color: #be185d; background: rgba(244,114,182,0.12); }
-        .col-header.bc { color: #1d4ed8; background: rgba(96,165,250,0.12); }
-
-        /* Grid 2 kolom */
-        .two-col-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 0 14px 14px;
-            overflow-y: auto;
-            flex: 1;
-            scrollbar-width: none;
-        }
-        .two-col-grid::-webkit-scrollbar { display: none; }
-
-        .group-btn {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
-            color: #1f2937;
-            padding: 12px 8px;
-            border-radius: 14px;
-            font-family: 'Inter', sans-serif;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            text-align: center;
-            transition: all 0.12s;
-            line-height: 1.2;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.07);
-        }
-        .group-btn:hover, .group-btn:active {
-            transform: scale(0.96);
-            background: #f0fdf9;
-            border-color: #075e54;
-        }
-        .group-btn.gc { border-left: 3px solid #ec4899; }
-        .group-btn.bc { border-left: 3px solid #3b82f6; }
-        .group-btn.circle-plus-gc {
-            background: #fdf2f8;
-            border: 1px solid #fbcfe8;
-            border-left: 3px solid #ec4899;
-            color: #be185d;
-            font-size: 13px;
-        }
-        .group-btn.circle-plus-gc i { color: #ec4899; }
-        .group-btn.circle-plus-bc {
-            background: #eff6ff;
-            border: 1px solid #bfdbfe;
-            border-left: 3px solid #3b82f6;
-            color: #1d4ed8;
-            font-size: 13px;
-        }
-        .group-btn.circle-plus-bc i { color: #3b82f6; }
-
-        /* ---- LAYAR LOADING ---- */
-        #screenLoading {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 14px;
-            background: #efeae2;
-        }
-        .spinner-ring {
-            width: 44px; height: 44px;
-            border: 4px solid rgba(7,94,84,0.15);
-            border-top: 4px solid #075e54;
-            border-radius: 50%;
-            animation: spin 0.85s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        #screenLoading p { font-size: 14px; color: #777; }
-        #screenLoading strong { color: #075e54; }
-
-        /* ---- LAYAR SLIDER ---- */
-        #screenSlider {
-            flex: 1;
-            display: none;
-            flex-direction: column;
-            overflow: hidden;
-            background: #efeae2;
-        }
-        .slider-area {
-            flex: 1;
-            position: relative;
-            overflow: hidden;
-            display: flex;
-        }
-        .cards-track {
-            display: flex;
-            width: 100%;
-            height: 100%;
-            transition: transform 0.38s cubic-bezier(0.25, 0.8, 0.25, 1);
-        }
-        .profile-card {
-            min-width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            background: #f8f9fa;
-            overflow-y: auto;
-            overflow-x: hidden;
-        }
-        .card-photo-wrap {
-            width: 100%; height: 50%;
-            position: relative; overflow: hidden; flex-shrink: 0;
-            background: #0e201b;
-            display: flex; align-items: center; justify-content: center;
-        }
-        .card-photo-wrap img {
-            width: 100%; height: 100%;
-            object-fit: contain;
-        }
-        .card-photo-wrap .no-photo {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            background: #e6f2eb; color: #128c7e; font-size: 80px;
-        }
-        .photo-loader {
-            width: 100%; height: 100%;
-            display: flex; align-items: center; justify-content: center;
-            background: #e6f2eb; color: #128c7e; font-size: 40px;
-        }
-        .counter-badge {
-            position: absolute; top: 14px; left: 14px;
-            background: rgba(0,0,0,0.55); backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff; border: 1px solid rgba(255, 255, 255, 0.2);
-            font-size: 12px; font-weight: 600; padding: 5px 12px; border-radius: 20px; z-index: 5;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .card-header-info {
-            padding: 20px 20px 14px;
-            border-bottom: 1px solid #e2e8f0;
-            background: #fff;
-            flex-shrink: 0;
-            text-align: left;
-        }
-        .card-header-info h2 {
-            font-size: 26px; font-weight: 800; color: #0f172a;
-            margin-bottom: 4px;
-        }
-        .card-header-info p.full-name {
-            font-size: 14px; color: #64748b; font-weight: 500;
-            margin-bottom: 12px;
-        }
-        .header-meta {
-            display: flex; flex-direction: column; gap: 8px; margin-top: 14px;
-        }
-        .header-meta-item {
-            display: flex; align-items: flex-start; gap: 10px; font-size: 12px; color: #475569; font-weight: 500; line-height: 1.4;
-        }
-        .header-meta-item i {
-            color: #0ea5e9; width: 16px; margin-top: 2px; text-align: center;
-        }
-        
-        .card-info {
-            padding: 20px;
-            display: flex; flex-direction: column; gap: 16px;
-            background: #f8fafc;
-            flex-shrink: 0;
-        }
-        
-        .info-group {
-            margin-bottom: 6px;
-        }
-        .info-group-title {
-            font-size: 11px; font-weight: 600; color: #64748b;
-            margin-left: 12px; margin-bottom: 6px;
-        }
-        .info-section {
-            background: #fff; padding: 14px 16px; border-radius: 16px; 
-            border: 1px solid #f1f5f9; box-shadow: 0 1px 2px rgba(0,0,0,0.02);
-            font-size: 12px; color: #334155; line-height: 1.5; font-weight: 500;
-        }
-        .info-section:last-child {
-            margin-bottom: 0;
-        }
-        .social-links {
-            display: flex; flex-direction: column; gap: 8px;
-        }
-        .social-item {
-            display: flex; align-items: center; gap: 12px; text-decoration: none; font-size: 12.5px; font-weight: 600; padding: 10px 16px; border-radius: 12px; transition: 0.2s; border: 1px solid transparent;
-        }
-        .social-ig { background: #fdf4ff; color: #d946ef; border-color: #fae8ff; }
-        .social-ig:hover { background: #fae8ff; }
-        .social-tiktok { background: #f1f5f9; color: #0f172a; border-color: #e2e8f0; }
-        .social-tiktok:hover { background: #e2e8f0; }
-        .social-wa { background: #f0fdf4; color: #16a34a; border-color: #dcfce7; }
-        .social-wa:hover { background: #dcfce7; }
-        .info-row { display: flex; flex-direction: column; gap: 2px; }
-        .info-ig {
-            display: inline-flex; align-items: center; gap: 6px;
-            color: #e1306c; font-size: 13px; text-decoration: none;
-        }
-        .nav-btn {
-            position: absolute; top: 24%; transform: translateY(-50%);
-            background: rgba(255,255,255,0.85); backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            border: 1px solid rgba(255,255,255,0.4); color: #075e54;
-            width: 40px; height: 40px; border-radius: 50%; font-size: 15px;
-            cursor: pointer; z-index: 10; transition: all 0.2s;
-            display: flex; align-items: center; justify-content: center;
-            box-shadow: 0 3px 10px rgba(0,0,0,0.2);
-        }
-        .nav-btn:hover:not(:disabled) { background: #ffffff; transform: translateY(-50%) scale(1.08); }
-        .nav-btn:disabled { opacity: 0.15; cursor: default; }
-        .nav-btn.prev { left: 10px; }
-        .nav-btn.next { right: 10px; }
-        .dot-bar {
-            display: flex; justify-content: center; align-items: center;
-            gap: 6px; padding: 10px 0; background: #fff; min-height: 34px;
-            border-top: 1px solid #f0f0f0;
-        }
-        .dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: #d1d5db; transition: all 0.3s; cursor: pointer;
-        }
-        .dot.active { background: #075e54; width: 20px; border-radius: 3px; }
-
-        .card-actions {
-            display: flex; align-items: center; justify-content: space-between;
-            gap: 10px; margin-top: 6px; padding-top: 10px;
-            border-top: 1px dashed #e5e7eb; flex-wrap: wrap;
-        }
-        .btn-share {
-            display: inline-flex; align-items: center; gap: 6px;
-            background: #25d366; color: white; border: none;
-            padding: 7px 14px; border-radius: 20px;
-            font-size: 12px; font-weight: 600; cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-            box-shadow: 0 2px 6px rgba(37, 211, 102, 0.25);
-            font-family: 'Inter', sans-serif;
-            margin-left: auto;
-        }
-        .btn-share:hover { background: #1eb956; }
-        .btn-share:active { transform: scale(0.96); }
-
-        .share-icon-btn {
-            position: absolute; top: 14px; right: 14px;
-            background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: white; border: 1px solid rgba(255, 255, 255, 0.25);
-            width: 38px; height: 38px; border-radius: 50%;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 15px; cursor: pointer; z-index: 5;
-            transition: all 0.2s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-        }
-        .share-icon-btn:hover {
-            background: #25d366; border-color: #25d366;
-            transform: scale(1.08);
-        }
-        .share-icon-btn:active { transform: scale(0.94); }
-
-        .toast {
-            position: absolute; bottom: 50px; left: 50%;
-            transform: translateX(-50%) translateY(20px);
-            background: #1f2937; color: white;
-            padding: 9px 18px; border-radius: 20px;
-            font-size: 12px; font-weight: 500; opacity: 0;
-            visibility: hidden; transition: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-            z-index: 1000; box-shadow: 0 4px 14px rgba(0,0,0,0.3);
-            white-space: nowrap; pointer-events: none;
-        }
-        .toast.show {
-            opacity: 1; visibility: visible;
-            transform: translateX(-50%) translateY(0);
-        }
-
-        .empty-screen {
-            flex: 1; display: flex; flex-direction: column;
-            align-items: center; justify-content: center;
-            gap: 12px; color: #9ca3af; text-align: center; padding: 30px;
-        }
-        .empty-screen i { font-size: 36px; }
-        .empty-screen p { font-size: 14px; line-height: 1.5; color: #6b7280; }
-        .back-btn {
-            margin-top: 16px; padding: 10px 22px; border-radius: 22px;
-            background: #075e54; color: #ffffff; border: none;
-            font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
-            cursor: pointer; display: inline-flex; align-items: center; justify-content: center;
-            gap: 8px; box-shadow: 0 4px 12px rgba(7, 94, 84, 0.25);
-            transition: all 0.2s ease;
-        }
-        .back-btn i { font-size: 12px; }
-        .back-btn:hover { background: #128c7e; transform: translateY(-1px); }
-        .back-btn:active { transform: scale(0.96); }
-    
-        /* ID Card Template Styling */
-        #idCardContainer {
-            position: absolute; top: -9999px; left: -9999px;
-            width: 400px; height: 678px;
-            background: #fff; z-index: -100;
-        }
-        #idCard {
-            width: 400px; height: 678px;
-            background-color: #fff;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            font-family: 'Inter', sans-serif;
-            position: relative;
-            box-sizing: border-box;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid #e2e8f0;
-        }
-        /* Photo Position (Calculated Pixel Perfect) */
-        .canva-photo {
-            position: absolute;
-            top: 197.5px;
-            left: 138.5px;
-            width: 181px; height: 209px;
-            display: flex; justify-content: center; align-items: center;
-            background: transparent;
-            z-index: 5;
-        }
-        .canva-photo img {
-            width: 100%; height: 100%; object-fit: cover;
-            border-radius: 2px;
-        }
-        /* Text Value Positions (Calculated Pixel Perfect) */
-        .canva-text {
-            position: absolute;
-            right: 53.5px; /* Exact right alignment with the dotted line */
-            width: 320px;
-            text-align: right;
-            font-size: 20px; font-weight: 800;
-            text-transform: uppercase;
-            z-index: 10;
-        }
-        /* Using bottom to sit perfectly on top of the dotted lines */
-        .text-name { bottom: 107px; } 
-        .text-dob  { bottom: 62px; font-size: 18px; } 
-        .text-class { bottom: 29px; } 
-
-    </style>
-    
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-</head>
-<body>
-<div class="phone-wrap">
-
-    <!-- HEADER -->
-    <div class="header">
-        <i class="fas fa-arrow-left header-back" onclick="goBack()"></i>
-        <div class="header-info">
-            <div class="header-title" id="headerTitle">Buku Saku Mentee</div>
-            <div class="header-sub" id="headerSub">Pilih tingkat kelas</div>
-        </div>
-    </div>
-
-    <!-- LAYAR 1: PICKER TINGKAT KELAS (X, XI, XII) -->
-    <div id="screenGradePicker" style="display: flex; flex-direction: column; gap: 14px; padding: 20px 16px; flex: 1;">
-        <div style="text-align: center; color: #075e54; font-weight: 700; font-size: 14px; margin-bottom: 4px;"><i class="fas fa-graduation-cap"></i> PILIH TINGKAT KELAS</div>
-        <button class="grade-card-btn" onclick="selectGrade('X')" style="background: linear-gradient(135deg, #128c7e, #075e54); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(7,94,84,0.25); cursor: pointer; transition: transform 0.12s;">
-            <span><i class="fas fa-chalkboard-teacher" style="margin-right: 12px;"></i> Kelas X</span>
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        <button class="grade-card-btn" onclick="selectGrade('XI')" style="background: linear-gradient(135deg, #2563eb, #1d4ed8); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(37,99,235,0.25); cursor: pointer; transition: transform 0.12s;">
-            <span><i class="fas fa-user-graduate" style="margin-right: 12px;"></i> Kelas XI</span>
-            <i class="fas fa-chevron-right"></i>
-        </button>
-        <button class="grade-card-btn" onclick="selectGrade('XII')" style="background: linear-gradient(135deg, #7c3aed, #6d28d9); color: white; border: none; padding: 18px 20px; border-radius: 16px; font-weight: 800; font-size: 18px; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 4px 12px rgba(124,58,237,0.25); cursor: pointer; transition: transform 0.12s;">
-            <span><i class="fas fa-award" style="margin-right: 12px;"></i> Kelas XII</span>
-            <i class="fas fa-chevron-right"></i>
-        </button>
-
-        <!-- PENCARIAN GLOBAL MENTEE -->
-        <div style="margin-top: 16px; position: relative;">
-            <div style="text-align: center; color: #075e54; font-weight: 700; font-size: 14px; margin-bottom: 10px;"><i class="fas fa-search"></i> PENCARIAN MENTEE</div>
-            <div style="position: relative;">
-                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888;"></i>
-                <input type="text" id="globalMenteeSearch" placeholder="Cari nama mentee..." style="width: 100%; padding: 14px 16px 14px 40px; border-radius: 12px; border: 1px solid #ccc; font-size: 15px; outline: none; box-sizing: border-box;" onfocus="fetchAllProfiles()">
-            </div>
-            <div id="globalMenteeSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 250px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; padding: 8px;"></div>
-        </div>
-
-    </div>
-    <!-- LAYAR 1.5: PICKER 2 KOLOM (GIRLS & BOYS PER SUB-KELAS) -->
-    <div id="screenPicker" style="display: none; flex-direction: column;">
-        <!-- PENCARIAN MENTEE KELAS SPESIFIK -->
-        <div style="margin: 16px; position: relative;">
-            <div style="position: relative;">
-                <i class="fas fa-search" style="position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: #888;"></i>
-                <input type="text" id="classMenteeSearch" placeholder="Cari mentee di kelas ini..." style="width: 100%; padding: 12px 16px 12px 40px; border-radius: 12px; border: 1px solid #ccc; font-size: 14px; outline: none; box-sizing: border-box;" onfocus="fetchAllProfiles()">
-            </div>
-            <div id="classMenteeSearchResults" style="position: absolute; top: 100%; left: 0; right: 0; background: white; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); max-height: 250px; overflow-y: auto; z-index: 100; display: none; margin-top: 4px; padding: 8px;"></div>
-        </div>
-
-        <div class="col-headers">
-            <div class="col-header gc"><i class="fas fa-female"></i> Girls Circle (GC)</div>
-            <div class="col-header bc"><i class="fas fa-male"></i> Boys Circle (BC)</div>
-        </div>
-        <div class="two-col-grid" id="classButtonsGrid">
-            <!-- Tombol sub-kelas X 1 s/d X 12 di-generate otomatis -->
-        </div>
-    </div>
-
-    <!-- LAYAR 2: LOADING -->
-    <div id="screenLoading">
-        <div class="spinner-ring"></div>
-        <p>Memuat profil <strong id="loadingName"></strong>...</p>
-    </div>
-
-    <!-- LAYAR 3: SLIDER -->
-    <div id="screenSlider">
-        <div class="slider-area" id="sliderArea">
-            <div class="cards-track" id="cardsTrack"></div>
-            <button class="nav-btn prev" id="btnPrev" onclick="slidePrev()" disabled><i class="fas fa-chevron-left"></i></button>
-            <button class="nav-btn next" id="btnNext" onclick="slideNext()" disabled><i class="fas fa-chevron-right"></i></button>
-        </div>
-        <div class="dot-bar" id="dotBar"></div>
-    </div>
-
-    <!-- TOAST NOTIFICATION -->
-    <div id="toast" class="toast">Link disalin!</div>
-
-</div>
-
-<script>
     const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxxBNmpogyqo1iEYy3j6mZld6lmc6PPb5sde67cjQKsKEfinbIPojU2WRN0_Mf4Bhd8rQ/exec';
 
     let screen = 'gradePicker';
     let selectedGrade = 'X';
     let displayedProfiles = [];
     let currentIndex = 0;
-    
-    // --- MENTEE SEARCH LOGIC ---
-    let allProfilesCache = null;
-    let isFetchingProfiles = false;
-    
-    async function fetchAllProfiles() {
-        if (allProfilesCache) return allProfilesCache;
-        if (isFetchingProfiles) return new Promise(r => setTimeout(() => r(fetchAllProfiles()), 500));
-        isFetchingProfiles = true;
-        try {
-            // Tampilkan loading spinner kecil di input jika mau, tapi biarkan saja dulu
-            const res = await fetch(APPS_SCRIPT_URL, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify({ action: 'get_profiles' }) });
-            const data = await res.json();
-            if (data.status === 'success') allProfilesCache = data.profiles;
-        } catch(e) { console.error(e); }
-        isFetchingProfiles = false;
-        return allProfilesCache;
-    }
-
-    function setupMenteeSearch(inputId, resultsId, isGlobal) {
-        const input = document.getElementById(inputId);
-        const resDiv = document.getElementById(resultsId);
-        
-        input.addEventListener('input', async (e) => {
-            const val = e.target.value.toLowerCase().trim();
-            if (!val) { resDiv.style.display = 'none'; return; }
-            
-            const profiles = await fetchAllProfiles();
-            if (!profiles) return;
-            
-            const filtered = profiles.filter(p => {
-                const matchName = p.nama.toLowerCase().includes(val);
-                if (isGlobal) return matchName;
-                const matchGrade = (p.kelas || '').toUpperCase().includes(' ' + selectedGrade + ' ') || (p.kelas || '').toUpperCase().includes(' ' + selectedGrade + '-') || (p.kelas || '').toUpperCase().endsWith(' ' + selectedGrade);
-                return matchName && matchGrade;
-            });
-            
-            if (filtered.length === 0) {
-                resDiv.innerHTML = '<div style="padding: 12px; color: #888; text-align: center; font-size: 13px;">Tidak ada hasil</div>';
-                resDiv.style.display = 'block';
-                return;
-            }
-            
-            resDiv.innerHTML = filtered.slice(0, 15).map(p => {
-                const encoded = encodeURIComponent(JSON.stringify(p)).replace(/'/g, "%27");
-                return `
-                <div style="padding: 12px; border-bottom: 1px solid #eee; cursor: pointer; display: flex; align-items: center; justify-content: space-between;" onclick="openProfileFromSearch('${encoded}')">
-                    <div>
-                        <div style="font-weight: 600; font-size: 14px; color: #333;">${p.nama}</div>
-                        <div style="font-size: 12px; color: #666; margin-top: 4px;">${p.kelas || '-'}</div>
-                    </div>
-                    <i class="fas fa-chevron-right" style="color: #ccc; font-size: 12px;"></i>
-                </div>
-            `}).join('');
-            resDiv.style.display = 'block';
-        });
-
-        // Hide when clicked outside
-        document.addEventListener('click', (e) => {
-            if (!input.contains(e.target) && !resDiv.contains(e.target)) {
-                resDiv.style.display = 'none';
-            }
-        });
-    }
-
-    window.openProfileFromSearch = function(pStr) {
-        const p = JSON.parse(decodeURIComponent(pStr));
-        document.getElementById('globalMenteeSearch').value = '';
-        document.getElementById('classMenteeSearch').value = '';
-        document.getElementById('globalMenteeSearchResults').style.display = 'none';
-        document.getElementById('classMenteeSearchResults').style.display = 'none';
-        
-        displayedProfiles = [p];
-        currentIndex = 0;
-        showScreen('slider');
-        renderSlider();
-    }
-
-    setupMenteeSearch('globalMenteeSearch', 'globalMenteeSearchResults', true);
-    setupMenteeSearch('classMenteeSearch', 'classMenteeSearchResults', false);
-    // ----------------------------
 
     let touchStartX = 0;
     document.getElementById('sliderArea').addEventListener('touchstart', e => { touchStartX = e.touches[0].clientX; }, { passive: true });
@@ -630,20 +35,10 @@
 
         const grid = document.getElementById('classButtonsGrid');
         grid.innerHTML = '';
-        
-        let subClasses = [];
-        if (grade === 'X') {
-            for (let i = 1; i <= 12; i++) subClasses.push(i.toString());
-        } else if (grade === 'XI') {
-            subClasses = ["A", "B1", "B2", "B3", "C1", "C2", "C3", "C4", "D1", "D2", "E1", "E2"].sort();
-        } else if (grade === 'XII') {
-            subClasses = ["A1", "A2", "B1", "B2", "C", "D1", "D2", "D3", "E1", "E2", "F1", "F2"].sort();
-        }
-
-        for (let sub of subClasses) {
+        for (let i = 1; i <= 12; i++) {
             grid.innerHTML += `
-                <button class="group-btn gc" onclick="selectGroup('GC ${grade}-${sub}')">${grade} ${sub}</button>
-                <button class="group-btn bc" onclick="selectGroup('BC ${grade}-${sub}')">${grade} ${sub}</button>
+                <button class="group-btn gc" onclick="selectGroup('GC ${grade}-${i}')">${grade} ${i}</button>
+                <button class="group-btn bc" onclick="selectGroup('BC ${grade}-${i}')">${grade} ${i}</button>
             `;
         }
         showScreen('picker');
@@ -699,26 +94,15 @@
                     }
 
                     // Cocokkan persis (e.g. "GC X-1 34" atau "GC X-1")
-                    // Toleransi terhadap perbedaan strip dan spasi
-                    const normPKelas = pKelas.replace(/-/g, ' ');
-                    const normGroup = groupName.toUpperCase().replace(/-/g, ' ');
-                    if (normPKelas.includes(normGroup)) return true;
+                    if (pKelas.includes(groupName.toUpperCase())) return true;
 
-                    // Match berdasarkan Tingkat dan Suffix Sub-kelas
-                    const targetParts = normGroup.split(' ');
-                    const targetGrade = targetParts[1]; // misal "XI", "X"
-                    const targetSub = targetParts.length > 2 ? targetParts[2] : '';
-                    
-                    if (targetGrade && targetSub) {
-                        const pParts = normPKelas.split(/\s+/);
-                        // Pastikan grade-nya persis cocok (menghindari "XII" cocok dengan "XI")
-                        if (pParts.includes(targetGrade)) {
-                            // Cek suffix sub-kelas
-                            const pLastPart = pParts[pParts.length - 1];
-                            if (pLastPart === targetSub || pParts.includes(targetSub)) {
-                                if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
-                                if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
-                            }
+                    // Match berdasarkan angka kelas & Gender (GC=Girls, BC=Boys)
+                    if (targetNum) {
+                        const pParts = pKelas.split(/[\s-]+/);
+                        const pLastNum = pParts[pParts.length - 1];
+                        if (pLastNum === targetNum) {
+                            if (isGC && (pKelas.includes('GC') || genderVal.includes('GIRL') || genderVal === 'P')) return true;
+                            if (isBC && (pKelas.includes('BC') || genderVal.includes('BOY') || genderVal === 'L')) return true;
                         }
                     }
                     return false;
@@ -737,7 +121,6 @@
                 }
 
                 document.getElementById('headerSub').textContent = `${displayedProfiles.length} mentee`;
-                currentIndex = 0;
                 renderSlider();
                 showScreen('slider');
 
@@ -796,22 +179,7 @@
                 else if (matchId && matchId[1]) finalFileId = matchId[1];
             }
             
-            p.fotoId = finalFileId;
-            
-            // Restore rotation from localStorage if available
-            if (p.fotoId && p.rotation === undefined) {
-                try {
-                    let savedRotations = JSON.parse(localStorage.getItem('skycircle_rotations') || '{}');
-                    if (savedRotations[p.fotoId] !== undefined) {
-                        p.rotation = savedRotations[p.fotoId];
-                    }
-                } catch(e) {}
-            }
-            
-            let directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
-            if (finalFileId && p.rotation) {
-                directUrl = `https://wsrv.nl/?url=${directUrl}&ro=${p.rotation}&w=400`;
-            }
+            const directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
             
             const imgHtml = finalFileId
                 ? `<img src="${directUrl}" data-fileid="${finalFileId}" id="img-${finalFileId}" alt="foto" onerror="handleImgError(this, '${finalFileId}')">
@@ -894,14 +262,9 @@
             card.innerHTML = `
                 <div class="card-photo-wrap">
                     ${imgHtml}
-                    <div style="position: absolute; top: 14px; right: 14px; display: flex; flex-direction: column; gap: 8px; z-index: 5;">
-                        <button class="share-icon-btn" style="position: static;" title="Putar Foto 90 Derajat" onclick="rotatePhoto(${i})">
-                            <i class="fas fa-redo"></i>
-                        </button>
-                        <button class="share-icon-btn" style="position: static;" title="Unduh ID Card" onclick="shareProfile(${i})">
-                            <i class="fas fa-id-badge"></i>
-                        </button>
-                    </div>
+                    <button class="share-icon-btn" title="Unduh ID Card" onclick="shareProfile(${i})">
+                        <i class="fas fa-id-badge"></i>
+                    </button>
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
                 </div>
                 <div class="card-header-info">
@@ -947,12 +310,7 @@
                 dotBar.appendChild(dot);
             }
         });
-        
-        // Ensure currentIndex is within bounds (in case displayedProfiles shrunk)
-        if (currentIndex >= displayedProfiles.length) {
-            currentIndex = Math.max(0, displayedProfiles.length - 1);
-        }
-        goToSlide(currentIndex);
+        goToSlide(0);
     }
 
     function goToSlide(i) {
@@ -994,33 +352,6 @@
 
     // --- STRATEGI SHARE PROFIL & DEEP LINKING ---
     let autoTargetNama = null;
-
-    window.rotatePhoto = function(index) {
-        const p = displayedProfiles[index];
-        if (!p) return;
-        p.rotation = ((p.rotation || 0) + 90) % 360;
-        
-        // Save to localStorage as fallback/cache
-        if (p.fotoId) {
-            try {
-                let savedRotations = JSON.parse(localStorage.getItem('skycircle_rotations') || '{}');
-                savedRotations[p.fotoId] = p.rotation;
-                localStorage.setItem('skycircle_rotations', JSON.stringify(savedRotations));
-            } catch(e) {}
-            
-            // Save globally via Google Apps Script
-            fetch(APPS_SCRIPT_URL, {
-                method: 'POST',
-                body: JSON.stringify({
-                    action: 'update_rotation',
-                    fotoId: p.fotoId,
-                    rotation: p.rotation
-                })
-            }).catch(e => console.error("Gagal sinkronisasi rotasi:", e));
-        }
-        
-        renderSlider();
-    };
 
     function shareProfile(index) {
         const p = displayedProfiles[index];
@@ -1080,135 +411,98 @@
 
         function renderHTML(safeImgSrc, safeBgSrc) {
             const toast = document.getElementById('toast');
-            toast.textContent = 'Menyiapkan gambar ID Card...';
+            toast.textContent = 'Menyiapkan dialog cetak PDF...';
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 1500);
 
-            let printContainer = document.getElementById('print-container');
-            if (!printContainer) {
-                printContainer = document.createElement('div');
-                printContainer.id = 'print-container';
-                document.body.appendChild(printContainer);
-                
-                const style = document.createElement('style');
-                style.innerHTML = `
-                    #print-container { 
-                        position: fixed !important;
-                        left: -9999px !important;
-                        top: -9999px !important;
-                        display: block !important;
-                        z-index: -9999;
-                    }
-                `;
-                document.head.appendChild(style);
-            }
+            const iframe = document.createElement('iframe');
+            iframe.style.position = 'fixed';
+            iframe.style.right = '0';
+            iframe.style.bottom = '0';
+            iframe.style.width = '0';
+            iframe.style.height = '0';
+            iframe.style.border = 'none';
+            document.body.appendChild(iframe);
 
-            printContainer.innerHTML = `
-                <style>
-                    #print-container .id-card {
-                        position: relative;
-                        width: 500px;
-                        height: 850px;
-                        background-color: #fff;
-                        background-image: url('${safeBgSrc}');
-                        background-size: 100% 100%;
-                        background-position: center top;
-                        background-repeat: no-repeat;
-                        color: ${themeColor};
-                        font-family: 'Inter', sans-serif;
-                        overflow: hidden;
-                    }
-                    #print-container .photo {
-                        position: absolute;
-                        overflow: hidden;
-                        border-radius: 30px;
-                        top: 210px;
-                        right: 65px;
-                        width: 265px;
-                        height: 405px;
-                        background-color: #eee;
-                        background-image: url('${safeImgSrc}');
-                        background-size: cover;
-                        background-position: center center;
-                        background-repeat: no-repeat;
-                    }
-                    #print-container .text {
-                        position: absolute;
-                        right: 75px;
-                        width: 400px;
-                        text-align: right;
-                        text-transform: uppercase;
-                        z-index: 10;
-                    }
-                    #print-container .name { top: 660px; right: 70px; font-size: 28px; font-weight: 800; }
-                    #print-container .dob { top: 710px; right: 70px; font-size: 28px; font-weight: 800; }
-                    #print-container .kelas { top: 760px; right: 70px; font-size: 28px; font-weight: 800; }
-                </style>
-                <div class="id-card">
-                    <div class="photo"></div>
-                    <div class="text name">${mainName}</div>
-                    <div class="text dob">${dob}</div>
-                    <div class="text kelas">${teamName}</div>
-                </div>
-            `;
-
-            // Since we're using background-image, we should wait for it to load manually
-            // We can do this by creating a hidden Image object
-            const preloader = new Image();
-            preloader.crossOrigin = "anonymous";
-            let captureFired = false;
+            const doc = iframe.contentWindow.document;
+            doc.open();
+            doc.write(`
+                <html>
+                <head>
+                    <title>IDCard_${mainName}</title>
+                    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&display=swap" rel="stylesheet">
+                    <style>
+                        @page {
+                            size: 400px 678px;
+                            margin: 0;
+                        }
+                        body {
+                            margin: 0;
+                            padding: 0;
+                            -webkit-print-color-adjust: exact !important;
+                            print-color-adjust: exact !important;
+                        }
+                        .id-card {
+                            position: relative;
+                            width: 400px;
+                            height: 678px;
+                            background-color: #fff;
+                            background-image: url('${safeBgSrc}');
+                            background-size: cover;
+                            background-position: center;
+                            color: ${themeColor};
+                            font-family: 'Inter', sans-serif;
+                            overflow: hidden;
+                        }
+                        .photo {
+                            position: absolute;
+                            top: 197.5px;
+                            left: 138.5px;
+                            width: 181px;
+                            height: 209px;
+                            background-image: url('${safeImgSrc}');
+                            background-size: cover;
+                            background-position: center;
+                            border-radius: 2px;
+                        }
+                        .text {
+                            position: absolute;
+                            right: 53.5px;
+                            width: 320px;
+                            text-align: right;
+                            text-transform: uppercase;
+                            z-index: 10;
+                        }
+                        .name { bottom: 107px; font-size: 20px; font-weight: 800; }
+                        .dob { bottom: 62px; font-size: 18px; font-weight: 800; }
+                        .kelas { bottom: 29px; font-size: 20px; font-weight: 800; }
+                    </style>
+                </head>
+                <body>
+                    <div class="id-card">
+                        <div class="photo"></div>
+                        <div class="text name">${mainName}</div>
+                        <div class="text dob">${dob}</div>
+                        <div class="text kelas">${teamName}</div>
+                    </div>
+                    \\x3Cscript>
+                        window.onload = function() {
+                            setTimeout(() => {
+                                window.print();
+                            }, 500);
+                        };
+                    \\x3C/script>
+                </body>
+                </html>
+            `);
+            doc.close();
             
-            const triggerCapture = () => {
-                if (captureFired) return;
-                captureFired = true;
-                
-                if (!window.html2canvas) {
-                    const script = document.createElement('script');
-                    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js';
-                    script.onload = () => captureIDCard(printContainer.querySelector('.id-card'));
-                    document.head.appendChild(script);
-                } else {
-                    captureIDCard(printContainer.querySelector('.id-card'));
+            setTimeout(() => {
+                if(document.body.contains(iframe)) {
+                    document.body.removeChild(iframe);
                 }
-            };
-
-            const captureIDCard = (el) => {
-                html2canvas(el, {
-                    useCORS: true,
-                    scale: 2, // 500x850 at scale 2 is 1000x1700, very high res!
-                    backgroundColor: null
-                }).then(canvas => {
-                    const dataUrl = canvas.toDataURL('image/png');
-                    const a = document.createElement('a');
-                    a.href = dataUrl;
-                    a.download = `ID-Card-${mainName}.png`;
-                    a.click();
-                    showToast('ID Card berhasil didownload!');
-                }).catch(err => {
-                    showToast('Gagal memproses gambar');
-                    console.error(err);
-                });
-            };
-
-            preloader.onload = triggerCapture;
-            preloader.onerror = triggerCapture;
-            preloader.src = safeImgSrc;
-            
-            // Fallback timeout just in case it hangs
-            setTimeout(triggerCapture, 3000);
-        } // End of renderHTML
-
-        let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';
-        
-        if (p.fotoId && p.fotoId !== '-') {
-            let rotParam = p.rotation ? `&ro=${p.rotation}` : '';
-            finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover${rotParam}`;
-        } else if (p.fotoUrl && p.fotoUrl !== '-') {
-            finalImgSrc = p.fotoUrl;
-        }
-
-        renderHTML(finalImgSrc, base64BgBoy);
-    } // End of shareProfile
+            }, 60000); // Hapus iframe setelah 1 menit agar tidak menumpuk
+        } // End of shareProfile
 
     function showToast(msg) {
         const toast = document.getElementById('toast');
@@ -1219,9 +513,6 @@
             toast.classList.remove('show');
         }, 2600);
     }
-
-
-
 
     function checkQueryParamsOnLoad() {
         const params = new URLSearchParams(window.location.search);
@@ -1237,7 +528,3 @@
     }
 
     checkQueryParamsOnLoad();
-</script>
-    <div id="idCardContainer"></div>
-</body>
-</html>

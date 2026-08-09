@@ -51,6 +51,11 @@ function doPost(e) {
       return handleGetHistory(payload);
     }
     
+    // ACTION: UPDATE ROTATION
+    if (payload.action === "update_rotation") {
+      return handleUpdateRotation(payload);
+    }
+    
     if (payload.action === "check_mentor") {
       return handleCheckMentor(payload);
     }
@@ -735,6 +740,9 @@ function handleSubmitPresensi(payload) {
   // Loop data dan isi absensi jika nama cocok dengan yang di submit
   var updatedCount = 0;
   var hadirNames = []; // untuk direkam di log
+  var izinNames = [];  // untuk direkam di log
+  var izinList = payload.izinList || [];
+
   for (var r = 1; r < data.length; r++) {
     var studentName = String(data[r][namaIndex - 1]).toLowerCase().trim();
     
@@ -749,9 +757,24 @@ function handleSubmitPresensi(payload) {
        }
     }
     
-    // Opsional: Batasi hanya yang satu mentor, tapi karena UI Presensi baru menggunakan Autocomplete nama anak spesifik dari daftar, kita bisa langsung timpa statusnya.
     if (isHadir) {
        sheet.getRange(r + 1, colIndex).setValue("Hadir");
+       updatedCount++;
+    }
+
+    // Cek apakah anak ini ada di daftar izinList
+    var isIzin = false;
+    for(var z = 0; z < izinList.length; z++) {
+       var submittedNameIzin = String(izinList[z]).toLowerCase().trim();
+       if (studentName === submittedNameIzin) {
+           isIzin = true;
+           izinNames.push(String(data[r][namaIndex - 1]).trim());
+           break;
+       }
+    }
+    
+    if (isIzin) {
+       sheet.getRange(r + 1, colIndex).setValue("Izin/Sakit");
        updatedCount++;
     }
   }
@@ -764,8 +787,8 @@ function handleSubmitPresensi(payload) {
   if (!logSheet) {
       logSheet = ss.insertSheet(logSheetName);
       // Buat Header untuk sheet baru
-      logSheet.appendRow(["Waktu Input", "Tanggal Mentoring", "Nama Mentor", "Email Mentor", "Pertemuan Ke", "Jumlah Hadir", "Daftar Siswa Hadir"]);
-      logSheet.getRange("A1:G1").setFontWeight("bold").setBackground("#d9ead3");
+      logSheet.appendRow(["Waktu Input", "Tanggal Mentoring", "Nama Mentor", "Email Mentor", "Pertemuan Ke", "Jumlah Hadir", "Daftar Siswa Hadir", "Jumlah Izin/Sakit", "Daftar Siswa Izin/Sakit"]);
+      logSheet.getRange("A1:I1").setFontWeight("bold").setBackground("#d9ead3");
   }
 
   // Tambahkan baris log baru (Format waktu pasti WIB Asia/Jakarta)
@@ -773,7 +796,8 @@ function handleSubmitPresensi(payload) {
   var mentorName = payload.mentorName || "Unknown";
   var mentorEmail = payload.mentorEmail || "Tanpa Email";
   var daftarHadirStr = hadirNames.join(", ");
-  logSheet.appendRow([timeStamp, tanggal, mentorName, mentorEmail, "Pertemuan " + pertemuanNum, updatedCount, daftarHadirStr]);
+  var daftarIzinStr = izinNames.join(", ");
+  logSheet.appendRow([timeStamp, tanggal, mentorName, mentorEmail, "Pertemuan " + pertemuanNum, hadirNames.length, daftarHadirStr, izinNames.length, daftarIzinStr]);
   // ------------------------------
   
   return ContentService.createTextOutput(JSON.stringify({
@@ -804,6 +828,7 @@ function handleGetSchoolData(payload) {
       gender: colMap["l/p"] !== undefined ? row[colMap["l/p"]] : (colMap["jenis kelamin"] !== undefined ? row[colMap["jenis kelamin"]] : ""),
       kelas: colMap["kelas"] !== undefined ? row[colMap["kelas"]] : "",
       kelompok: colMap["kelompok"] !== undefined ? row[colMap["kelompok"]] : "",
+      mentor: colMap["nama mentor"] !== undefined ? row[colMap["nama mentor"]] : "",
       angkatan: colMap["angkatan"] !== undefined ? row[colMap["angkatan"]] : "",
       p1: colMap["p1"] !== undefined ? row[colMap["p1"]] : "",
       p2: colMap["p2"] !== undefined ? row[colMap["p2"]] : "",
@@ -1208,6 +1233,7 @@ function handleGetProfiles(payload) {
   }
 
   var profiles = [];
+  var scriptProps = PropertiesService.getScriptProperties().getProperties();
   
   for (var r = 1; r < data.length; r++) {
     var row = data[r];
@@ -1246,6 +1272,16 @@ function handleGetProfiles(payload) {
       }
     }
 
+    var fotoId = "";
+    if (fotoUrl) {
+      var matchId = fotoUrl.match(/[?&]id=([a-zA-Z0-9_-]+)/);
+      if (matchId) fotoId = matchId[1];
+    }
+    var rotation = 0;
+    if (fotoId && scriptProps["rot_" + fotoId]) {
+      rotation = parseInt(scriptProps["rot_" + fotoId]) || 0;
+    }
+
     profiles.push({
       nama: nama,
       panggilan: panggilan,
@@ -1262,6 +1298,7 @@ function handleGetProfiles(payload) {
       instagram: instagram,
       tanggalLahir: tanggalLahir,
       fotoUrl: fotoUrl,
+      rotation: rotation,
       extraFields: extraFields
     });
   }
@@ -1397,4 +1434,29 @@ function syncProfileChecklist() {
   
   profileRange.setValues(checklistValues);
   return "Berhasil mencentang " + updatedCount + " siswa yang sudah mengisi profile!";
+}
+
+function handleUpdateRotation(payload) {
+  var fotoId = payload.fotoId;
+  var rotation = payload.rotation;
+  
+  if (!fotoId) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "error",
+      "message": "fotoId tidak ditemukan"
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  try {
+    PropertiesService.getScriptProperties().setProperty("rot_" + fotoId, String(rotation));
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "message": "Rotasi berhasil disimpan secara global"
+    })).setMimeType(ContentService.MimeType.JSON);
+  } catch (err) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "error",
+      "message": String(err)
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
 }

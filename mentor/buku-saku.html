@@ -797,7 +797,10 @@
             
             p.fotoId = finalFileId;
             
-            const directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
+            let directUrl = finalFileId ? `https://lh3.googleusercontent.com/d/${finalFileId}` : '';
+            if (finalFileId && p.rotation) {
+                directUrl = `https://wsrv.nl/?url=${directUrl}&ro=${p.rotation}&w=400`;
+            }
             
             const imgHtml = finalFileId
                 ? `<img src="${directUrl}" data-fileid="${finalFileId}" id="img-${finalFileId}" alt="foto" onerror="handleImgError(this, '${finalFileId}')">
@@ -880,9 +883,14 @@
             card.innerHTML = `
                 <div class="card-photo-wrap">
                     ${imgHtml}
-                    <button class="share-icon-btn" title="Unduh ID Card" onclick="shareProfile(${i})">
-                        <i class="fas fa-id-badge"></i>
-                    </button>
+                    <div style="position: absolute; top: 14px; right: 14px; display: flex; flex-direction: column; gap: 8px; z-index: 5;">
+                        <button class="share-icon-btn" style="position: static;" title="Putar Foto 90 Derajat" onclick="rotatePhoto(${i})">
+                            <i class="fas fa-undo"></i>
+                        </button>
+                        <button class="share-icon-btn" style="position: static;" title="Unduh ID Card" onclick="shareProfile(${i})">
+                            <i class="fas fa-id-badge"></i>
+                        </button>
+                    </div>
                     <div class="counter-badge">${i+1} / ${displayedProfiles.length}</div>
                 </div>
                 <div class="card-header-info">
@@ -970,6 +978,13 @@
 
     // --- STRATEGI SHARE PROFIL & DEEP LINKING ---
     let autoTargetNama = null;
+
+    window.rotatePhoto = function(index) {
+        const p = displayedProfiles[index];
+        if (!p) return;
+        p.rotation = ((p.rotation || 0) + 90) % 360;
+        renderSlider();
+    };
 
     function shareProfile(index) {
         const p = displayedProfiles[index];
@@ -1150,7 +1165,8 @@
         let finalImgSrc = 'https://ui-avatars.com/api/?name='+encodeURIComponent(mainName)+'&background=random&color=fff&size=512';
         
         if (p.fotoId && p.fotoId !== '-') {
-            finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover`;
+            let rotParam = p.rotation ? `&ro=${p.rotation}` : '';
+            finalImgSrc = `https://wsrv.nl/?url=https://lh3.googleusercontent.com/d/${p.fotoId}&w=400&h=520&fit=cover${rotParam}`;
         } else if (p.fotoUrl && p.fotoUrl !== '-') {
             finalImgSrc = p.fotoUrl;
         }

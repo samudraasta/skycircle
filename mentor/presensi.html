@@ -871,8 +871,8 @@
                 alert("Tanggal jangan sampai kosong Kak!");
                 return;
             }
-            if (selectedStudents.length === 0) {
-                alert("Harap masukkan setidaknya 1 siswa yang hadir Kak!");
+            if (selectedStudents.length === 0 && selectedIzinStudents.length === 0) {
+                alert("Harap masukkan setidaknya 1 siswa (Hadir atau Izin/Sakit) Kak!");
                 return;
             }
 

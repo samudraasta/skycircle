@@ -77,6 +77,9 @@ function doPost(e) {
     if (payload.action === "submit_presensi") {
       return handleSubmitPresensi(payload);
     }
+    if (payload.action === "get_presensi_history") {
+      return handleGetPresensiHistory(payload);
+    }
     if (payload.action === "get_school_data") {
       return handleGetSchoolData(payload);
     }
@@ -1459,4 +1462,47 @@ function handleUpdateRotation(payload) {
       "message": String(err)
     })).setMimeType(ContentService.MimeType.JSON);
   }
+}
+
+function handleGetPresensiHistory(payload) {
+  var email = payload.mentorEmail;
+  var ss = getSS();
+  var logSheet = ss.getSheetByName("Log Presensi");
+  
+  if (!logSheet || !email) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "history": []
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var data = logSheet.getDataRange().getValues();
+  var history = [];
+  
+  for (var i = data.length - 1; i >= 1; i--) {
+    if (String(data[i][3]).toLowerCase().trim() === String(email).toLowerCase().trim()) {
+      var waktuRaw = data[i][0];
+      var waktuStr = "";
+      if (waktuRaw instanceof Date) {
+        waktuStr = Utilities.formatDate(waktuRaw, "Asia/Jakarta", "dd MMM yyyy, HH:mm");
+      } else {
+        waktuStr = String(waktuRaw);
+      }
+      
+      history.push({
+        waktuInput: waktuStr,
+        tanggalMentoring: String(data[i][1]),
+        pertemuan: String(data[i][4]),
+        jumlahHadir: String(data[i][5]),
+        daftarHadir: String(data[i][6]),
+        jumlahIzin: String(data[i][7]),
+        daftarIzin: String(data[i][8])
+      });
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    "status": "success",
+    "history": history
+  })).setMimeType(ContentService.MimeType.JSON);
 }

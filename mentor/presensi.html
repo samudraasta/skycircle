@@ -1113,10 +1113,12 @@
                         `;
                         
                         if (parseInt(h.jumlahHadir) > 0) {
-                            html += `<div style="margin-bottom: 2px; color: #128C7E; font-size: 12px;"><strong>Hadir (${h.jumlahHadir}):</strong> ${h.daftarHadir}</div>`;
+                            const listHadir = h.daftarHadir.split(',').map(n => `<div style="padding-left: 8px;">• ${n.trim()}</div>`).join('');
+                            html += `<div style="margin-bottom: 4px; margin-top: 6px; color: #128C7E; font-size: 12px;"><strong>Hadir (${h.jumlahHadir}):</strong><br>${listHadir}</div>`;
                         }
                         if (parseInt(h.jumlahIzin) > 0) {
-                            html += `<div style="color: #e53935; font-size: 12px;"><strong>Izin/Sakit (${h.jumlahIzin}):</strong> ${h.daftarIzin}</div>`;
+                            const listIzin = h.daftarIzin.split(',').map(n => `<div style="padding-left: 8px;">• ${n.trim()}</div>`).join('');
+                            html += `<div style="color: #e53935; font-size: 12px; margin-top: 6px;"><strong>Izin/Sakit (${h.jumlahIzin}):</strong><br>${listIzin}</div>`;
                         }
                         
                         card.innerHTML = html;

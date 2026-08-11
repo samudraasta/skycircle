@@ -1100,9 +1100,8 @@
                         let html = `
                             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; border-bottom: 1px dashed #e0e0e0; padding-bottom: 6px;">
                                 <strong style="color: #075e54; font-size: 13px;"><i class="fas fa-calendar-check" style="margin-right: 5px;"></i> ${h.pertemuan}</strong>
-                                <span style="color: #888; font-size: 11px;">${h.waktuInput}</span>
                             </div>
-                            <div style="margin-bottom: 4px; font-size: 12px;"><strong>Tanggal:</strong> ${h.tanggalMentoring.substring(0,10)}</div>
+                            <div style="margin-bottom: 4px; font-size: 12px;"><strong>Tanggal Mentoring:</strong> ${h.tanggalMentoring.substring(0,15)}</div>
                         `;
                         
                         if (parseInt(h.jumlahHadir) > 0) {

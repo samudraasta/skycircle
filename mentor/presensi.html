@@ -523,6 +523,7 @@
             <div class="wa-header-icons" style="display: flex; align-items: center;">
                 <a href="../index.html" style="color: white; text-decoration: none;"><i class="fas fa-home" title="Beranda Utama"></i></a>
                 <a href="../school/dashboard.html" style="color: white; text-decoration: none;"><i class="fas fa-school" title="Dashboard Sekolah" style="margin-left: 15px;"></i></a>
+                <a href="#" onclick="openMateriModal(event)" style="color: white; text-decoration: none;"><i class="fas fa-folder-open" title="Materi Mentoring" style="margin-left: 15px;"></i></a>
                 <a href="buku-saku.html" style="color: white; text-decoration: none;"><i class="fas fa-book-open" title="Buku Saku" style="margin-left: 15px;"></i></a>
             </div>
         </div>
@@ -620,6 +621,19 @@
             <button class="nav-btn next" id="btnNext" onclick="slideNext()" disabled><i class="fas fa-chevron-right"></i></button>
         </div>
         <div class="dot-indicator" id="dotIndicator"></div>
+    </div>
+
+    <!-- Modal Popup Materi -->
+    <div id="materi-modal" onclick="if(event.target===this) closeMateriModal()" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.65); backdrop-filter: blur(4px); z-index: 99999; justify-content: center; align-items: center;">
+        <div style="background: white; border-radius: 20px; width: 90%; max-width: 400px; max-height: 80vh; display: flex; flex-direction: column; box-shadow: 0 15px 35px rgba(0,0,0,0.3); font-family: 'Inter', sans-serif; overflow: hidden;">
+            <div style="background: #075e54; color: white; padding: 20px; display: flex; justify-content: space-between; align-items: center;">
+                <h3 style="margin: 0; font-size: 16px; font-weight: 600;"><i class="fas fa-folder-open" style="margin-right: 8px;"></i> Daftar Materi Mentoring</h3>
+                <i class="fas fa-times" style="font-size: 20px; cursor: pointer; opacity: 0.8;" onclick="closeMateriModal()"></i>
+            </div>
+            <div id="materi-list-container" style="padding: 16px; overflow-y: auto; flex: 1; background: #efeae2;">
+                <!-- Buttons will be rendered here -->
+            </div>
+        </div>
     </div>
 
     <!-- Modal Popup Identitas Mentor -->
@@ -1133,6 +1147,55 @@
                 }
             } catch(e) {
                 container.innerHTML = `<div style="text-align: center; color: #d32f2f; padding: 20px 0;"><i class="fas fa-wifi" style="font-size: 24px; margin-bottom: 10px;"></i><br>Gagal koneksi ke server.</div>`;
+            }
+        }
+        
+        // --- MATERI MODAL ---
+        function openMateriModal(e) {
+            if(e) e.preventDefault();
+            document.getElementById('materi-modal').style.display = 'flex';
+            loadMateriList();
+        }
+
+        function closeMateriModal() {
+            document.getElementById('materi-modal').style.display = 'none';
+        }
+
+        async function loadMateriList() {
+            const container = document.getElementById('materi-list-container');
+            container.innerHTML = '<div style="text-align: center; color: #667781; padding: 30px 0;"><i class="fas fa-spinner fa-spin" style="font-size: 24px; margin-bottom: 10px;"></i><br>Memuat daftar materi...</div>';
+            
+            try {
+                const res = await fetch(APPS_SCRIPT_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'get_materi' })
+                });
+                const result = await res.json();
+                
+                if (result.status === 'success' && result.data && result.data.length > 0) {
+                    let html = '<style>.materi-btn{display:flex;align-items:center;background:white;padding:12px 14px;border-radius:12px;margin-bottom:10px;text-decoration:none;color:#111b21;font-weight:600;font-size:13px;box-shadow:0 1px 2px rgba(0,0,0,0.05);border:1px solid #e9edef;transition:transform 0.1s;}.materi-btn:active{transform:scale(0.98);background:#f9f9f9;}.materi-icon{background:#ffebee;color:#e53935;width:34px;height:34px;border-radius:8px;display:flex;justify-content:center;align-items:center;font-size:16px;margin-right:12px;flex-shrink:0;}</style>';
+                    result.data.forEach(m => {
+                        let iconClass = m.link.includes('docs.google') || m.link.includes('pdf') || m.link.includes('document') ? 'fa-file-pdf' : 'fa-folder';
+                        if(m.link.includes('presentation')) iconClass = 'fa-file-powerpoint';
+                        if(m.link.includes('mp4') || m.link.includes('video')) iconClass = 'fa-file-video';
+                        
+                        // Hilangkan angka dalam kurung "(1) TAWAZUN" -> "TAWAZUN"
+                        let title = m.nama.replace(/^\(\d+\)\s*/, '');
+                        
+                        html += `
+                            <a href="${m.link}" target="_blank" class="materi-btn">
+                                <div class="materi-icon"><i class="fas ${iconClass}"></i></div>
+                                <div style="flex: 1; line-height: 1.3;">${title}</div>
+                                <i class="fas fa-chevron-right" style="color: #ccc; font-size: 14px;"></i>
+                            </a>
+                        `;
+                    });
+                    container.innerHTML = html;
+                } else {
+                    container.innerHTML = '<div style="text-align: center; color: #667781; padding: 30px 0;">Belum ada materi di Spreadsheet.</div>';
+                }
+            } catch(e) {
+                container.innerHTML = '<div style="text-align: center; color: #d32f2f; padding: 30px 0;"><i class="fas fa-wifi" style="font-size: 24px; margin-bottom: 10px;"></i><br>Gagal mengambil data materi.</div>';
             }
         }
     </script>

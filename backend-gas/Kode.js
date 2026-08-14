@@ -80,6 +80,9 @@ function doPost(e) {
     if (payload.action === "get_presensi_history") {
       return handleGetPresensiHistory(payload);
     }
+    if (payload.action === "get_materi") {
+      return handleGetMateri(payload);
+    }
     if (payload.action === "get_school_data") {
       return handleGetSchoolData(payload);
     }
@@ -1504,5 +1507,37 @@ function handleGetPresensiHistory(payload) {
   return ContentService.createTextOutput(JSON.stringify({
     "status": "success",
     "history": history
+  })).setMimeType(ContentService.MimeType.JSON);
+}
+
+// ==========================================
+// FUNGSI GET MATERI
+// ==========================================
+function handleGetMateri() {
+  var ss = getSS();
+  var sheet = ss.getSheetByName("Materi");
+  
+  if (!sheet) {
+    return ContentService.createTextOutput(JSON.stringify({
+      "status": "success",
+      "data": []
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+  
+  var data = sheet.getDataRange().getValues();
+  var result = [];
+  
+  // Skip baris pertama (header)
+  for (var i = 1; i < data.length; i++) {
+    var nama = data[i][0];
+    var link = data[i][1];
+    if (nama && link) {
+      result.push({nama: String(nama).trim(), link: String(link).trim()});
+    }
+  }
+  
+  return ContentService.createTextOutput(JSON.stringify({
+    "status": "success",
+    "data": result
   })).setMimeType(ContentService.MimeType.JSON);
 }

@@ -1181,6 +1181,8 @@
                         
                         // Hilangkan angka dalam kurung "(1) TAWAZUN" -> "TAWAZUN"
                         let title = m.nama.replace(/^\(\d+\)\s*/, '');
+                        // Buat jadi Title Case (huruf depan besar)
+                        title = title.toLowerCase().replace(/\b\w/g, c => c.toUpperCase());
                         
                         html += `
                             <a href="${m.link}" target="_blank" class="materi-btn">

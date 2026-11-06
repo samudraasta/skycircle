@@ -847,7 +847,11 @@ function handleGetSchoolData(payload) {
       p9: colMap["p9"] !== undefined ? row[colMap["p9"]] : "",
       p10: colMap["p10"] !== undefined ? row[colMap["p10"]] : "",
       p11: colMap["p11"] !== undefined ? row[colMap["p11"]] : "",
-      p12: colMap["p12"] !== undefined ? row[colMap["p12"]] : ""
+      p12: colMap["p12"] !== undefined ? row[colMap["p12"]] : "",
+      p13: colMap["p13"] !== undefined ? row[colMap["p13"]] : "",
+      p14: colMap["p14"] !== undefined ? row[colMap["p14"]] : "",
+      p15: colMap["p15"] !== undefined ? row[colMap["p15"]] : "",
+      p16: colMap["p16"] !== undefined ? row[colMap["p16"]] : ""
     };
     students.push(student);
   }
@@ -915,7 +919,11 @@ function handleGetAdminData(payload) {
           p9_filled: false,
           p10_filled: false,
           p11_filled: false,
-          p12_filled: false
+          p12_filled: false,
+          p13_filled: false,
+          p14_filled: false,
+          p15_filled: false,
+          p16_filled: false
        };
     }
     
@@ -932,6 +940,10 @@ function handleGetAdminData(payload) {
     if(colMap["p10"] !== undefined && row[colMap["p10"]] !== "") groups[key].p10_filled = true;
     if(colMap["p11"] !== undefined && row[colMap["p11"]] !== "") groups[key].p11_filled = true;
     if(colMap["p12"] !== undefined && row[colMap["p12"]] !== "") groups[key].p12_filled = true;
+    if(colMap["p13"] !== undefined && row[colMap["p13"]] !== "") groups[key].p13_filled = true;
+    if(colMap["p14"] !== undefined && row[colMap["p14"]] !== "") groups[key].p14_filled = true;
+    if(colMap["p15"] !== undefined && row[colMap["p15"]] !== "") groups[key].p15_filled = true;
+    if(colMap["p16"] !== undefined && row[colMap["p16"]] !== "") groups[key].p16_filled = true;
   }
   
   var mentorList = [];
@@ -962,21 +974,21 @@ function formatSpreadsheetManually() {
     colMap[String(headers[i]).toLowerCase().trim()] = i + 1; // 1-indexed for getRange
   }
   
-  // 1. Ubah Total Pertemuan menjadi 12
+  // 1. Ubah Total Pertemuan menjadi 16
   var totalPertemuanCol = colMap["total pertemuan"];
   if (totalPertemuanCol) {
     var range = sheet.getRange(2, totalPertemuanCol, sheet.getLastRow() - 1, 1);
     var values = range.getValues();
     for (var i = 0; i < values.length; i++) {
-      values[i][0] = 12;
+      values[i][0] = 16;
     }
     range.setValues(values);
-    Logger.log("Berhasil mengubah angka di kolom Total Pertemuan menjadi 12.");
+    Logger.log("Berhasil mengubah angka di kolom Total Pertemuan menjadi 16.");
   }
   
-  // 2. Tambahkan kolom Kelompok dan P1 s.d P12 jika belum ada
+  // 2. Tambahkan kolom Kelompok dan P1 s.d P16 jika belum ada
   var requiredHeaders = ["Kelompok"];
-  for (var i = 1; i <= 12; i++) {
+  for (var i = 1; i <= 16; i++) {
     requiredHeaders.push("P" + i);
   }
   
@@ -997,7 +1009,7 @@ function formatSpreadsheetManually() {
   if (headersAdded.length > 0) {
     Logger.log("Berhasil menambahkan kolom baru: " + headersAdded.join(", "));
   } else {
-    Logger.log("Semua kolom (Kelompok & P1-P12) sudah ada.");
+    Logger.log("Semua kolom (Kelompok & P1-P16) sudah ada.");
   }
   
   Logger.log("Format spreadsheet selesai!");

@@ -188,7 +188,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">Tren Pelaporan Mentor</span>
-                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 12 Pertemuan</span>
+                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 16 Pertemuan</span>
                 </div>
                 <div style="font-size: 13px; color: var(--text-muted);">
                     <strong id="stat-active" style="font-size: 16px; color: var(--text-main);">0</strong> Mentor Aktif Semester Ini
@@ -245,6 +245,10 @@
                         <th>P10</th>
                         <th>P11</th>
                         <th>P12</th>
+                        <th>P13</th>
+                        <th>P14</th>
+                        <th>P15</th>
+                        <th>P16</th>
                         <th onclick="toggleSort('total')" style="cursor: pointer; user-select: none; text-align: center;">Total Laporan <i id="sort-icon-total" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                         <th style="text-align: center;">Aksi WA</th>
                     </tr>
@@ -444,7 +448,7 @@
             
             // Hitung total laporan terisi per mentor untuk sorting & display
             filtered.forEach(m => {
-                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled, m.p13_filled, m.p14_filled, m.p15_filled, m.p16_filled];
                 m._filledCount = pList.filter(Boolean).length;
             });
 
@@ -482,7 +486,7 @@
             document.getElementById('stat-total').innerText = filtered.length;
             
             let uniqueGroups = new Set();
-            let chartDataFilled = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            let chartDataFilled = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             
             filtered.forEach(m => {
                 if(m.kelompok) uniqueGroups.add(m.kelompok);
@@ -498,6 +502,10 @@
                 if(m.p10_filled) chartDataFilled[9]++;
                 if(m.p11_filled) chartDataFilled[10]++;
                 if(m.p12_filled) chartDataFilled[11]++;
+                if(m.p13_filled) chartDataFilled[12]++;
+                if(m.p14_filled) chartDataFilled[13]++;
+                if(m.p15_filled) chartDataFilled[14]++;
+                if(m.p16_filled) chartDataFilled[15]++;
             });
             
             document.getElementById('stat-groups').innerText = uniqueGroups.size;
@@ -506,7 +514,7 @@
             // Hitung Laporan Tertunda (Pending Reports) secara dinamis
             let maxMeeting = 0;
             filtered.forEach(m => {
-                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled, m.p13_filled, m.p14_filled, m.p15_filled, m.p16_filled];
                 pList.forEach((filled, idx) => {
                     if (filled && (idx + 1 > maxMeeting)) maxMeeting = idx + 1;
                 });
@@ -515,7 +523,7 @@
             let pendingCount = 0;
             if (maxMeeting > 0) {
                 filtered.forEach(m => {
-                    let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                    let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled, m.p13_filled, m.p14_filled, m.p15_filled, m.p16_filled];
                     for (let p = 0; p < maxMeeting; p++) {
                         if (!pList[p]) pendingCount++;
                     }
@@ -552,14 +560,14 @@
             updateChart(chartDataPersentase);
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="17" style="text-align:center; padding: 30px;">Belum ada data mentor untuk kelas ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="21" style="text-align:center; padding: 30px;">Belum ada data mentor untuk kelas ini.</td></tr>`;
                 return;
             }
 
             const limit = parseInt(document.getElementById('row-limit').value) || 50;
             let counter = 1;
             filtered.slice(0, limit).forEach(m => {
-                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled];
+                let pList = [m.p1_filled, m.p2_filled, m.p3_filled, m.p4_filled, m.p5_filled, m.p6_filled, m.p7_filled, m.p8_filled, m.p9_filled, m.p10_filled, m.p11_filled, m.p12_filled, m.p13_filled, m.p14_filled, m.p15_filled, m.p16_filled];
                 
                 let pCells = pList.map(filled => {
                     if (filled) {
@@ -583,7 +591,7 @@
                     actionHtml = `<span style="font-size: 11px; color: var(--text-muted);">No HP tak ada</span>`;
                 }
 
-                let percent = Math.round((m._filledCount / 12) * 100);
+                let percent = Math.round((m._filledCount / 16) * 100);
                 let pillClass = percent >= 75 ? 'status-pill status-done' : 'status-pill';
                 let pillStyle = percent >= 75 ? '' : (percent > 0 ? 'background: #fff3cd; color: #856404;' : 'background: #f8d7da; color: #721c24;');
 
@@ -599,7 +607,7 @@
                     <td style="text-align: center;">${genderBadge}</td>
                     <td>${m.kelompok}</td>
                     ${pCells}
-                    <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${m._filledCount}/12</span></td>
+                    <td style="text-align: center;"><span class="${pillClass}" style="${pillStyle}">${m._filledCount}/16</span></td>
                     <td style="text-align: center;">${actionHtml}</td>
                 `;
                 tbody.appendChild(tr);
@@ -612,7 +620,7 @@
                 mentorChart.data.datasets[0].data = dataHadir;
                 mentorChart.update();
             } else {
-                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12', 'P.13', 'P.14', 'P.15', 'P.16'];
                 mentorChart = new Chart(ctx, {
                     type: 'line',
                     data: {

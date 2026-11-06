@@ -315,7 +315,7 @@
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
                 <div style="display: flex; align-items: center; gap: 12px;">
                     <span style="font-size: 16px; font-weight: 700; color: var(--text-main);">Tren Kehadiran Siswa</span>
-                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 12 Pertemuan</span>
+                    <span class="badge badge-success" style="font-size: 12px; padding: 4px 10px; border-radius: 12px;">Total 16 Pertemuan</span>
                 </div>
                 <div style="font-size: 13px; color: var(--text-muted);">
                     <strong id="stat-active" style="font-size: 16px; color: var(--text-main);">0</strong> Siswa Aktif Semester Ini
@@ -373,11 +373,15 @@
                         <th>P10</th>
                         <th>P11</th>
                         <th>P12</th>
+                        <th>P13</th>
+                        <th>P14</th>
+                        <th>P15</th>
+                        <th>P16</th>
                         <th onclick="toggleSort('kehadiran')" style="cursor: pointer; user-select: none; text-align: center;">Kehadiran <i id="sort-icon-kehadiran" class="fas fa-sort" style="font-size: 11px; margin-left: 4px; color: #ccc;"></i></th>
                     </tr>
                 </thead>
                 <tbody id="student-table-body">
-                    <tr><td colspan="18" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
+                    <tr><td colspan="22" style="text-align: center; padding: 40px;">Memuat data siswa dari database...</td></tr>
                 </tbody>
             </table>
             
@@ -407,10 +411,10 @@
                     allStudents = data.students;
                     switchTingkatTab('Semua');
                 } else {
-                    document.getElementById('student-table-body').innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
+                    document.getElementById('student-table-body').innerHTML = `<tr><td colspan="22" style="text-align:center; color:red;">Gagal memuat data</td></tr>`;
                 }
             } catch (err) {
-                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="18" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
+                document.getElementById('student-table-body').innerHTML = `<tr><td colspan="22" style="text-align:center; color:red;">Error koneksi jaringan</td></tr>`;
             }
         }
 
@@ -426,7 +430,7 @@
         function checkHasPendingReports(studentList) {
             let maxMeeting = 0;
             allStudents.forEach(s => {
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 marks.forEach((m, idx) => {
                     let val = String(m || '').trim().toLowerCase();
                     if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
@@ -440,10 +444,10 @@
             studentList.forEach(s => {
                 let grp = getStudentGroup(s);
                 if (!groupStats[grp]) {
-                    groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
+                    groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                 }
                 groupStats[grp].total++;
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 marks.forEach((m, idx) => {
                     let val = String(m || '').trim().toLowerCase();
                     if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
@@ -697,7 +701,7 @@
             
             // Hitung persentase kehadiran per siswa & label gender
             filtered.forEach(s => {
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 let hadirCount = 0;
                 let validCount = 0;
                 marks.forEach(m => {
@@ -765,11 +769,11 @@
             
             let uniqueGroups = new Set();
             let totalKehadiranSemua = 0;
-            let chartDataHadir = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+            let chartDataHadir = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
             
             filtered.forEach(s => {
                 uniqueGroups.add(getStudentGroup(s));
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 marks.forEach((m, idx) => {
                     if (String(m).toLowerCase() === 'hadir') {
                         chartDataHadir[idx]++;
@@ -783,7 +787,7 @@
             // Hitung jumlah pertemuan maksimal yang sudah berjalan (dari status valid)
             let maxMeeting = 0;
             allStudents.forEach(s => {
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 marks.forEach((m, idx) => {
                     let val = String(m || '').trim().toLowerCase();
                     if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
@@ -803,10 +807,10 @@
                 filtered.forEach(s => {
                     let grp = getStudentGroup(s);
                     if (!groupStats[grp]) {
-                        groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
+                        groupStats[grp] = { total: 0, pFilled: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0] };
                     }
                     groupStats[grp].total++;
-                    let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                    let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                     marks.forEach((m, idx) => {
                         let val = String(m || '').trim().toLowerCase();
                         if (val === 'hadir' || val === 'sakit' || val === 'izin' || val === 'alpa' || val === 'alpha') {
@@ -856,7 +860,7 @@
             // -----------------------------
 
             if(filtered.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="18" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="21" style="text-align:center; padding: 30px;">Belum ada data siswa untuk kelas ini.</td></tr>`;
                 return;
             }
 
@@ -870,8 +874,8 @@
 
             filtered.slice(startIndex, endIndex).forEach(s => {
                 let hadirCount = 0;
-                let totalPertemuan = 12;
-                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                let totalPertemuan = 16;
+                let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                 
                 let pCells = marks.map(p => {
                     if(String(p).toLowerCase() === 'hadir') {
@@ -926,7 +930,7 @@
                 schoolChart.data.datasets[0].data = dataHadir;
                 schoolChart.update();
             } else {
-                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12', 'P.13', 'P.14', 'P.15', 'P.16'];
                 schoolChart = new Chart(ctx, {
                     type: 'line',
                     data: {
@@ -1036,7 +1040,7 @@
                     }
 
                     // Hitung % Kehadiran karena kita ambil mentah dari allStudents
-                    let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12];
+                    let marks = [s.p1, s.p2, s.p3, s.p4, s.p5, s.p6, s.p7, s.p8, s.p9, s.p10, s.p11, s.p12, s.p13, s.p14, s.p15, s.p16];
                     let hadirCount = 0;
                     let validCount = 0;
                     marks.forEach(m => {

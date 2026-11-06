@@ -144,7 +144,7 @@
                 <div class="card" style="position: relative;">
                     <div class="section-title" style="margin-bottom: 10px;">
                         <span>Tren Laporan Mentor Masuk</span>
-                        <div class="badge badge-success" style="font-size: 14px;">Total 12 Pertemuan</div>
+                        <div class="badge badge-success" style="font-size: 14px;">Total 16 Pertemuan</div>
                     </div>
                     <div style="font-size: 32px; font-weight: 700; color: var(--text-main); margin-bottom: 24px;">
                         <span id="stat-active-mentors">0</span> <span style="font-size: 14px; font-weight: 400; color: var(--text-muted);">Mentor Aktif Semester Ini</span>
@@ -173,6 +173,10 @@
                             <option value="p10">Pertemuan 10</option>
                             <option value="p11">Pertemuan 11</option>
                             <option value="p12">Pertemuan 12</option>
+                            <option value="p13">Pertemuan 13</option>
+                            <option value="p14">Pertemuan 14</option>
+                            <option value="p15">Pertemuan 15</option>
+                            <option value="p16">Pertemuan 16</option>
                         </select>
                     </div>
 
@@ -317,7 +321,7 @@
             let uniqueGroups = new Set();
             let pendingCount = 0;
             let doneCount = 0;
-            let chartDataFilled = [0,0,0,0,0,0,0,0,0,0,0,0];
+            let chartDataFilled = [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0];
             
             filtered.forEach(m => {
                 if(m.kelompok) uniqueGroups.add(m.kelompok);
@@ -336,6 +340,10 @@
                 if(m.p10_filled) chartDataFilled[9]++;
                 if(m.p11_filled) chartDataFilled[10]++;
                 if(m.p12_filled) chartDataFilled[11]++;
+                if(m.p13_filled) chartDataFilled[12]++;
+                if(m.p14_filled) chartDataFilled[13]++;
+                if(m.p15_filled) chartDataFilled[14]++;
+                if(m.p16_filled) chartDataFilled[15]++;
             });
             
             document.getElementById('stat-groups').innerText = uniqueGroups.size;
@@ -388,7 +396,7 @@
                 adminChart.data.datasets[0].data = dataFilled;
                 adminChart.update();
             } else {
-                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12'];
+                const labels = ['P.1', 'P.2', 'P.3', 'P.4', 'P.5', 'P.6', 'P.7', 'P.8', 'P.9', 'P.10', 'P.11', 'P.12', 'P.13', 'P.14', 'P.15', 'P.16'];
                 adminChart = new Chart(ctx, {
                     type: 'bar',
                     data: {

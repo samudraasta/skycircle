@@ -441,21 +441,48 @@
             flex-direction: column;
             gap: 6px;
             margin-top: 10px;
+            max-height: 280px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .selected-students::-webkit-scrollbar {
+            width: 4px;
+        }
+        .selected-students::-webkit-scrollbar-thumb {
+            background: rgba(7, 94, 84, 0.3);
+            border-radius: 4px;
         }
         .student-chip {
             background: rgba(7, 94, 84, 0.1);
             color: #075e54;
-            padding: 4px 10px;
+            padding: 6px 12px;
             border-radius: 12px;
             font-size: 13px;
             font-weight: 500;
             display: flex;
             align-items: center;
-            gap: 6px;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .student-chip-num {
+            font-size: 11px;
+            font-weight: 700;
+            background: rgba(7, 94, 84, 0.2);
+            color: #075e54;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
         }
         .student-chip i {
             cursor: pointer;
             color: #075e54;
+            font-size: 14px;
+            flex-shrink: 0;
+            padding: 2px;
         }
 
         /* WA Footer Input */
@@ -561,7 +588,10 @@
                 <label style="font-size: 13px; color: #555; font-weight: 600; margin-bottom: 4px; display: block;">Pilih Tanggal:</label>
                 <input type="date" id="input-tanggal" class="wa-form-control" style="margin-bottom: 16px;">
 
-                <label style="font-size: 13px; color: #555; font-weight: 600; margin-bottom: 4px; display: block;">Kehadiran Mentee:</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="font-size: 13px; color: #555; font-weight: 600; margin: 0;">Kehadiran Mentee:</label>
+                    <span id="badge-count-hadir" style="font-size: 11px; font-weight: 700; color: #075e54; background: rgba(7, 94, 84, 0.15); padding: 2px 8px; border-radius: 10px; display: none;">0 Mentee</span>
+                </div>
                 <div class="autocomplete-wrapper">
                     <input type="text" id="input-siswa" class="wa-form-control" placeholder="Ketik nama siswa..." autocomplete="off">
                     <div id="autocomplete-list" class="autocomplete-dropdown"></div>
@@ -570,7 +600,10 @@
                     <!-- Chips will be added here -->
                 </div>
 
-                <label style="font-size: 13px; color: #555; font-weight: 600; margin-bottom: 4px; display: block;">Mentee Izin/Sakit:</label>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 4px;">
+                    <label style="font-size: 13px; color: #555; font-weight: 600; margin: 0;">Mentee Izin/Sakit:</label>
+                    <span id="badge-count-izin" style="font-size: 11px; font-weight: 700; color: #e53935; background: rgba(229, 57, 53, 0.15); padding: 2px 8px; border-radius: 10px; display: none;">0 Mentee</span>
+                </div>
                 <div class="autocomplete-wrapper">
                     <input type="text" id="input-siswa-izin" class="wa-form-control" placeholder="Ketik nama siswa izin/sakit..." autocomplete="off">
                     <div id="autocomplete-list-izin" class="autocomplete-dropdown"></div>
@@ -844,17 +877,33 @@
 
         function renderChips() {
             const container = document.getElementById('selected-students');
+            const badge = document.getElementById('badge-count-hadir');
             container.innerHTML = '';
             
-            selectedStudents.forEach(name => {
+            if (badge) {
+                if (selectedStudents.length > 0) {
+                    badge.innerText = `${selectedStudents.length} Mentee`;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            selectedStudents.forEach((name, idx) => {
                 const chip = document.createElement('div');
                 chip.className = 'student-chip';
                 chip.innerHTML = `
-                    <span>${name}</span>
-                    <i class="fas fa-times-circle" onclick="removeStudent('${name}')"></i>
+                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <span class="student-chip-num">${idx + 1}</span>
+                        <span>${name}</span>
+                    </div>
+                    <i class="fas fa-times-circle" onclick="removeStudent('${name}')" title="Hapus"></i>
                 `;
                 container.appendChild(chip);
             });
+
+            // Auto-scroll ke nama yang baru ditambahkan
+            container.scrollTop = container.scrollHeight;
         }
 
         function removeIzinStudent(name) {
@@ -864,19 +913,35 @@
 
         function renderIzinChips() {
             const container = document.getElementById('selected-students-izin');
+            const badge = document.getElementById('badge-count-izin');
             container.innerHTML = '';
             
-            selectedIzinStudents.forEach(name => {
+            if (badge) {
+                if (selectedIzinStudents.length > 0) {
+                    badge.innerText = `${selectedIzinStudents.length} Mentee`;
+                    badge.style.display = 'inline-block';
+                } else {
+                    badge.style.display = 'none';
+                }
+            }
+
+            selectedIzinStudents.forEach((name, idx) => {
                 const chip = document.createElement('div');
                 chip.className = 'student-chip';
                 chip.style.background = '#fef0f0';
                 chip.style.color = '#e53935';
                 chip.innerHTML = `
-                    <span>${name}</span>
-                    <i class="fas fa-times-circle" onclick="removeIzinStudent('${name}')" style="color: #e53935;"></i>
+                    <div style="display: flex; align-items: center; gap: 8px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                        <span class="student-chip-num" style="background: rgba(229, 57, 53, 0.2); color: #e53935;">${idx + 1}</span>
+                        <span>${name}</span>
+                    </div>
+                    <i class="fas fa-times-circle" onclick="removeIzinStudent('${name}')" style="color: #e53935;" title="Hapus"></i>
                 `;
                 container.appendChild(chip);
             });
+
+            // Auto-scroll ke nama yang baru ditambahkan
+            container.scrollTop = container.scrollHeight;
         }
 
         // Submit Form
